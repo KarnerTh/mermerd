@@ -6,14 +6,7 @@ import (
 )
 
 func SanitizeColumnType(columnType string) string {
-	switch {
-	case columnType == "character varying", columnType == "varchar":
-		return "string"
-	case strings.Contains(columnType, "timestamp"):
-		return "date"
-	default:
-		return sanitize(strings.ReplaceAll(columnType, " ", "_"))
-	}
+	return strings.ReplaceAll(sanitize(columnType), " ", "_")
 }
 
 func SanitizeTableName(tableName string) string {
