@@ -111,10 +111,15 @@ func (c mysqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 									  ON kc.COLUMN_NAME = kc2.COLUMN_NAME AND kc2.CONSTRAINT_NAME = 'PRIMARY' AND
 										 kc2.TABLE_NAME = c.TABLE_NAME
 				   where kc.CONSTRAINT_NAME = c.CONSTRAINT_NAME
-			   ) "isPrimary"
+			   ) "isPrimary",
+			   (
+				   select COUNT(*) > 1
+				   from information_schema.KEY_COLUMN_USAGE kc
+				   where kc.TABLE_NAME = c.TABLE_NAME
+					 and kc.CONSTRAINT_NAME = 'PRIMARY'
+			   ) "hasMultiplePk"
 		from information_schema.REFERENTIAL_CONSTRAINTS c
-		where c.TABLE_NAME = ?
-		   or c.REFERENCED_TABLE_NAME = ?
+		where c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?
 		`, tableName, tableName)
 	if err != nil {
 		return nil, err
@@ -123,7 +128,14 @@ func (c mysqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 	var constraints []ConstraintResult
 	for rows.Next() {
 		var constraint ConstraintResult
-		if err = rows.Scan(&constraint.FkTable, &constraint.PKTable, &constraint.ConstraintName, &constraint.IsPrimary); err != nil {
+		err = rows.Scan(&constraint.FkTable,
+			&constraint.PKTable,
+			&constraint.ConstraintName,
+			&constraint.IsPrimary,
+			&constraint.HasMultiplePK,
+		)
+
+		if err != nil {
 			return nil, err
 		}
 
