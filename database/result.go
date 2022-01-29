@@ -20,4 +20,5 @@ type ConstraintResult struct {
 	PKTable        string
 	ConstraintName string
 	IsPrimary      bool
+	HasMultiplePK  bool
 }

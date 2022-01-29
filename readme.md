@@ -23,12 +23,9 @@ extended.
 1. Specify the connection string (via parameter or interactive cli)
 2. Specify the schema that should be used (via parameter or interactive cli)
 3. Select the tables that you are interested in (multiselect, at least 1)
-4. Enjoy you current database schema in Mermaid-JS format
-
+4. Enjoy your current database schema in Mermaid-JS format
 
 https://user-images.githubusercontent.com/22556363/149669994-bd5cfd8d-670c-4f64-9fe9-4892866d6763.mp4
-
-
 
 ## Parameters
 
@@ -57,9 +54,22 @@ Examples for connection strings:
 * I also recommend using an IDE with an Mermaid-JS extension,
   e.g. [VS Code](https://marketplace.visualstudio.com/items?itemName=tomoyukim.vscode-mermaid-editor)
 
+## How does mermerd determine the constraints?
+
+The table constraints are analysed and interpreted as listed:
+
+| Nr. | Constraint type                        | Criteria                                                                 |
+|-----|----------------------------------------|--------------------------------------------------------------------------|
+| 1   | <code>a &#124;o--&#124;&#124; b</code> | If table a has a FK to table b and that column is the only PK of table a |
+| 2   | <code>a }o--&#124;&#124; b</code>      | Same as 1, but table a has multiple PK                                   |
+|     |                                        | Same as 1, but the FK is not a PK                                        |
+| 3   | <code>a }o--o&#124; b</code>           | Same as 2, but the FK is nullable                                        |
+
 ## Roadmap
 
 * [ ] Unit tests
 * [ ] Configurable suggestions for connection string input
 * [ ] Support `}o--o|` relation (currently displayed as `}o--||`)
 * [ ] Improve output file naming
+* [ ] Take unique constraints into account
+* [ ] Support ERD Attributes for FK and PK

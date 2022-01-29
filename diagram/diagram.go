@@ -73,7 +73,7 @@ func Create(result *database.Result) error {
 }
 
 func getRelation(constraint database.ConstraintResult) string {
-	if constraint.IsPrimary {
+	if constraint.IsPrimary && !constraint.HasMultiplePK {
 		return "|o--||"
 	} else {
 		return "}o--||"

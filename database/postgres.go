@@ -113,7 +113,16 @@ func (c postgresConnector) GetConstraints(tableName string) ([]ConstraintResult,
 													 on kc2.constraint_name = tc.constraint_name and
 														tc.constraint_type = 'PRIMARY KEY'
 								 where kc.constraint_name = c.constraint_name)
-							, false) "isPrimary"
+							, false) "isPrimary",
+						(
+							select COUNT(*) > 1 "hasMultiplePk"
+							from information_schema.table_constraints tc
+									 -- one constraint can have multiple columns
+									 inner join information_schema.key_column_usage kc
+												on kc.constraint_name = tc.constraint_name
+							where tc.table_name = fk.table_name
+							  and tc.constraint_type = 'PRIMARY KEY'
+						)
 		from information_schema.referential_constraints c
 				 inner join information_schema.table_constraints fk on c.constraint_name = fk.constraint_name
 				 inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
@@ -126,7 +135,15 @@ func (c postgresConnector) GetConstraints(tableName string) ([]ConstraintResult,
 	var constraints []ConstraintResult
 	for rows.Next() {
 		var constraint ConstraintResult
-		if err = rows.Scan(&constraint.FkTable, &constraint.PKTable, &constraint.ConstraintName, &constraint.IsPrimary); err != nil {
+		err = rows.Scan(
+			&constraint.FkTable,
+			&constraint.PKTable,
+			&constraint.ConstraintName,
+			&constraint.IsPrimary,
+			&constraint.HasMultiplePK,
+		)
+
+		if err != nil {
 			return nil, err
 		}
 
