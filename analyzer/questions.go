@@ -1,15 +1,15 @@
 package analyzer
 
-import "github.com/AlecAivazis/survey/v2"
+import (
+	"github.com/AlecAivazis/survey/v2"
+	"mermerd/config"
+)
 
 func ConnectionQuestion() survey.Prompt {
 	return &survey.Input{
 		Message: "Connection string",
 		Suggest: func(toComplete string) []string {
-			return []string{
-				"postgresql://user:password@localhost:5432/dvdrental",
-				"mysql://root:password@tcp(127.0.0.1:3306)/db",
-			}
+			return config.ConnectionStringSuggestions
 		},
 	}
 }

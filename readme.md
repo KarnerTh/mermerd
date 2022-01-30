@@ -2,6 +2,11 @@
 
 Create [Mermaid-Js](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram) ERD diagrams from existing tables.
 
+## Installation
+
+Just head over to the [Releases](https://github.com/KarnerTh/mermerd/releases) page and download the right executable
+for your operating system.
+
 ## Features
 
 * Supports PostgreSQL and MySQL
@@ -41,6 +46,17 @@ Some configurations can be set via command line parameters. The parameters can a
 resulting constraint is not in the list of selected tables. These tables do not have any column infos and are only
 present via their table name.
 
+## Config file
+
+Mermerd uses a yaml configuration file in your home directory called `.mermerd` (is created on first use).
+
+```yaml
+# These connection strings are available as suggestions in the cli (use tab to access)
+connectionStrings:
+  - postgresql://user:password@localhost:5432/yourDb
+  - mysql://root:password@tcp(127.0.0.1:3306)/yourDb
+```
+
 ## Connection strings
 
 Examples for connection strings:
@@ -67,8 +83,8 @@ The table constraints are analysed and interpreted as listed:
 
 ## Roadmap
 
+* [x] Configurable suggestions for connection string input
 * [ ] Unit tests
-* [ ] Configurable suggestions for connection string input
 * [ ] Support `}o--o|` relation (currently displayed as `}o--||`)
 * [ ] Improve output file naming
 * [ ] Take unique constraints into account
