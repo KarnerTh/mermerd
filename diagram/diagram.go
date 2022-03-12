@@ -10,7 +10,7 @@ import (
 )
 
 func Create(result *database.Result) error {
-	f, err := os.Create("result.mmd")
+	f, err := os.Create(config.OutputFileName())
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func Create(result *database.Result) error {
 
 	constraints := strings.Builder{}
 	for _, constraint := range allConstraints {
-		if (!sliceContainsItem(tableNames, constraint.PKTable) || !sliceContainsItem(tableNames, constraint.FkTable)) && !config.ShowAllConstraints {
+		if (!sliceContainsItem(tableNames, constraint.PKTable) || !sliceContainsItem(tableNames, constraint.FkTable)) && !config.ShowAllConstraints() {
 			continue
 		}
 

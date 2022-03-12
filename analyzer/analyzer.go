@@ -14,14 +14,12 @@ func Analyze() (*database.Result, error) {
 		return nil, err
 	}
 
-	var connectionString string
-	if config.ConnectionString == "" {
+	connectionString := config.ConnectionString()
+	if config.ConnectionString() == "" {
 		err = survey.AskOne(ConnectionQuestion(), &connectionString, survey.WithValidator(survey.Required))
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		connectionString = config.ConnectionString
 	}
 
 	loading.Start("Connecting to database and getting schemas")
@@ -36,8 +34,8 @@ func Analyze() (*database.Result, error) {
 	}
 	defer db.Close()
 
-	var selectedSchema string
-	if config.Schema == "" {
+	selectedSchema := config.Schema()
+	if selectedSchema == "" {
 		schemas, err := db.GetSchemas()
 		if err != nil {
 			return nil, err
@@ -56,8 +54,6 @@ func Analyze() (*database.Result, error) {
 				return nil, err
 			}
 		}
-	} else {
-		selectedSchema = config.Schema
 	}
 
 	// get tables
@@ -69,9 +65,15 @@ func Analyze() (*database.Result, error) {
 	}
 	loading.Stop()
 
-	err = survey.AskOne(TableQuestion(tables), &selectedTables, survey.WithValidator(survey.MinItems(1)))
-	if err != nil {
-		return nil, err
+	if config.UseAllTables() {
+		selectedTables = tables
+	} else if len(config.SelectedTables()) > 0 {
+		selectedTables = config.SelectedTables()
+	} else {
+		err = survey.AskOne(TableQuestion(tables), &selectedTables, survey.WithValidator(survey.MinItems(1)))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// get columns and constraints

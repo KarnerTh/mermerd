@@ -1,0 +1,13 @@
+# Connection properties
+connectionString: "postgresql://user:password@localhost:5432/dvdrental"
+schema: "public"
+
+# Define what tables should be used
+#useAllTables: true
+selectedTables:
+  - city
+  - customer
+
+# Additional flags
+showAllConstraints: true
+outputFileName: "my-db.mmd"
