@@ -1,5 +1,7 @@
 showAllConstraints: true
 outputFileName: "my-db.mmd"
+
+# These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
   - postgresql://user:password@localhost:5432/yourDb
   - mysql://root:password@tcp(127.0.0.1:3306)/yourDb

@@ -9,7 +9,7 @@ import (
 func ShowSuccess() {
 	color.Green(fmt.Sprintf(`
 
-Diagram was created successfully in %s
+✓ Diagram was created successfully (%s)
 
 `, config.OutputFileName()))
 }
