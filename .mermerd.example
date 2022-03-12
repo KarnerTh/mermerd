@@ -1,0 +1,5 @@
+showAllConstraints: true
+outputFileName: "my-db.mmd"
+connectionStringSuggestions:
+  - postgresql://user:password@localhost:5432/yourDb
+  - mysql://root:password@tcp(127.0.0.1:3306)/yourDb

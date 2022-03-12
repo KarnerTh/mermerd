@@ -7,9 +7,9 @@ import (
 
 func ConnectionQuestion() survey.Prompt {
 	return &survey.Input{
-		Message: "Connection string",
+		Message: "Connection string:",
 		Suggest: func(toComplete string) []string {
-			return config.ConnectionStringSuggestions
+			return config.ConnectionStringSuggestions()
 		},
 	}
 }
