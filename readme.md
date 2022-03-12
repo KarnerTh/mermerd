@@ -11,7 +11,7 @@ Create [Mermaid-Js](https://mermaid-js.github.io/mermaid/#/entityRelationshipDia
   <li><a href="#how-does-it-work">How does it work</a></li>
   <li><a href="#parametersflags">Parameters/Flags</a></li>
   <li><a href="#global-configuration-file">Global configuration file</a></li>
-  <li><a href="#use-a-predefined-run-configuration-e.g.-for-cicd)">Use a predefined run configuration (e.g. for CI/CD)</a></li>
+  <li><a href="#use-a-predefined-run-configuration-eg-for-cicd">Use a predefined run configuration (e.g. for CI/CD)</a></li>
   <li><a href="#example-usages">Example usages</a></li>
   <li><a href="#connection-strings">Connection strings</a></li>
   <li><a href="#how-can-i-writeupdate-mermaid-js-diagrams">How can I write/update Mermaid-JS diagrams?</a></li>
