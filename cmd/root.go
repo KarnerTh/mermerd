@@ -79,6 +79,5 @@ func initConfig() {
 		viper.SetConfigName(".mermerd")
 	}
 
-	err := viper.ReadInConfig()
-	cobra.CheckErr(err)
+	_ = viper.ReadInConfig()
 }
