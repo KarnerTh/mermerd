@@ -1,4 +1,5 @@
 showAllConstraints: true
+encloseWithMermaidBackticks: false
 outputFileName: "my-db.mmd"
 
 # These connection strings are available as suggestions in the cli (use tab to access)

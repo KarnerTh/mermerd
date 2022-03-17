@@ -11,3 +11,4 @@ selectedTables:
 # Additional flags
 showAllConstraints: true
 outputFileName: "my-db.mmd"
+encloseWithMermaidBackticks: false

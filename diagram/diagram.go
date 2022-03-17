@@ -54,12 +54,7 @@ func Create(result *database.Result) error {
 			return err
 		}
 
-		if config.EncloseWithMermaidBackticks() {
-			_, err = buffer.WriteString("\n```")
-		}
-
 		_, err = buffer.WriteString("\n\n")
-
 	}
 
 	constraints := strings.Builder{}
@@ -75,6 +70,10 @@ func Create(result *database.Result) error {
 	_, err = buffer.WriteString(constraints.String())
 	if err != nil {
 		return err
+	}
+
+	if config.EncloseWithMermaidBackticks() {
+		_, err = buffer.WriteString("```\n")
 	}
 
 	if err := buffer.Flush(); err != nil {

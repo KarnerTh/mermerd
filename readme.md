@@ -39,6 +39,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Show only the constraints that you are interested in
 * Interactive cli (multiselect, search for tables and schemas, etc.)
 * Use it in CI/CD pipeline via a run configuration
+* Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown 
 
 ## Why would I need it / Why should I care?
 
@@ -63,13 +64,14 @@ Some configurations can be set via command line parameters/flags. The available 
 via `mermerd -h`
 
 ```
-  -c, --connectionString string   connection string that should be used
-  -h, --help                      help for mermerd
-  -o, --outputFileName string     output file name (default "result.mmd")
-      --runConfig string          run configuration (replaces global configuration)
-  -s, --schema string             schema that should be used
-      --showAllConstraints        show all constraints, even though the table of the resulting constraint was not selected
-      --useAllTables              use all available tables
+  -c, --connectionString string       connection string that should be used
+  -e, --encloseWithMermaidBackticks   enclose output with mermaid backticks (needed for e.g. in markdown viewer)
+  -h, --help                          help for mermerd
+  -o, --outputFileName string         output file name (default "result.mmd")
+      --runConfig string              run configuration (replaces global configuration)
+  -s, --schema string                 schema that should be used
+      --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
+      --useAllTables                  use all available tables
 ```
 
 If the flag `--showAllConstraints` is provided, mermerd will print out all constraints of the selected tables, even when
@@ -84,6 +86,7 @@ provide connection string suggestions for the cli.
 
 ```yaml
 showAllConstraints: true
+encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
 
 # These connection strings are available as suggestions in the cli (use tab to access)
@@ -111,6 +114,7 @@ selectedTables:
 
 # Additional flags
 showAllConstraints: true
+encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
 ```
 
