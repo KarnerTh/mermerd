@@ -18,6 +18,13 @@ func Create(result *database.Result) error {
 	defer f.Close()
 
 	buffer := bufio.NewWriter(f)
+
+	if config.EncloseWithMermaidBackticks() {
+		_, err = buffer.WriteString("```mermaid\n")
+		if err != nil {
+			return err
+		}
+	}
 	_, err = buffer.WriteString("erDiagram\n")
 	if err != nil {
 		return err
@@ -46,6 +53,11 @@ func Create(result *database.Result) error {
 		if err != nil {
 			return err
 		}
+
+		if config.EncloseWithMermaidBackticks() {
+			_, err = buffer.WriteString("\n```")
+		}
+
 		_, err = buffer.WriteString("\n\n")
 
 	}
