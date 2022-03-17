@@ -10,6 +10,7 @@ const (
 	ConnectionStringKey            = "connectionString"
 	ConnectionStringSuggestionsKey = "connectionStringSuggestions"
 	OutputFileNameKey              = "outputFileName"
+	EncloseWithMermaidBackticksKey = "encloseWithMermaidBackticks"
 )
 
 func ShowAllConstraints() bool {
@@ -38,4 +39,8 @@ func ConnectionStringSuggestions() []string {
 
 func SelectedTables() []string {
 	return viper.GetStringSlice(SelectedTablesKey)
+}
+
+func EncloseWithMermaidBackticks() bool {
+	return viper.GetBool(EncloseWithMermaidBackticksKey)
 }
