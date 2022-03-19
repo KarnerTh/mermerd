@@ -8,8 +8,12 @@ import (
 
 type postgresConnector baseConnector
 
+func (c *postgresConnector) GetDbType() DbType {
+	return c.dbType
+}
+
 func (c *postgresConnector) Connect() error {
-	db, err := sql.Open(c.dbType.String(), c.dataSourceName)
+	db, err := sql.Open(c.dbType.String(), c.connectionString)
 	if err != nil {
 		return err
 	}

@@ -6,10 +6,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type mysqlConnector baseConnector
+type mySqlConnector baseConnector
 
-func (c *mysqlConnector) Connect() error {
-	db, err := sql.Open(c.dbType.String(), c.dataSourceName)
+func (c *mySqlConnector) GetDbType() DbType {
+	return c.dbType
+}
+
+func (c *mySqlConnector) Connect() error {
+	db, err := sql.Open(c.dbType.String(), c.connectionString)
 	if err != nil {
 		return err
 	}
@@ -22,14 +26,14 @@ func (c *mysqlConnector) Connect() error {
 	return nil
 }
 
-func (c mysqlConnector) Close() {
+func (c mySqlConnector) Close() {
 	err := c.db.Close()
 	if err != nil {
 		fmt.Println("could not close database connection", err)
 	}
 }
 
-func (c mysqlConnector) GetSchemas() ([]string, error) {
+func (c mySqlConnector) GetSchemas() ([]string, error) {
 	rows, err := c.db.Query("select schema_name from information_schema.schemata")
 	if err != nil {
 		return nil, err
@@ -48,7 +52,7 @@ func (c mysqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c mysqlConnector) GetTables(schemaName string) ([]string, error) {
+func (c mySqlConnector) GetTables(schemaName string) ([]string, error) {
 	rows, err := c.db.Query(`
 		select table_name
 		from information_schema.tables
@@ -72,7 +76,7 @@ func (c mysqlConnector) GetTables(schemaName string) ([]string, error) {
 	return tables, nil
 }
 
-func (c mysqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select column_name, data_type
 		from information_schema.columns
@@ -99,7 +103,7 @@ func (c mysqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	return columns, nil
 }
 
-func (c mysqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
+func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 		select c.TABLE_NAME,
 			   c.REFERENCED_TABLE_NAME,

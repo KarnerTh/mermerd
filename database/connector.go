@@ -7,31 +7,32 @@ import (
 )
 
 type baseConnector struct {
-	dbType         DbType
-	dataSourceName string
-	db             *sql.DB
+	dbType           DbType
+	connectionString string
+	db               *sql.DB
 }
 
 type Connector interface {
 	Connect() error
 	Close()
+	GetDbType() DbType
 	GetSchemas() ([]string, error)
 	GetTables(schemaName string) ([]string, error)
 	GetColumns(tableName string) ([]ColumnResult, error)
 	GetConstraints(tableName string) ([]ConstraintResult, error)
 }
 
-func NewConnector(dataSourceName string) (Connector, error) {
+func NewConnector(connectionString string) (Connector, error) {
 	switch {
-	case strings.HasPrefix(dataSourceName, "postgresql") || strings.HasPrefix(dataSourceName, "postgres"):
+	case strings.HasPrefix(connectionString, "postgresql") || strings.HasPrefix(connectionString, "postgres"):
 		return &postgresConnector{
-			dbType:         Postgres,
-			dataSourceName: dataSourceName,
+			dbType:           Postgres,
+			connectionString: connectionString,
 		}, nil
-	case strings.HasPrefix(dataSourceName, "mysql"):
-		return &mysqlConnector{
-			dbType:         MySql,
-			dataSourceName: strings.ReplaceAll(dataSourceName, "mysql://", ""),
+	case strings.HasPrefix(connectionString, "mysql"):
+		return &mySqlConnector{
+			dbType:           MySql,
+			connectionString: strings.ReplaceAll(connectionString, "mysql://", ""),
 		}, nil
 	default:
 		return nil, errors.New("could not create connector for db")
