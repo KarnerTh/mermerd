@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+const (
+	relationOneToOne  = "|o--||"
+	relationManyToOne = "}o--||"
+)
+
 func Create(result *database.Result) error {
 	f, err := os.Create(config.OutputFileName())
 	if err != nil {
@@ -18,43 +23,41 @@ func Create(result *database.Result) error {
 	defer f.Close()
 
 	buffer := bufio.NewWriter(f)
-
 	if config.EncloseWithMermaidBackticks() {
-		_, err = buffer.WriteString("```mermaid\n")
-		if err != nil {
+		if _, err = buffer.WriteString("```mermaid\n"); err != nil {
 			return err
 		}
 	}
-	_, err = buffer.WriteString("erDiagram\n")
-	if err != nil {
+
+	if _, err = buffer.WriteString("erDiagram\n"); err != nil {
 		return err
 	}
 
 	var tableNames []string
-	var allConstraints []database.ConstraintResult
+	var allConstraints database.ConstraintResultList
 	for _, table := range result.Tables {
 		tableNames = append(tableNames, table.TableName)
-		allConstraints = appendConstraintsIfNotExists(allConstraints, table.Constraints...)
+		allConstraints = allConstraints.AppendIfNotExists(table.Constraints...)
 	}
 
 	for _, table := range result.Tables {
-		_, err := buffer.WriteString(fmt.Sprintf("    %s {\n", table.TableName))
-		if err != nil {
+		if _, err := buffer.WriteString(fmt.Sprintf("    %s {\n", table.TableName)); err != nil {
 			return err
 		}
 
 		for _, column := range table.Columns {
-			_, err := buffer.WriteString(fmt.Sprintf("        %s %s\n", column.DataType, column.Name))
-			if err != nil {
+			if _, err := buffer.WriteString(fmt.Sprintf("        %s %s\n", column.DataType, column.Name)); err != nil {
 				return err
 			}
 		}
-		_, err = buffer.WriteString("    }")
-		if err != nil {
+
+		if _, err = buffer.WriteString("    }"); err != nil {
 			return err
 		}
 
-		_, err = buffer.WriteString("\n\n")
+		if _, err = buffer.WriteString("\n\n"); err != nil {
+			return err
+		}
 	}
 
 	constraints := strings.Builder{}
@@ -67,8 +70,7 @@ func Create(result *database.Result) error {
 		constraints.WriteString(fmt.Sprintf("    %s %s %s : \"\"\n", constraint.FkTable, relation, constraint.PKTable))
 	}
 
-	_, err = buffer.WriteString(constraints.String())
-	if err != nil {
+	if _, err = buffer.WriteString(constraints.String()); err != nil {
 		return err
 	}
 
@@ -85,34 +87,13 @@ func Create(result *database.Result) error {
 
 func getRelation(constraint database.ConstraintResult) string {
 	if constraint.IsPrimary && !constraint.HasMultiplePK {
-		return "|o--||"
+		return relationOneToOne
 	} else {
-		return "}o--||"
+		return relationManyToOne
 	}
 }
 
-// ensure that only unique items are appended to the list of constraints
-func appendConstraintsIfNotExists(list []database.ConstraintResult, items ...database.ConstraintResult) []database.ConstraintResult {
-	result := list
-	for _, item := range items {
-		if !sliceContainsConstraint(result, item) {
-			result = append(result, item)
-		}
-	}
-
-	return result
-}
-
-func sliceContainsConstraint(slice []database.ConstraintResult, item database.ConstraintResult) bool {
-	for _, sliceItem := range slice {
-		if sliceItem == item {
-			return true
-		}
-	}
-
-	return false
-}
-
+// todo replace with go1.18 generic (slice contains)
 func sliceContainsItem(slice []string, item string) bool {
 	for _, sliceItem := range slice {
 		if sliceItem == item {
