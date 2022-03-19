@@ -14,13 +14,13 @@ func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 
 	t.Run("Same item should not be appended", func(t *testing.T) {
 		// Arrange
-		expectedCount := len(constraintList)
 		testItem := constraintItem
 
 		// Act
 		result := constraintList.AppendIfNotExists(testItem)
 
 		// Assert
+		expectedCount := len(constraintList)
 		if len(result) != expectedCount {
 			t.Errorf("Expected %d items, but got %d", expectedCount, len(result))
 		}
@@ -28,7 +28,6 @@ func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 
 	t.Run("Different item should be appended", func(t *testing.T) {
 		// Arrange
-		expectedCount := len(constraintList) + 1
 		testItem := constraintItem
 		testItem.FkTable = "tableC"
 
@@ -36,6 +35,7 @@ func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 		result := constraintList.AppendIfNotExists(testItem)
 
 		// Assert
+		expectedCount := len(constraintList) + 1
 		if len(result) != expectedCount {
 			t.Errorf("Expected %d items, but got %d", expectedCount, len(result))
 		}
