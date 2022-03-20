@@ -70,7 +70,7 @@ func (c postgresConnector) GetTables(schemaName string) ([]string, error) {
 			return nil, err
 		}
 
-		tables = append(tables, SanitizeTableName(table))
+		tables = append(tables, SanitizeValue(table))
 	}
 
 	return tables, nil
@@ -94,8 +94,8 @@ func (c postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) 
 			return nil, err
 		}
 
-		column.Name = SanitizeColumnName(column.Name)
-		column.DataType = SanitizeColumnType(column.DataType)
+		column.Name = SanitizeValue(column.Name)
+		column.DataType = SanitizeValue(column.DataType)
 
 		columns = append(columns, column)
 	}
