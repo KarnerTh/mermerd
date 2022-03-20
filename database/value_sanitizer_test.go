@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -27,9 +28,7 @@ func TestSanitizeValue(t *testing.T) {
 			result := SanitizeValue(value)
 
 			// Assert
-			if result != testCase.expectedResult {
-				t.Errorf("Expected %s, got %s", testCase.expectedResult, result)
-			}
+			assert.Equal(t, testCase.expectedResult, result)
 		})
 	}
 }

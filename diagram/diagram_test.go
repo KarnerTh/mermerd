@@ -2,6 +2,7 @@ package diagram
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"mermerd/database"
 	"testing"
 )
@@ -33,9 +34,7 @@ func TestGetRelation(t *testing.T) {
 			result := getRelation(constraint)
 
 			// Assert
-			if result != testCase.expectedRelation {
-				t.Errorf("Expected %s, got %s", testCase.expectedRelation, result)
-			}
+			assert.Equal(t, testCase.expectedRelation, result)
 		})
 	}
 }

@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -10,14 +11,8 @@ func TestDbType_String(t *testing.T) {
 		dbType         DbType
 		expectedResult string
 	}{
-		{
-			dbType:         Postgres,
-			expectedResult: "pgx",
-		},
-		{
-			dbType:         MySql,
-			expectedResult: "mysql",
-		},
+		{dbType: Postgres, expectedResult: "pgx"},
+		{dbType: MySql, expectedResult: "mysql"},
 	}
 
 	for index, testCase := range testCases {
@@ -29,9 +24,7 @@ func TestDbType_String(t *testing.T) {
 			result := dbType.String()
 
 			// Assert
-			if result != testCase.expectedResult {
-				t.Errorf("Expected %s, got %s", testCase.expectedResult, result)
-			}
+			assert.Equal(t, testCase.expectedResult, result)
 		})
 	}
 }

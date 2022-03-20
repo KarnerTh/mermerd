@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -10,18 +11,9 @@ func TestNewConnector(t *testing.T) {
 		connectionString string
 		expectedDbType   DbType
 	}{
-		{
-			connectionString: "postgresql://user:password@localhost:5432/yourDb",
-			expectedDbType:   Postgres,
-		},
-		{
-			connectionString: "postgres://user:password@localhost:5432/yourDb",
-			expectedDbType:   Postgres,
-		},
-		{
-			connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/yourDb",
-			expectedDbType:   MySql,
-		},
+		{connectionString: "postgresql://user:password@localhost:5432/yourDb", expectedDbType: Postgres},
+		{connectionString: "postgres://user:password@localhost:5432/yourDb", expectedDbType: Postgres},
+		{connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/yourDb", expectedDbType: MySql},
 	}
 
 	for index, testCase := range testCases {
@@ -30,15 +22,11 @@ func TestNewConnector(t *testing.T) {
 			connectionString := testCase.connectionString
 
 			// Act
-			resultConnector, resultError := NewConnector(connectionString)
+			connector, err := NewConnector(connectionString)
 
 			// Assert
-			if resultError != nil {
-				t.Errorf("Should not throw error")
-			}
-			if resultConnector.GetDbType() != testCase.expectedDbType {
-				t.Errorf("Expected %s, got %s", testCase.expectedDbType, resultConnector)
-			}
+			assert.Nil(t, err)
+			assert.Equal(t, connector.GetDbType(), testCase.expectedDbType)
 		})
 	}
 }
@@ -48,13 +36,9 @@ func TestUnsupportedConnector(t *testing.T) {
 	connectionString := "notSupported://user:password@localhost:5432/yourDb"
 
 	// Act
-	resultConnector, resultError := NewConnector(connectionString)
+	connector, err := NewConnector(connectionString)
 
 	// Assert
-	if resultError == nil {
-		t.Errorf("Should throw error")
-	}
-	if resultConnector != nil {
-		t.Errorf("Connector should be nil")
-	}
+	assert.NotNil(t, err)
+	assert.Nil(t, connector)
 }

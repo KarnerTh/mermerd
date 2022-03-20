@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  mermerd-postgres-test-db:
+    image: postgres:14.1
+    environment:
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_DB: 'mermerd_test'
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db-table-setup.sql:/docker-entrypoint-initdb.d/db-table-setup.sql

@@ -1,6 +1,9 @@
 package database
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 	constraintItem := ConstraintResult{
@@ -21,9 +24,7 @@ func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 
 		// Assert
 		expectedCount := len(constraintList)
-		if len(result) != expectedCount {
-			t.Errorf("Expected %d items, but got %d", expectedCount, len(result))
-		}
+		assert.Len(t, result, expectedCount)
 	})
 
 	t.Run("Different item should be appended", func(t *testing.T) {
@@ -36,8 +37,6 @@ func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 
 		// Assert
 		expectedCount := len(constraintList) + 1
-		if len(result) != expectedCount {
-			t.Errorf("Expected %d items, but got %d", expectedCount, len(result))
-		}
+		assert.Len(t, result, expectedCount)
 	})
 }
