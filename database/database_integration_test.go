@@ -7,6 +7,10 @@ import (
 )
 
 func TestDatabaseIntegrations(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	testCases := []struct {
 		dbType           DbType
 		connectionString string

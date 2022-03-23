@@ -4,11 +4,13 @@ test_target := "./..."
 test-coverage:
 	go test -cover -coverprofile=coverage.out ./...; go tool cover -html=coverage.out -o coverage.html; rm coverage.out
 
-# https://github.com/mfridman/tparse
-.PHONY: test-pretty
-test-pretty:
+# https://github.com/mfridman/tparse is needed
+.PHONY: test-all
+test-all:
 	go test $(test_target) -cover -json | tparse -all
 
-.PHONY: test-pretty-small
-test-pretty-small:
-	go test $(test_target) -cover -json | tparse -all -smallscreen
+# https://github.com/mfridman/tparse is needed
+.PHONY: test-unit
+test-unit:
+	go test --short $(test_target) -cover -json | tparse -all
+
