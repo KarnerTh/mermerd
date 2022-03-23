@@ -1,12 +1,24 @@
-version: '3.3'
+version: "3.3"
 services:
   mermerd-postgres-test-db:
     image: postgres:14.1
     environment:
-      POSTGRES_USER: 'user'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_DB: 'mermerd_test'
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "mermerd_test"
     ports:
       - "5432:5432"
     volumes:
-      - ./db-table-setup.sql:/docker-entrypoint-initdb.d/db-table-setup.sql
+      - ./db-table-setup.sql:/docker-entrypoint-initdb.d/1.sql
+  mermerd-mysql-test-db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: "mermerd_test"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db-table-setup.sql:/docker-entrypoint-initdb.d/1.sql
