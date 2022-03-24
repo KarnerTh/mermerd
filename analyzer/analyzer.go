@@ -2,28 +2,41 @@ package analyzer
 
 import (
 	"errors"
-	"github.com/AlecAivazis/survey/v2"
 	"mermerd/config"
 	"mermerd/database"
 	"mermerd/util"
 )
 
-func Analyze() (*database.Result, error) {
+type analyzer struct {
+	config           config.MermerdConfig
+	connectorFactory database.ConnectorFactory
+	questioner       Questioner
+}
+
+type Analyzer interface {
+	Analyze() (*database.Result, error)
+}
+
+func NewAnalyzer(config config.MermerdConfig, connectorFactory database.ConnectorFactory, questioner Questioner) Analyzer {
+	return analyzer{config, connectorFactory, questioner}
+}
+
+func (a analyzer) Analyze() (*database.Result, error) {
 	loading, err := util.NewLoadingSpinner()
 	if err != nil {
 		return nil, err
 	}
 
-	connectionString := config.ConnectionString()
-	if config.ConnectionString() == "" {
-		err = survey.AskOne(ConnectionQuestion(), &connectionString, survey.WithValidator(survey.Required))
+	connectionString := a.config.ConnectionString()
+	if connectionString == "" {
+		connectionString, err = a.questioner.AskConnectionQuestion(a.config.ConnectionStringSuggestions())
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	loading.Start("Connecting to database and getting schemas")
-	db, err := database.NewConnector(connectionString)
+	db, err := a.connectorFactory.NewConnector(connectionString)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +47,7 @@ func Analyze() (*database.Result, error) {
 	}
 	defer db.Close()
 
-	selectedSchema := config.Schema()
+	selectedSchema := a.config.Schema()
 	if selectedSchema == "" {
 		schemas, err := db.GetSchemas()
 		if err != nil {
@@ -49,7 +62,7 @@ func Analyze() (*database.Result, error) {
 			selectedSchema = schemas[0]
 			break
 		default:
-			err = survey.AskOne(SchemaQuestion(schemas), &selectedSchema)
+			selectedSchema, err = a.questioner.AskSchemaQuestion(schemas)
 			if err != nil {
 				return nil, err
 			}
@@ -65,12 +78,12 @@ func Analyze() (*database.Result, error) {
 	}
 	loading.Stop()
 
-	if config.UseAllTables() {
+	if a.config.UseAllTables() {
 		selectedTables = tables
-	} else if len(config.SelectedTables()) > 0 {
-		selectedTables = config.SelectedTables()
+	} else if len(a.config.SelectedTables()) > 0 {
+		selectedTables = a.config.SelectedTables()
 	} else {
-		err = survey.AskOne(TableQuestion(tables), &selectedTables, survey.WithValidator(survey.MinItems(1)))
+		selectedTables, err = a.questioner.AskTableQuestion(tables)
 		if err != nil {
 			return nil, err
 		}

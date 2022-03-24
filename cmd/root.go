@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/color"
 	"mermerd/analyzer"
 	"mermerd/config"
+	"mermerd/database"
 	"mermerd/diagram"
 	"mermerd/util"
 	"os"
@@ -21,6 +22,12 @@ var rootCmd = &cobra.Command{
 	Long:  "Create Mermaid ERD diagrams from existing tables",
 	Run: func(cmd *cobra.Command, args []string) {
 		util.ShowIntro()
+		config := config.NewConfig()
+		connectorFactory := database.NewConnectorFactory()
+		questioner := analyzer.NewQuestioner()
+		analyzer := analyzer.NewAnalyzer(config, connectorFactory, questioner)
+		diagram := diagram.NewDiagram(config)
+
 		result, err := analyzer.Analyze()
 		if err != nil {
 			fmt.Println(err.Error())
@@ -35,7 +42,7 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		util.ShowSuccess()
+		util.ShowSuccess(config.OutputFileName())
 	},
 }
 

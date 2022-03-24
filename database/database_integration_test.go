@@ -11,6 +11,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 		t.Skip("skipping integration test")
 	}
 
+	connectorFactory := NewConnectorFactory()
 	testCases := []struct {
 		dbType           DbType
 		connectionString string
@@ -29,7 +30,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		connector, _ := NewConnector(testCase.connectionString)
+		connector, _ := connectorFactory.NewConnector(testCase.connectionString)
 
 		getConnectionAndConnect := func() Connector {
 			_ = connector.Connect()
@@ -73,6 +74,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				assert.Nil(t, err)
 				assert.ElementsMatch(t, expectedResult, tables)
 			})
+
 			t.Run("GetColumns", func(t *testing.T) {
 				connector := getConnectionAndConnect()
 				testCases := []struct {

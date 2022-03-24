@@ -14,8 +14,20 @@ const (
 	relationManyToOne = "}o--||"
 )
 
-func Create(result *database.Result) error {
-	f, err := os.Create(config.OutputFileName())
+type diagram struct {
+	config config.MermerdConfig
+}
+
+type Diagram interface {
+	Create(result *database.Result) error
+}
+
+func NewDiagram(config config.MermerdConfig) Diagram {
+	return diagram{config}
+}
+
+func (d diagram) Create(result *database.Result) error {
+	f, err := os.Create(d.config.OutputFileName())
 	if err != nil {
 		return err
 	}
@@ -23,7 +35,7 @@ func Create(result *database.Result) error {
 	defer f.Close()
 
 	buffer := bufio.NewWriter(f)
-	if config.EncloseWithMermaidBackticks() {
+	if d.config.EncloseWithMermaidBackticks() {
 		if _, err = buffer.WriteString("```mermaid\n"); err != nil {
 			return err
 		}
@@ -62,7 +74,7 @@ func Create(result *database.Result) error {
 
 	constraints := strings.Builder{}
 	for _, constraint := range allConstraints {
-		if (!sliceContainsItem(tableNames, constraint.PKTable) || !sliceContainsItem(tableNames, constraint.FkTable)) && !config.ShowAllConstraints() {
+		if (!sliceContainsItem(tableNames, constraint.PKTable) || !sliceContainsItem(tableNames, constraint.FkTable)) && !d.config.ShowAllConstraints() {
 			continue
 		}
 
@@ -74,7 +86,7 @@ func Create(result *database.Result) error {
 		return err
 	}
 
-	if config.EncloseWithMermaidBackticks() {
+	if d.config.EncloseWithMermaidBackticks() {
 		_, err = buffer.WriteString("```\n")
 	}
 

@@ -7,6 +7,7 @@ import (
 )
 
 func TestNewConnector(t *testing.T) {
+	connectorFactory := NewConnectorFactory()
 	testCases := []struct {
 		connectionString string
 		expectedDbType   DbType
@@ -22,7 +23,7 @@ func TestNewConnector(t *testing.T) {
 			connectionString := testCase.connectionString
 
 			// Act
-			connector, err := NewConnector(connectionString)
+			connector, err := connectorFactory.NewConnector(connectionString)
 
 			// Assert
 			assert.Nil(t, err)
@@ -33,10 +34,11 @@ func TestNewConnector(t *testing.T) {
 
 func TestUnsupportedConnector(t *testing.T) {
 	// Arrange
+	connectorFactory := NewConnectorFactory()
 	connectionString := "notSupported://user:password@localhost:5432/yourDb"
 
 	// Act
-	connector, err := NewConnector(connectionString)
+	connector, err := connectorFactory.NewConnector(connectionString)
 
 	// Assert
 	assert.NotNil(t, err)

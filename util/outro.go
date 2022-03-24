@@ -3,15 +3,14 @@ package util
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"mermerd/config"
 )
 
-func ShowSuccess() {
+func ShowSuccess(fileName string) {
 	color.Green(fmt.Sprintf(`
 
 ✓ Diagram was created successfully (%s)
 
-`, config.OutputFileName()))
+`, fileName))
 }
 
 func ShowError() {
