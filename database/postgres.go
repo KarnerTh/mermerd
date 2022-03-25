@@ -8,8 +8,12 @@ import (
 
 type postgresConnector baseConnector
 
+func (c *postgresConnector) GetDbType() DbType {
+	return c.dbType
+}
+
 func (c *postgresConnector) Connect() error {
-	db, err := sql.Open(c.dbType.String(), c.dataSourceName)
+	db, err := sql.Open(c.dbType.String(), c.connectionString)
 	if err != nil {
 		return err
 	}
@@ -66,7 +70,7 @@ func (c postgresConnector) GetTables(schemaName string) ([]string, error) {
 			return nil, err
 		}
 
-		tables = append(tables, SanitizeTableName(table))
+		tables = append(tables, SanitizeValue(table))
 	}
 
 	return tables, nil
@@ -90,8 +94,8 @@ func (c postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) 
 			return nil, err
 		}
 
-		column.Name = SanitizeColumnName(column.Name)
-		column.DataType = SanitizeColumnType(column.DataType)
+		column.Name = SanitizeValue(column.Name)
+		column.DataType = SanitizeValue(column.DataType)
 
 		columns = append(columns, column)
 	}

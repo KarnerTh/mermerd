@@ -13,34 +13,51 @@ const (
 	EncloseWithMermaidBackticksKey = "encloseWithMermaidBackticks"
 )
 
-func ShowAllConstraints() bool {
+type config struct{}
+
+type MermerdConfig interface {
+	ShowAllConstraints() bool
+	UseAllTables() bool
+	Schema() string
+	ConnectionString() string
+	OutputFileName() string
+	ConnectionStringSuggestions() []string
+	SelectedTables() []string
+	EncloseWithMermaidBackticks() bool
+}
+
+func NewConfig() MermerdConfig {
+	return config{}
+}
+
+func (c config) ShowAllConstraints() bool {
 	return viper.GetBool(ShowAllConstraintsKey)
 }
 
-func UseAllTables() bool {
+func (c config) UseAllTables() bool {
 	return viper.GetBool(UseAllTablesKey)
 }
 
-func Schema() string {
+func (c config) Schema() string {
 	return viper.GetString(SchemaKey)
 }
 
-func ConnectionString() string {
+func (c config) ConnectionString() string {
 	return viper.GetString(ConnectionStringKey)
 }
 
-func OutputFileName() string {
+func (c config) OutputFileName() string {
 	return viper.GetString(OutputFileNameKey)
 }
 
-func ConnectionStringSuggestions() []string {
+func (c config) ConnectionStringSuggestions() []string {
 	return viper.GetStringSlice(ConnectionStringSuggestionsKey)
 }
 
-func SelectedTables() []string {
+func (c config) SelectedTables() []string {
 	return viper.GetStringSlice(SelectedTablesKey)
 }
 
-func EncloseWithMermaidBackticks() bool {
+func (c config) EncloseWithMermaidBackticks() bool {
 	return viper.GetBool(EncloseWithMermaidBackticksKey)
 }

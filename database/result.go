@@ -7,7 +7,7 @@ type Result struct {
 type TableResult struct {
 	TableName   string
 	Columns     []ColumnResult
-	Constraints []ConstraintResult
+	Constraints ConstraintResultList
 }
 
 type ColumnResult struct {
@@ -15,10 +15,33 @@ type ColumnResult struct {
 	DataType string
 }
 
+type ConstraintResultList []ConstraintResult
 type ConstraintResult struct {
 	FkTable        string
 	PKTable        string
 	ConstraintName string
 	IsPrimary      bool
 	HasMultiplePK  bool
+}
+
+// AppendIfNotExists ensures that only unique items are appended to the list of constraints
+func (source ConstraintResultList) AppendIfNotExists(items ...ConstraintResult) ConstraintResultList {
+	result := source
+	for _, item := range items {
+		if !sliceContainsConstraint(result, item) {
+			result = append(result, item)
+		}
+	}
+
+	return result
+}
+
+func sliceContainsConstraint(slice []ConstraintResult, item ConstraintResult) bool {
+	for _, sliceItem := range slice {
+		if sliceItem == item {
+			return true
+		}
+	}
+
+	return false
 }

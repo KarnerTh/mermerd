@@ -1,0 +1,49 @@
+package config
+
+import (
+	"bytes"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestYamlConfig(t *testing.T) {
+	// Arrange
+	config := NewConfig()
+	var configYaml = []byte(`
+# Connection properties
+connectionString: "connectionStringExample"
+schema: "public"
+
+# Define what tables should be used
+useAllTables: false
+selectedTables:
+  - city
+  - customer
+
+# Additional flags
+showAllConstraints: true
+outputFileName: "my-db.mmd"
+encloseWithMermaidBackticks: false
+
+# These connection strings are available as suggestions in the cli (use tab to access)
+connectionStringSuggestions:
+  - suggestion1
+  - suggestion2
+`)
+
+	// Act
+	viper.SetConfigType("yaml")
+	err := viper.ReadConfig(bytes.NewBuffer(configYaml))
+
+	// Assert
+	assert.Nil(t, err)
+	assert.Equal(t, "connectionStringExample", config.ConnectionString())
+	assert.Equal(t, "public", config.Schema())
+	assert.Equal(t, false, config.UseAllTables())
+	assert.ElementsMatch(t, []string{"city", "customer"}, config.SelectedTables())
+	assert.Equal(t, true, config.ShowAllConstraints())
+	assert.Equal(t, "my-db.mmd", config.OutputFileName())
+	assert.Equal(t, false, config.EncloseWithMermaidBackticks())
+	assert.ElementsMatch(t, []string{"suggestion1", "suggestion2"}, config.ConnectionStringSuggestions())
+}

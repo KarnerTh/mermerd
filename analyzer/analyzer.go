@@ -2,83 +2,121 @@ package analyzer
 
 import (
 	"errors"
-	"github.com/AlecAivazis/survey/v2"
 	"mermerd/config"
 	"mermerd/database"
 	"mermerd/util"
 )
 
-func Analyze() (*database.Result, error) {
-	loading, err := util.NewLoadingSpinner()
+type analyzer struct {
+	loadingSpinner   util.LoadingSpinner
+	config           config.MermerdConfig
+	connectorFactory database.ConnectorFactory
+	questioner       Questioner
+}
+
+type Analyzer interface {
+	Analyze() (*database.Result, error)
+
+	GetConnectionString() (string, error)
+	GetSchema(db database.Connector) (string, error)
+	GetTables(db database.Connector, selectedSchema string) ([]string, error)
+	GetColumnsAndConstraints(db database.Connector, selectedTables []string) ([]database.TableResult, error)
+}
+
+func NewAnalyzer(config config.MermerdConfig, connectorFactory database.ConnectorFactory, questioner Questioner) Analyzer {
+	loadingSpinner := util.NewLoadingSpinner()
+	return analyzer{loadingSpinner, config, connectorFactory, questioner}
+}
+
+func (a analyzer) Analyze() (*database.Result, error) {
+	connectionString, err := a.GetConnectionString()
 	if err != nil {
 		return nil, err
 	}
 
-	connectionString := config.ConnectionString()
-	if config.ConnectionString() == "" {
-		err = survey.AskOne(ConnectionQuestion(), &connectionString, survey.WithValidator(survey.Required))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	loading.Start("Connecting to database and getting schemas")
-	db, err := database.NewConnector(connectionString)
+	db, err := a.connectorFactory.NewConnector(connectionString)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Connect()
-	if err != nil {
+	a.loadingSpinner.Start("Connecting to database")
+	if err = db.Connect(); err != nil {
 		return nil, err
 	}
 	defer db.Close()
+	a.loadingSpinner.Stop()
 
-	selectedSchema := config.Schema()
-	if selectedSchema == "" {
-		schemas, err := db.GetSchemas()
-		if err != nil {
-			return nil, err
-		}
-		loading.Stop()
-
-		switch len(schemas) {
-		case 0:
-			return nil, errors.New("no schemas available")
-		case 1:
-			selectedSchema = schemas[0]
-			break
-		default:
-			err = survey.AskOne(SchemaQuestion(schemas), &selectedSchema)
-			if err != nil {
-				return nil, err
-			}
-		}
+	selectedSchema, err := a.GetSchema(db)
+	if err != nil {
+		return nil, err
 	}
 
-	// get tables
-	var selectedTables []string
-	loading.Start("Getting tables")
+	selectedTables, err := a.GetTables(db, selectedSchema)
+	if err != nil {
+		return nil, err
+	}
+
+	tableResults, err := a.GetColumnsAndConstraints(db, selectedTables)
+	if err != nil {
+		return nil, err
+	}
+
+	return &database.Result{Tables: tableResults}, nil
+}
+
+func (a analyzer) GetConnectionString() (string, error) {
+	if connectionString := a.config.ConnectionString(); connectionString != "" {
+		return connectionString, nil
+	}
+
+	return a.questioner.AskConnectionQuestion(a.config.ConnectionStringSuggestions())
+}
+
+func (a analyzer) GetSchema(db database.Connector) (string, error) {
+	if selectedSchema := a.config.Schema(); selectedSchema != "" {
+		return selectedSchema, nil
+	}
+
+	a.loadingSpinner.Start("Getting schemas")
+	schemas, err := db.GetSchemas()
+	a.loadingSpinner.Stop()
+
+	if err != nil {
+		return "", err
+	}
+
+	switch len(schemas) {
+	case 0:
+		return "", errors.New("no schemas available")
+	case 1:
+		return schemas[0], nil
+	default:
+		return a.questioner.AskSchemaQuestion(schemas)
+	}
+}
+
+func (a analyzer) GetTables(db database.Connector, selectedSchema string) ([]string, error) {
+	if selectedTables := a.config.SelectedTables(); len(selectedTables) > 0 {
+		return selectedTables, nil
+	}
+
+	a.loadingSpinner.Start("Getting tables")
 	tables, err := db.GetTables(selectedSchema)
 	if err != nil {
 		return nil, err
 	}
-	loading.Stop()
+	a.loadingSpinner.Stop()
 
-	if config.UseAllTables() {
-		selectedTables = tables
-	} else if len(config.SelectedTables()) > 0 {
-		selectedTables = config.SelectedTables()
+	if a.config.UseAllTables() {
+		return tables, nil
 	} else {
-		err = survey.AskOne(TableQuestion(tables), &selectedTables, survey.WithValidator(survey.MinItems(1)))
-		if err != nil {
-			return nil, err
-		}
+		return a.questioner.AskTableQuestion(tables)
 	}
+}
 
-	// get columns and constraints
+func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []string) ([]database.TableResult, error) {
 	var tableResults []database.TableResult
-	loading.Start("Getting columns and constraints")
+	a.loadingSpinner.Start("Getting columns and constraints")
 	for _, table := range selectedTables {
 		columns, err := db.GetColumns(table)
 		if err != nil {
@@ -92,7 +130,6 @@ func Analyze() (*database.Result, error) {
 
 		tableResults = append(tableResults, database.TableResult{TableName: table, Columns: columns, Constraints: constraints})
 	}
-	loading.Stop()
-
-	return &database.Result{Tables: tableResults}, nil
+	a.loadingSpinner.Stop()
+	return tableResults, nil
 }

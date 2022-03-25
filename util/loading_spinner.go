@@ -14,14 +14,10 @@ type loadingSpinner struct {
 	spinner *spinner.Spinner
 }
 
-func NewLoadingSpinner() (*loadingSpinner, error) {
+func NewLoadingSpinner() LoadingSpinner {
 	s := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
-	err := s.Color("green")
-	if err != nil {
-		return nil, err
-	}
-
-	return &loadingSpinner{spinner: s}, nil
+	_ = s.Color("green")
+	return &loadingSpinner{spinner: s}
 }
 
 func (s *loadingSpinner) Start(text string) {

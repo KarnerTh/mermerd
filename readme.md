@@ -16,6 +16,7 @@ Create [Mermaid-Js](https://mermaid-js.github.io/mermaid/#/entityRelationshipDia
   <li><a href="#connection-strings">Connection strings</a></li>
   <li><a href="#how-can-i-writeupdate-mermaid-js-diagrams">How can I write/update Mermaid-JS diagrams?</a></li>
   <li><a href="#how-does-mermerd-determine-the-constraints">How does mermerd determine the constraints?</a></li>
+  <li><a href="#tests">Tests</a></li>
   <li><a href="#roadmap">Roadmap</a></li>
 </ul>
 
@@ -39,7 +40,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Show only the constraints that you are interested in
 * Interactive cli (multiselect, search for tables and schemas, etc.)
 * Use it in CI/CD pipeline via a run configuration
-* Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown 
+* Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown
 
 ## Why would I need it / Why should I care?
 
@@ -161,9 +162,32 @@ The table constraints are analysed and interpreted as listed:
 |     |                                        | Same as 1, but the FK is not a PK                                        |
 | 3   | <code>a }o--o&#124; b</code>           | Same as 2, but the FK is nullable                                        |
 
+## Tests
+
+You can either use the Makefile targets to run the tests and have a pretty
+output ([tparse](https://github.com/mfridman/tparse) is used for formatting) or start them manually via `go test`.
+
+Mocks for unit tests are generated via [mockery](https://github.com/vektra/mockery) (can be created
+via `make create-mocks` or `mockery --all`)
+
+Local setup for integration tests:
+
+1. `cd test`
+2. `docker-compose up -d`
+3. done - the required tables are created automatically at startup (`test/db-table-setup.sql` contains all test data)
+
+Integration and unit tests are separated via the `--short` flag:
+
+* `go test --short -v ./...` runs all unit tests
+* `go test -v ./...` runs all unit and integration tests
+
+or via the Makefile targets
+
+* `make test-unit` runs all unit tests
+* `make test-all` runs all unit and integration tests
+
 ## Roadmap
 
-* [ ] Unit tests
 * [ ] Support `}o--o|` relation (currently displayed as `}o--||`)
 * [ ] Take unique constraints into account
 * [ ] Support ERD Attributes for FK and PK
