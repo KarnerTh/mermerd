@@ -1,4 +1,5 @@
 # Mermerd
+[![tests](https://github.com/KarnerTh/mermerd/actions/workflows/test.yml/badge.svg)](https://github.com/KarnerTh/mermerd/actions/workflows/test.yml)
 
 Create [Mermaid-Js](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram) ERD diagrams from existing tables.
 
