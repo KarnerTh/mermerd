@@ -47,6 +47,7 @@ func (q questioner) AskTableQuestion(tables []string) ([]string, error) {
 		Options:  tables,
 		PageSize: 15,
 	}
+
 	err := survey.AskOne(question, &result, survey.WithValidator(survey.MinItems(1)))
 	return result, err
 }

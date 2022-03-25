@@ -167,6 +167,9 @@ The table constraints are analysed and interpreted as listed:
 You can either use the Makefile targets to run the tests and have a pretty
 output ([tparse](https://github.com/mfridman/tparse) is used for formatting) or start them manually via `go test`.
 
+Mocks for unit tests are generated via [mockery](https://github.com/vektra/mockery) (can be created
+via `make create-mocks` or `mockery --all`)
+
 Local setup for integration tests:
 
 1. `cd test`
@@ -185,7 +188,6 @@ or via the Makefile targets
 
 ## Roadmap
 
-* [ ] Unit tests
 * [ ] Support `}o--o|` relation (currently displayed as `}o--||`)
 * [ ] Take unique constraints into account
 * [ ] Support ERD Attributes for FK and PK

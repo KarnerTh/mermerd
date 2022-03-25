@@ -4,6 +4,11 @@ test_target := "./..."
 test-coverage:
 	go test -cover -coverprofile=coverage.out ./...; go tool cover -html=coverage.out -o coverage.html; rm coverage.out
 
+# https://github.com/vektra/mockery is needed
+.PHONY: create-mocks
+create-mocks:
+	mockery --all
+
 # https://github.com/mfridman/tparse is needed
 .PHONY: test-all
 test-all:
