@@ -105,7 +105,6 @@ func getRelation(constraint database.ConstraintResult) string {
 	}
 }
 
-// todo replace with go1.18 generic (slice contains)
 func sliceContainsItem(slice []string, item string) bool {
 	for _, sliceItem := range slice {
 		if sliceItem == item {
