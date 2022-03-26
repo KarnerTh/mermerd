@@ -3,8 +3,10 @@
 
 Create [Mermaid-Js](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram) ERD diagrams from existing tables.
 
-# Contents
+Want to see what has changed? Take a look at
+the [Changelog](https://github.com/KarnerTh/mermerd/blob/master/changelog.md)
 
+# Contents
 <ul>
   <li><a href="#installation">Installation</a></li>
   <li><a href="#features">Features</a></li>
@@ -25,13 +27,6 @@ Create [Mermaid-Js](https://mermaid-js.github.io/mermaid/#/entityRelationshipDia
 
 Just head over to the [Releases](https://github.com/KarnerTh/mermerd/releases) page and download the right executable
 for your operating system. To be able to use it globally on your system, add the executable to your path.
-
-## Changes from 0.0.2 to 0.0.3
-
-* `.mermerd` configuration file is not automatically created on first use anymore
-* the parameter for the connection string suggestions (previously `connectionStrings`) was renamed
-  to `connectionStringSuggestions`
-* the flag `-ac` was replaced with `--showAllConstraints`
 
 ## Features
 
