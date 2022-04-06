@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -78,10 +79,27 @@ func (c mySqlConnector) GetTables(schemaName string) ([]string, error) {
 
 func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
-		select column_name, data_type
-		from information_schema.columns
-		where table_name = ?
-		order by ordinal_position
+		select
+			col.column_name,
+			col.data_type,
+			case x.CONSTRAINT_TYPE
+				when 'PRIMARY KEY' THEN 'PK'
+				when 'FOREIGN KEY' THEN 'FK'
+				else ''
+			end constraint_type
+		from information_schema.columns as col
+		left join (
+		select usg.table_name, usg.column_name, cns.CONSTRAINT_TYPE
+			from information_schema.KEY_COLUMN_USAGE as usg
+			join information_schema.TABLE_CONSTRAINTS as cns
+			on cns.TABLE_NAME = usg.TABLE_NAME
+			and cns.CONSTRAINT_NAME = usg.CONSTRAINT_NAME
+			and cns.CONSTRAINT_TYPE IN ('PRIMARY KEY', 'FOREIGN KEY')
+		) as x
+		on x.TABLE_NAME = col.table_name
+		and x.COLUMN_NAME = col.column_name
+		where col.TABLE_NAME = ?
+		order by col.ordinal_position
 		`, tableName)
 	if err != nil {
 		return nil, err
@@ -90,12 +108,13 @@ func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.ConstraintType); err != nil {
 			return nil, err
 		}
 
 		column.Name = SanitizeValue(column.Name)
 		column.DataType = SanitizeValue(column.DataType)
+		column.ConstraintType = SanitizeValue(column.ConstraintType)
 
 		columns = append(columns, column)
 	}

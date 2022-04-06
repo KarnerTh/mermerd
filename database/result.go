@@ -11,8 +11,9 @@ type TableResult struct {
 }
 
 type ColumnResult struct {
-	Name     string
-	DataType string
+	Name           string
+	DataType       string
+	ConstraintType string
 }
 
 type ConstraintResultList []ConstraintResult

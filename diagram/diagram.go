@@ -58,7 +58,17 @@ func (d diagram) Create(result *database.Result) error {
 		}
 
 		for _, column := range table.Columns {
-			if _, err := buffer.WriteString(fmt.Sprintf("        %s %s\n", column.DataType, column.Name)); err != nil {
+			if _, err := buffer.WriteString(fmt.Sprintf("        %s %s", column.DataType, column.Name)); err != nil {
+				return err
+			}
+
+			if column.ConstraintType != "" {
+				if _, err := buffer.WriteString(fmt.Sprintf(" %s", column.ConstraintType)); err != nil {
+					return err
+				}
+			}
+
+			if _, err := buffer.WriteString("\n"); err != nil {
 				return err
 			}
 		}
