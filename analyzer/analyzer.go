@@ -97,7 +97,13 @@ func (a analyzer) GetSchema(db database.Connector) (string, error) {
 
 func (a analyzer) GetTables(db database.Connector, selectedSchema string) ([]string, error) {
 	if selectedTables := a.config.SelectedTables(); len(selectedTables) > 0 {
-		return selectedTables, nil
+		tableNames := make([]string, 0, len(selectedTables))
+
+		for tableName := range selectedTables {
+			tableNames = append(tableNames, tableName)
+		}
+
+		return tableNames, nil
 	}
 
 	a.loadingSpinner.Start("Getting tables")

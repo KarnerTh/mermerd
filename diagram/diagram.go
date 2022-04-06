@@ -52,24 +52,32 @@ func (d diagram) Create(result *database.Result) error {
 		allConstraints = allConstraints.AppendIfNotExists(table.Constraints...)
 	}
 
+	selectedTables := d.config.SelectedTables()
+
 	for _, table := range result.Tables {
 		if _, err := buffer.WriteString(fmt.Sprintf("    %s {\n", table.TableName)); err != nil {
 			return err
 		}
 
 		for _, column := range table.Columns {
-			if _, err := buffer.WriteString(fmt.Sprintf("        %s %s", column.DataType, column.Name)); err != nil {
-				return err
-			}
+			if d.config.ShowOnlySelectedColumns() {
+				if column.ConstraintType == "PK" || column.ConstraintType == "FK" {
+					if err := printColumn(buffer, column); err != nil {
+						return err
+					}
+				}
 
-			if column.ConstraintType != "" {
-				if _, err := buffer.WriteString(fmt.Sprintf(" %s", column.ConstraintType)); err != nil {
+				for _, columnName := range selectedTables[table.TableName].Columns {
+					if column.Name == columnName {
+						if err := printColumn(buffer, column); err != nil {
+							return err
+						}
+					}
+				}
+			} else {
+				if err := printColumn(buffer, column); err != nil {
 					return err
 				}
-			}
-
-			if _, err := buffer.WriteString("\n"); err != nil {
-				return err
 			}
 		}
 
@@ -101,6 +109,24 @@ func (d diagram) Create(result *database.Result) error {
 	}
 
 	if err := buffer.Flush(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func printColumn(buffer *bufio.Writer, column database.ColumnResult) error {
+	if _, err := buffer.WriteString(fmt.Sprintf("        %s %s", column.DataType, column.Name)); err != nil {
+		return err
+	}
+
+	if column.ConstraintType != "" {
+		if _, err := buffer.WriteString(fmt.Sprintf(" %s", column.ConstraintType)); err != nil {
+			return err
+		}
+	}
+
+	if _, err := buffer.WriteString("\n"); err != nil {
 		return err
 	}
 

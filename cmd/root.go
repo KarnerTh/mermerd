@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"mermerd/analyzer"
 	"mermerd/config"
 	"mermerd/database"
 	"mermerd/diagram"
 	"mermerd/util"
 	"os"
+
+	"github.com/fatih/color"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -57,6 +58,7 @@ func init() {
 
 	rootCmd.Flags().StringVar(&runConfig, "runConfig", "", "run configuration (replaces global configuration)")
 	rootCmd.Flags().Bool(config.ShowAllConstraintsKey, false, "show all constraints, even though the table of the resulting constraint was not selected")
+	rootCmd.Flags().Bool(config.ShowOnlySelectedColumnsKey, false, "show only primary keys, foreign keys and specified columns")
 	rootCmd.Flags().Bool(config.UseAllTablesKey, false, "use all available tables")
 	rootCmd.Flags().BoolP(config.EncloseWithMermaidBackticksKey, "e", false, "enclose output with mermaid backticks (needed for e.g. in markdown viewer)")
 	rootCmd.Flags().StringP(config.ConnectionStringKey, "c", "", "connection string that should be used")
@@ -64,6 +66,7 @@ func init() {
 	rootCmd.Flags().StringP(config.OutputFileNameKey, "o", "result.mmd", "output file name")
 
 	bindFlagToViper(config.ShowAllConstraintsKey)
+	bindFlagToViper(config.ShowOnlySelectedColumnsKey)
 	bindFlagToViper(config.UseAllTablesKey)
 	bindFlagToViper(config.EncloseWithMermaidBackticksKey)
 	bindFlagToViper(config.ConnectionStringKey)
