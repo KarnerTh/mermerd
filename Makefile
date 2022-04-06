@@ -19,3 +19,6 @@ test-all:
 test-unit:
 	go test --short $(test_target) -cover -json | tparse -all
 
+.PHONY: build
+build:
+	GOOS=darwin GOARCH=amd64 go build -o mermerd main.go
