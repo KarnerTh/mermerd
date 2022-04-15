@@ -24,8 +24,11 @@ the [Changelog](https://github.com/KarnerTh/mermerd/blob/master/changelog.md)
 </ul>
 
 ## Installation
+`go install github.com/KarnerTh/mermerd@latest`
 
-Just head over to the [Releases](https://github.com/KarnerTh/mermerd/releases) page and download the right executable
+or
+
+just head over to the [Releases](https://github.com/KarnerTh/mermerd/releases) page and download the right executable
 for your operating system. To be able to use it globally on your system, add the executable to your path.
 
 ## Features
