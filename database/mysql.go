@@ -113,7 +113,7 @@ func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 				   from information_schema.KEY_COLUMN_USAGE kc
 							left join information_schema.KEY_COLUMN_USAGE kc2
 									  ON kc.COLUMN_NAME = kc2.COLUMN_NAME AND kc2.CONSTRAINT_NAME = 'PRIMARY' AND
-										 kc2.TABLE_NAME = c.TABLE_NAME
+										 kc2.TABLE_NAME = kc.TABLE_NAME
 				   where kc.CONSTRAINT_NAME = c.CONSTRAINT_NAME
 			   ) "isPrimary",
 			   (
