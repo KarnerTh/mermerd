@@ -1,8 +1,9 @@
 package database
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConstraintResultList_AppendIfNotExists(t *testing.T) {

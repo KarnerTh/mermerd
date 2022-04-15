@@ -2,9 +2,10 @@ package analyzer
 
 import (
 	"errors"
-	"mermerd/config"
-	"mermerd/database"
-	"mermerd/util"
+	
+	"github.com/KarnerTh/mermerd/config"
+	"github.com/KarnerTh/mermerd/database"
+	"github.com/KarnerTh/mermerd/util"
 )
 
 type analyzer struct {

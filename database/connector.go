@@ -1,8 +1,6 @@
 package database
 
-import (
-	"database/sql"
-)
+import "database/sql"
 
 type baseConnector struct {
 	dbType           DbType

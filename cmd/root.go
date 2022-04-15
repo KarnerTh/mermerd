@@ -2,16 +2,17 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"mermerd/analyzer"
-	"mermerd/config"
-	"mermerd/database"
-	"mermerd/diagram"
-	"mermerd/util"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/KarnerTh/mermerd/analyzer"
+	"github.com/KarnerTh/mermerd/config"
+	"github.com/KarnerTh/mermerd/database"
+	"github.com/KarnerTh/mermerd/diagram"
+	"github.com/KarnerTh/mermerd/util"
 )
 
 var runConfig string

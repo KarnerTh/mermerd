@@ -1,3 +1,4 @@
+GIT_TAG := $(shell git describe --tags `git rev-list --tags --max-count=1`)
 test_target := "./..."
 
 .PHONY: test-coverage
@@ -19,3 +20,6 @@ test-all:
 test-unit:
 	go test --short $(test_target) -cover -json | tparse -all
 
+.PHONY: publish-package
+publish-package:
+	echo GOPROXY=proxy.golang.org go list -m github.com/KarnerTh/mermerd@$(GIT_TAG)

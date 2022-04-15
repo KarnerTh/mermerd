@@ -3,10 +3,11 @@ package diagram
 import (
 	"bufio"
 	"fmt"
-	"mermerd/config"
-	"mermerd/database"
 	"os"
 	"strings"
+
+	"github.com/KarnerTh/mermerd/config"
+	"github.com/KarnerTh/mermerd/database"
 )
 
 const (

@@ -2,9 +2,11 @@ package diagram
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"mermerd/database"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/KarnerTh/mermerd/database"
 )
 
 func TestGetRelation(t *testing.T) {

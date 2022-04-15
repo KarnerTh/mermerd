@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/spf13/viper"
-	"mermerd/cmd"
+
+	"github.com/KarnerTh/mermerd/cmd"
 )
 
 // ldflags flags from goreleaser

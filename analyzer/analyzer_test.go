@@ -1,10 +1,11 @@
 package analyzer
 
 import (
-	"github.com/stretchr/testify/assert"
-	"mermerd/database"
-	"mermerd/mocks"
 	"testing"
+
+	"github.com/KarnerTh/mermerd/database"
+	"github.com/KarnerTh/mermerd/mocks"
+	"github.com/stretchr/testify/assert"
 )
 
 func getAnalyzerWithMocks() (Analyzer, *mocks.MermerdConfig, *mocks.ConnectorFactory, *mocks.Questioner) {

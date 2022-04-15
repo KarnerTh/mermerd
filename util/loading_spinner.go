@@ -1,8 +1,9 @@
 package util
 
 import (
-	"github.com/briandowns/spinner"
 	"time"
+
+	"github.com/briandowns/spinner"
 )
 
 type LoadingSpinner interface {
