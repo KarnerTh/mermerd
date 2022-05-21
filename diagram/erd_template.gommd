@@ -1,0 +1,14 @@
+{{if .EncloseWithMermaidBackticks}}{{println "```mermaid"}}{{end -}}
+erDiagram
+{{- range .Tables}}
+    {{.Name}} {
+    {{- range .Columns}}
+        {{.DataType}} {{.Name}}
+    {{- end}}
+    }
+{{end -}}
+
+{{range .Constraints}}
+    {{.FkTableName}} {{.Relation}} {{.PkTableName}} : ""
+{{- end}}
+{{if .EncloseWithMermaidBackticks}}```{{end -}}

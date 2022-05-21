@@ -18,7 +18,7 @@ type ColumnResult struct {
 type ConstraintResultList []ConstraintResult
 type ConstraintResult struct {
 	FkTable        string
-	PKTable        string
+	PkTable        string
 	ConstraintName string
 	IsPrimary      bool
 	HasMultiplePK  bool

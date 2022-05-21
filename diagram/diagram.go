@@ -1,18 +1,11 @@
 package diagram
 
 import (
-	"bufio"
-	"fmt"
 	"os"
-	"strings"
+	"text/template"
 
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
-)
-
-const (
-	relationOneToOne  = "|o--||"
-	relationManyToOne = "}o--||"
 )
 
 type diagram struct {
@@ -35,70 +28,57 @@ func (d diagram) Create(result *database.Result) error {
 
 	defer f.Close()
 
-	buffer := bufio.NewWriter(f)
-	if d.config.EncloseWithMermaidBackticks() {
-		if _, err = buffer.WriteString("```mermaid\n"); err != nil {
-			return err
-		}
-	}
-
-	if _, err = buffer.WriteString("erDiagram\n"); err != nil {
+	tmpl, err := template.ParseFiles("diagram/erd_template.gommd")
+	if err != nil {
 		return err
 	}
 
-	var tableNames []string
+	tableData := make([]ErdTableData, len(result.Tables))
 	var allConstraints database.ConstraintResultList
-	for _, table := range result.Tables {
-		tableNames = append(tableNames, table.TableName)
+
+	for tableIndex, table := range result.Tables {
 		allConstraints = allConstraints.AppendIfNotExists(table.Constraints...)
-	}
 
-	for _, table := range result.Tables {
-		if _, err := buffer.WriteString(fmt.Sprintf("    %s {\n", table.TableName)); err != nil {
-			return err
-		}
-
-		for _, column := range table.Columns {
-			if _, err := buffer.WriteString(fmt.Sprintf("        %s %s\n", column.DataType, column.Name)); err != nil {
-				return err
+		columnData := make([]ErdColumnData, len(table.Columns))
+		for columnIndex, column := range table.Columns {
+			columnData[columnIndex] = ErdColumnData{
+				Name:     column.Name,
+				DataType: column.DataType,
 			}
 		}
 
-		if _, err = buffer.WriteString("    }"); err != nil {
-			return err
-		}
-
-		if _, err = buffer.WriteString("\n\n"); err != nil {
-			return err
+		tableData[tableIndex] = ErdTableData{
+			Name:    table.TableName,
+			Columns: columnData,
 		}
 	}
 
-	constraints := strings.Builder{}
+	var constraints []ErdConstraintData
 	for _, constraint := range allConstraints {
-		if (!sliceContainsItem(tableNames, constraint.PKTable) || !sliceContainsItem(tableNames, constraint.FkTable)) && !d.config.ShowAllConstraints() {
+		if (!tableNameInSlice(tableData, constraint.PkTable) || !tableNameInSlice(tableData, constraint.FkTable)) && !d.config.ShowAllConstraints() {
 			continue
 		}
 
-		relation := getRelation(constraint)
-		constraints.WriteString(fmt.Sprintf("    %s %s %s : \"\"\n", constraint.FkTable, relation, constraint.PKTable))
+		constraints = append(constraints, ErdConstraintData{
+			PkTableName: constraint.PkTable,
+			FkTableName: constraint.FkTable,
+			Relation:    getRelation(constraint),
+		})
 	}
 
-	if _, err = buffer.WriteString(constraints.String()); err != nil {
+	diagramData := ErdDiagramData{
+		EncloseWithMermaidBackticks: d.config.EncloseWithMermaidBackticks(),
+		Tables:                      tableData,
+		Constraints:                 constraints,
+	}
+
+	if err = tmpl.Execute(f, diagramData); err != nil {
 		return err
 	}
-
-	if d.config.EncloseWithMermaidBackticks() {
-		_, err = buffer.WriteString("```\n")
-	}
-
-	if err := buffer.Flush(); err != nil {
-		return err
-	}
-
 	return nil
 }
 
-func getRelation(constraint database.ConstraintResult) string {
+func getRelation(constraint database.ConstraintResult) ErdRelationType {
 	if constraint.IsPrimary && !constraint.HasMultiplePK {
 		return relationOneToOne
 	} else {
@@ -106,9 +86,9 @@ func getRelation(constraint database.ConstraintResult) string {
 	}
 }
 
-func sliceContainsItem(slice []string, item string) bool {
+func tableNameInSlice(slice []ErdTableData, tableName string) bool {
 	for _, sliceItem := range slice {
-		if sliceItem == item {
+		if sliceItem.Name == tableName {
 			return true
 		}
 	}

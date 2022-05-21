@@ -208,14 +208,14 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		}, nil).Once()
 		connectorMock.On("GetConstraints", "tableA").Return([]database.ConstraintResult{{
 			FkTable:        "tableA",
-			PKTable:        "tableB",
+			PkTable:        "tableB",
 			ConstraintName: "testConstraint",
 			IsPrimary:      false,
 			HasMultiplePK:  false,
 		}}, nil).Once()
 		connectorMock.On("GetConstraints", "tableB").Return([]database.ConstraintResult{{
 			FkTable:        "tableA",
-			PKTable:        "tableB",
+			PkTable:        "tableB",
 			ConstraintName: "testConstraint",
 			IsPrimary:      false,
 			HasMultiplePK:  false,

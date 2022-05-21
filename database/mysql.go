@@ -134,7 +134,7 @@ func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 	for rows.Next() {
 		var constraint ConstraintResult
 		err = rows.Scan(&constraint.FkTable,
-			&constraint.PKTable,
+			&constraint.PkTable,
 			&constraint.ConstraintName,
 			&constraint.IsPrimary,
 			&constraint.HasMultiplePK,

@@ -13,7 +13,7 @@ func TestGetRelation(t *testing.T) {
 	testCases := []struct {
 		isPrimary        bool
 		hasMultiplePK    bool
-		expectedRelation string
+		expectedRelation ErdRelationType
 	}{
 		{true, true, relationManyToOne},
 		{false, true, relationManyToOne},
@@ -26,7 +26,7 @@ func TestGetRelation(t *testing.T) {
 			// Arrange
 			constraint := database.ConstraintResult{
 				FkTable:        "tableA",
-				PKTable:        "tableB",
+				PkTable:        "tableB",
 				ConstraintName: "constraintXY",
 				IsPrimary:      testCase.isPrimary,
 				HasMultiplePK:  testCase.hasMultiplePK,

@@ -142,7 +142,7 @@ func (c postgresConnector) GetConstraints(tableName string) ([]ConstraintResult,
 		var constraint ConstraintResult
 		err = rows.Scan(
 			&constraint.FkTable,
-			&constraint.PKTable,
+			&constraint.PkTable,
 			&constraint.ConstraintName,
 			&constraint.IsPrimary,
 			&constraint.HasMultiplePK,

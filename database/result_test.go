@@ -9,7 +9,7 @@ import (
 func TestConstraintResultList_AppendIfNotExists(t *testing.T) {
 	constraintItem := ConstraintResult{
 		FkTable:        "tableA",
-		PKTable:        "tableB",
+		PkTable:        "tableB",
 		ConstraintName: "constraintXY",
 		IsPrimary:      false,
 		HasMultiplePK:  false,
