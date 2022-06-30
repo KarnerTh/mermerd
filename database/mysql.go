@@ -109,6 +109,7 @@ func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 		select c.TABLE_NAME,
 			   c.REFERENCED_TABLE_NAME,
 			   c.CONSTRAINT_NAME,
+       		   kcu.COLUMN_NAME,
 			   (
 				   select kc2.CONSTRAINT_NAME is not null "isPrimary"
 				   from information_schema.KEY_COLUMN_USAGE kc
@@ -124,6 +125,7 @@ func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 					 and kc.CONSTRAINT_NAME = 'PRIMARY'
 			   ) "hasMultiplePk"
 		from information_schema.REFERENTIAL_CONSTRAINTS c
+    		inner join information_schema.KEY_COLUMN_USAGE kcu on c.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
 		where c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?
 		`, tableName, tableName)
 	if err != nil {
@@ -133,9 +135,11 @@ func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, er
 	var constraints []ConstraintResult
 	for rows.Next() {
 		var constraint ConstraintResult
-		err = rows.Scan(&constraint.FkTable,
+		err = rows.Scan(
+			&constraint.FkTable,
 			&constraint.PkTable,
 			&constraint.ConstraintName,
+			&constraint.ColumnName,
 			&constraint.IsPrimary,
 			&constraint.HasMultiplePK,
 		)

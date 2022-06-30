@@ -9,6 +9,6 @@ erDiagram
 {{end -}}
 
 {{range .Constraints}}
-    {{.FkTableName}} {{.Relation}} {{.PkTableName}} : ""
+    {{.FkTableName}} {{.Relation}} {{.PkTableName}} : "{{.ColumnName}}"
 {{- end}}
 {{if .EncloseWithMermaidBackticks}}```{{end -}}

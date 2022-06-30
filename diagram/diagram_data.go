@@ -27,4 +27,5 @@ type ErdConstraintData struct {
 	PkTableName string
 	FkTableName string
 	Relation    ErdRelationType
+	ColumnName  string
 }

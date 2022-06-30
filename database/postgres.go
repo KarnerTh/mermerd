@@ -106,32 +106,33 @@ func (c postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) 
 
 func (c postgresConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
-		select distinct fk.table_name,
-						pk.table_name,
-						c.constraint_name,
-						coalesce(
-								(select tc.constraint_type is not null "isPrimary"
-								 from information_schema.key_column_usage kc
-										  inner join information_schema.key_column_usage kc2
-													 ON kc2.column_name = kc.column_name and kc2.table_name = kc.table_name
-										  inner join information_schema.table_constraints tc
-													 on kc2.constraint_name = tc.constraint_name and
-														tc.constraint_type = 'PRIMARY KEY'
-								 where kc.constraint_name = c.constraint_name)
-							, false) "isPrimary",
-						(
-							select COUNT(*) > 1 "hasMultiplePk"
-							from information_schema.table_constraints tc
-									 -- one constraint can have multiple columns
-									 inner join information_schema.key_column_usage kc
-												on kc.constraint_name = tc.constraint_name
-							where tc.table_name = fk.table_name
-							  and tc.constraint_type = 'PRIMARY KEY'
-						)
-		from information_schema.referential_constraints c
-				 inner join information_schema.table_constraints fk on c.constraint_name = fk.constraint_name
-				 inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
-		where fk.table_name = $1 or pk.table_name = $1
+	select fk.table_name,
+		   pk.table_name,
+		   c.constraint_name,
+		   kcu.column_name,
+		   coalesce(
+				   (select tc.constraint_type is not null "isPrimary"
+					from information_schema.key_column_usage kc
+							 inner join information_schema.key_column_usage kc2
+										ON kc2.column_name = kc.column_name and kc2.table_name = kc.table_name
+							 inner join information_schema.table_constraints tc
+										on kc2.constraint_name = tc.constraint_name and
+										   tc.constraint_type = 'PRIMARY KEY'
+					where kc.constraint_name = c.constraint_name
+					  and kc.column_name = kcu.column_name)
+			   , false) "isPrimary",
+		   (select COUNT(*) > 1 "hasMultiplePk"
+			from information_schema.table_constraints tc
+					 -- one constraint can have multiple columns
+					 inner join information_schema.key_column_usage kc
+								on kc.constraint_name = tc.constraint_name
+			where tc.table_name = fk.table_name
+			  and tc.constraint_type = 'PRIMARY KEY')
+	from information_schema.referential_constraints c
+			 inner join information_schema.table_constraints fk on c.constraint_name = fk.constraint_name
+			 inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
+			 inner join information_schema.key_column_usage kcu on c.constraint_name = kcu.constraint_name
+	where fk.table_name = $1 or pk.table_name = $1;
 		`, tableName)
 	if err != nil {
 		return nil, err
@@ -144,6 +145,7 @@ func (c postgresConnector) GetConstraints(tableName string) ([]ConstraintResult,
 			&constraint.FkTable,
 			&constraint.PkTable,
 			&constraint.ConstraintName,
+			&constraint.ColumnName,
 			&constraint.IsPrimary,
 			&constraint.HasMultiplePK,
 		)

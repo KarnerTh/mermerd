@@ -20,6 +20,7 @@ type ConstraintResult struct {
 	FkTable        string
 	PkTable        string
 	ConstraintName string
+	ColumnName     string
 	IsPrimary      bool
 	HasMultiplePK  bool
 }
