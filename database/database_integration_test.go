@@ -95,6 +95,8 @@ func TestDatabaseIntegrations(t *testing.T) {
 					{tableName: "article_comment", expectedColumns: []string{"id", "article_id", "comment"}},
 					{tableName: "label", expectedColumns: []string{"id", "label"}},
 					{tableName: "article_label", expectedColumns: []string{"article_id", "label_id"}},
+					{tableName: "test_1_a", expectedColumns: []string{"id", "xid"}},
+					{tableName: "test_1_b", expectedColumns: []string{"aid", "bid"}},
 				}
 
 				for index, testCase := range testCases {
