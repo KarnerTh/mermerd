@@ -44,3 +44,19 @@ alter table article_label
     add constraint fk_article_label_label_id foreign key (label_id) references label (id);
 alter table article_label
     add primary key (article_id, label_id);
+
+-- Test case for https://github.com/KarnerTh/mermerd/issues/8
+CREATE TABLE test_1_a
+(
+    id  int,
+    xid int,
+    PRIMARY KEY (id, xid)
+);
+
+CREATE TABLE test_1_b
+(
+    aid int,
+    bid int,
+    PRIMARY KEY (aid, bid),
+    FOREIGN KEY (aid, bid) REFERENCES test_1_a (id, xid)
+);

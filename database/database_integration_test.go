@@ -71,7 +71,15 @@ func TestDatabaseIntegrations(t *testing.T) {
 				tables, err := connector.GetTables(schema)
 
 				// Assert
-				expectedResult := []string{"article", "article_detail", "article_comment", "label", "article_label"}
+				expectedResult := []string{
+					"article",
+					"article_detail",
+					"article_comment",
+					"label",
+					"article_label",
+					"test_1_a",
+					"test_1_b",
+				}
 				assert.Nil(t, err)
 				assert.ElementsMatch(t, expectedResult, tables)
 			})

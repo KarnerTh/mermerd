@@ -65,6 +65,7 @@ via `mermerd -h`
 
 ```
   -c, --connectionString string       connection string that should be used
+      --debug                         show debug logs        
   -e, --encloseWithMermaidBackticks   enclose output with mermaid backticks (needed for e.g. in markdown viewer)
   -h, --help                          help for mermerd
   -o, --outputFileName string         output file name (default "result.mmd")
@@ -88,6 +89,7 @@ provide connection string suggestions for the cli.
 showAllConstraints: true
 encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
+debug: false
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -104,6 +106,7 @@ shown below) and start mermerd via `mermerd --runConfig yourRunConfig.yaml`
 # Connection properties
 connectionString: "postgresql://user:password@localhost:5432/dvdrental"
 schema: "public"
+debug: true
 
 # Define what tables should be used
 useAllTables: true

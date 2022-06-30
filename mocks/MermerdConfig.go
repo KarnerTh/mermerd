@@ -39,6 +39,20 @@ func (_m *MermerdConfig) ConnectionStringSuggestions() []string {
 	return r0
 }
 
+// Debug provides a mock function with given fields:
+func (_m *MermerdConfig) Debug() bool {
+	ret := _m.Called()
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func() bool); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // EncloseWithMermaidBackticks provides a mock function with given fields:
 func (_m *MermerdConfig) EncloseWithMermaidBackticks() bool {
 	ret := _m.Called()
