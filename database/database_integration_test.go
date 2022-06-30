@@ -164,11 +164,32 @@ func TestDatabaseIntegrations(t *testing.T) {
 					for _, item := range constraintResults {
 						if item.FkTable == fkTableName {
 							constraint = &item
+							break
 						}
 					}
 					assert.NotNil(t, constraint)
 					assert.True(t, constraint.IsPrimary)
 					assert.True(t, constraint.HasMultiplePK)
+				})
+
+				// Multiple primary keys
+				t.Run("Test 1 (Issue #8)", func(t *testing.T) {
+					// Arrange
+					pkTableName := "test_1_b"
+
+					// Act
+					constraintResults, err := connector.GetConstraints(pkTableName)
+
+					// Assert
+					assert.Nil(t, err)
+					assert.NotNil(t, constraintResults)
+					assert.Len(t, constraintResults, 2)
+					assert.True(t, constraintResults[0].IsPrimary)
+					assert.True(t, constraintResults[0].HasMultiplePK)
+					assert.Equal(t, constraintResults[0].ColumnName, "aid")
+					assert.True(t, constraintResults[1].IsPrimary)
+					assert.True(t, constraintResults[1].HasMultiplePK)
+					assert.Equal(t, constraintResults[1].ColumnName, "bid")
 				})
 			})
 		})
