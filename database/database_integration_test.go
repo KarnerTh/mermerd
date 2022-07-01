@@ -174,7 +174,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 					assert.True(t, constraint.HasMultiplePK)
 				})
 
-				// Multiple primary keys
+				// Multiple primary keys (https://github.com/KarnerTh/mermerd/issues/8)
 				t.Run("Test 1 (Issue #8)", func(t *testing.T) {
 					// Arrange
 					pkTableName := "test_1_b"
