@@ -67,6 +67,20 @@ func (_m *MermerdConfig) EncloseWithMermaidBackticks() bool {
 	return r0
 }
 
+// OmitConstraintLabels provides a mock function with given fields:
+func (_m *MermerdConfig) OmitConstraintLabels() bool {
+	ret := _m.Called()
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func() bool); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // OutputFileName provides a mock function with given fields:
 func (_m *MermerdConfig) OutputFileName() string {
 	ret := _m.Called()

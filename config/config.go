@@ -12,6 +12,7 @@ const (
 	OutputFileNameKey              = "outputFileName"
 	EncloseWithMermaidBackticksKey = "encloseWithMermaidBackticks"
 	DebugKey                       = "debug"
+	OmitConstraintLabelsKey        = "omitConstraintLabels"
 )
 
 type config struct{}
@@ -26,6 +27,7 @@ type MermerdConfig interface {
 	SelectedTables() []string
 	EncloseWithMermaidBackticks() bool
 	Debug() bool
+	OmitConstraintLabels() bool
 }
 
 func NewConfig() MermerdConfig {
@@ -66,4 +68,8 @@ func (c config) EncloseWithMermaidBackticks() bool {
 
 func (c config) Debug() bool {
 	return viper.GetBool(DebugKey)
+}
+
+func (c config) OmitConstraintLabels() bool {
+	return viper.GetBool(OmitConstraintLabelsKey)
 }

@@ -63,11 +63,16 @@ func (d diagram) Create(result *database.Result) error {
 			continue
 		}
 
+		constraintLabel := constraint.ColumnName
+		if d.config.OmitConstraintLabels() {
+			constraintLabel = ""
+		}
+
 		constraints = append(constraints, ErdConstraintData{
-			PkTableName: constraint.PkTable,
-			FkTableName: constraint.FkTable,
-			Relation:    getRelation(constraint),
-			ColumnName:  constraint.ColumnName,
+			PkTableName:     constraint.PkTable,
+			FkTableName:     constraint.FkTable,
+			Relation:        getRelation(constraint),
+			ConstraintLabel: constraintLabel,
 		})
 	}
 
