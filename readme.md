@@ -65,8 +65,10 @@ via `mermerd -h`
 
 ```
   -c, --connectionString string       connection string that should be used
+      --debug                         show debug logs        
   -e, --encloseWithMermaidBackticks   enclose output with mermaid backticks (needed for e.g. in markdown viewer)
   -h, --help                          help for mermerd
+      --omitConstraintLabels          omit the constraint labels
   -o, --outputFileName string         output file name (default "result.mmd")
       --runConfig string              run configuration (replaces global configuration)
   -s, --schema string                 schema that should be used
@@ -88,6 +90,8 @@ provide connection string suggestions for the cli.
 showAllConstraints: true
 encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
+debug: false
+omitConstraintLabels: false
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -102,7 +106,7 @@ shown below) and start mermerd via `mermerd --runConfig yourRunConfig.yaml`
 
 ```yaml
 # Connection properties
-connectionString: "postgresql://user:password@localhost:5432/dvdrental"
+connectionString: "postgresql://user:password@localhost:5432/yourDb"
 schema: "public"
 
 # Define what tables should be used
@@ -116,6 +120,8 @@ selectedTables:
 showAllConstraints: true
 encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
+debug: true
+omitConstraintLabels: true
 ```
 
 ## Example usages
@@ -131,10 +137,10 @@ mermerd --showAllConstraints
 mermerd --runConfig yourRunConfig.yaml
 
 # specify all connection properties so that only the table selection is done via the interactive cli
-mermerd -c "postgresql://user:password@localhost:5432/dvdrental" -s public
+mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public
 
 # same as previous one, but use all available tables without interaction
-mermerd -c "postgresql://user:password@localhost:5432/dvdrental" -s public --useAllTables
+mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables
 ```
 
 ## Connection strings

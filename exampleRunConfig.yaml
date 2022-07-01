@@ -12,3 +12,5 @@ selectedTables:
 showAllConstraints: true
 outputFileName: "my-db.mmd"
 encloseWithMermaidBackticks: false
+debug: false
+omitConstraintLabels: false

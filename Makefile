@@ -1,4 +1,4 @@
-GIT_TAG := $(shell git describe --tags `git rev-list --tags --max-count=1`)
+GIT_TAG := $(shell git describe --tags --abbrev=0)
 test_target := "./..."
 
 .PHONY: test-coverage

@@ -4,6 +4,8 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
 )
@@ -23,6 +25,7 @@ func NewDiagram(config config.MermerdConfig) Diagram {
 func (d diagram) Create(result *database.Result) error {
 	f, err := os.Create(d.config.OutputFileName())
 	if err != nil {
+		logrus.Error("Could not create output file", " | ", err)
 		return err
 	}
 
@@ -30,6 +33,7 @@ func (d diagram) Create(result *database.Result) error {
 
 	tmpl, err := template.ParseFiles("diagram/erd_template.gommd")
 	if err != nil {
+		logrus.Error("Could not load template file", " | ", err)
 		return err
 	}
 
@@ -59,10 +63,16 @@ func (d diagram) Create(result *database.Result) error {
 			continue
 		}
 
+		constraintLabel := constraint.ColumnName
+		if d.config.OmitConstraintLabels() {
+			constraintLabel = ""
+		}
+
 		constraints = append(constraints, ErdConstraintData{
-			PkTableName: constraint.PkTable,
-			FkTableName: constraint.FkTable,
-			Relation:    getRelation(constraint),
+			PkTableName:     constraint.PkTable,
+			FkTableName:     constraint.FkTable,
+			Relation:        getRelation(constraint),
+			ConstraintLabel: constraintLabel,
 		})
 	}
 
@@ -73,6 +83,7 @@ func (d diagram) Create(result *database.Result) error {
 	}
 
 	if err = tmpl.Execute(f, diagramData); err != nil {
+		logrus.Error("Could not create diagram", " | ", err)
 		return err
 	}
 	return nil

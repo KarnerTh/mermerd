@@ -2,7 +2,8 @@ package analyzer
 
 import (
 	"errors"
-	
+	"github.com/sirupsen/logrus"
+
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
 	"github.com/KarnerTh/mermerd/util"
@@ -81,10 +82,12 @@ func (a analyzer) GetSchema(db database.Connector) (string, error) {
 	a.loadingSpinner.Start("Getting schemas")
 	schemas, err := db.GetSchemas()
 	a.loadingSpinner.Stop()
-
 	if err != nil {
+		logrus.Error("Getting schemas failed", " | ", err)
 		return "", err
 	}
+
+	logrus.WithField("count", len(schemas)).Info("Got schemas")
 
 	switch len(schemas) {
 	case 0:
@@ -103,10 +106,13 @@ func (a analyzer) GetTables(db database.Connector, selectedSchema string) ([]str
 
 	a.loadingSpinner.Start("Getting tables")
 	tables, err := db.GetTables(selectedSchema)
+	a.loadingSpinner.Stop()
 	if err != nil {
+		logrus.Error("Getting tables failed", " | ", err)
 		return nil, err
 	}
-	a.loadingSpinner.Stop()
+
+	logrus.WithField("count", len(tables)).Info("Got tables")
 
 	if a.config.UseAllTables() {
 		return tables, nil
@@ -121,16 +127,29 @@ func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables
 	for _, table := range selectedTables {
 		columns, err := db.GetColumns(table)
 		if err != nil {
+			logrus.Error("Getting columns failed", " | ", err)
 			return nil, err
 		}
 
 		constraints, err := db.GetConstraints(table)
 		if err != nil {
+			logrus.Error("Getting constraints failed", " | ", err)
 			return nil, err
 		}
 
 		tableResults = append(tableResults, database.TableResult{TableName: table, Columns: columns, Constraints: constraints})
 	}
 	a.loadingSpinner.Stop()
+	columnCount, constraintCount := getTableResultStats(tableResults)
+	logrus.WithFields(logrus.Fields{"columns": columnCount, "constraints": constraintCount}).Info("Got columns and constraints constraints")
 	return tableResults, nil
+}
+
+func getTableResultStats(tableResults []database.TableResult) (columnCount int, constraintCount int) {
+	for _, tableResult := range tableResults {
+		columnCount += len(tableResult.Columns)
+		constraintCount += len(tableResult.Constraints)
+	}
+
+	return columnCount, constraintCount
 }
