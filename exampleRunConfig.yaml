@@ -1,7 +1,6 @@
 # Connection properties
 connectionString: "postgresql://user:password@localhost:5432/mermerd_test"
 schema: "public"
-debug: false
 
 # Define what tables should be used
 #useAllTables: true
@@ -13,3 +12,5 @@ selectedTables:
 showAllConstraints: true
 outputFileName: "my-db.mmd"
 encloseWithMermaidBackticks: false
+debug: false
+omitConstraintLabels: false

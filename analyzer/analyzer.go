@@ -82,12 +82,12 @@ func (a analyzer) GetSchema(db database.Connector) (string, error) {
 	a.loadingSpinner.Start("Getting schemas")
 	schemas, err := db.GetSchemas()
 	a.loadingSpinner.Stop()
-	logrus.WithField("count", len(schemas)).Info("Got schemas")
-
 	if err != nil {
 		logrus.Error("Getting schemas failed", " | ", err)
 		return "", err
 	}
+
+	logrus.WithField("count", len(schemas)).Info("Got schemas")
 
 	switch len(schemas) {
 	case 0:
@@ -106,11 +106,12 @@ func (a analyzer) GetTables(db database.Connector, selectedSchema string) ([]str
 
 	a.loadingSpinner.Start("Getting tables")
 	tables, err := db.GetTables(selectedSchema)
+	a.loadingSpinner.Stop()
 	if err != nil {
 		logrus.Error("Getting tables failed", " | ", err)
 		return nil, err
 	}
-	a.loadingSpinner.Stop()
+
 	logrus.WithField("count", len(tables)).Info("Got tables")
 
 	if a.config.UseAllTables() {

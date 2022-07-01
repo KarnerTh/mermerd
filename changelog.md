@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
+## [0.2.0] - 2022-06-01
+### Added
+- A `--debug` flag/config to show debug information
+- A `--omitConstraintLabels` flag/config to toggle the new constraint labels
+
+### Changed
+- The column name is now displayed as the constraint label (can be switched off)
+
+### Fixed
+- Sub query for constraints returned multiple items  ([Issue #8](https://github.com/KarnerTh/mermerd/issues/8))
+
 ## [0.1.0] - 2022-04-15
 ### Added
 - Mermerd is available via the go tools
@@ -54,6 +65,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.2.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.2.0
 
 [0.1.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.1.0
 
