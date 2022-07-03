@@ -141,7 +141,7 @@ func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables
 	}
 	a.loadingSpinner.Stop()
 	columnCount, constraintCount := getTableResultStats(tableResults)
-	logrus.WithFields(logrus.Fields{"columns": columnCount, "constraints": constraintCount}).Info("Got columns and constraints constraints")
+	logrus.WithFields(logrus.Fields{"columns": columnCount, "constraints": constraintCount}).Info("Got columns and constraints")
 	return tableResults, nil
 }
 
