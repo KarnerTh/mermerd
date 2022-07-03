@@ -1,6 +1,7 @@
 package diagram
 
 import (
+	_ "embed"
 	"os"
 	"text/template"
 
@@ -9,6 +10,9 @@ import (
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
 )
+
+//go:embed erd_template.gommd
+var erdTemplate string
 
 type diagram struct {
 	config config.MermerdConfig
@@ -31,7 +35,7 @@ func (d diagram) Create(result *database.Result) error {
 
 	defer f.Close()
 
-	tmpl, err := template.ParseFiles("diagram/erd_template.gommd")
+	tmpl, err := template.New("erd_template").Parse(erdTemplate)
 	if err != nil {
 		logrus.Error("Could not load template file", " | ", err)
 		return err
