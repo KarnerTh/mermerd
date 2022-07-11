@@ -69,6 +69,7 @@ func init() {
 	rootCmd.Flags().StringP(config.ConnectionStringKey, "c", "", "connection string that should be used")
 	rootCmd.Flags().StringP(config.SchemaKey, "s", "", "schema that should be used")
 	rootCmd.Flags().StringP(config.OutputFileNameKey, "o", "result.mmd", "output file name")
+	rootCmd.Flags().StringSlice(config.SelectedTablesKey, []string{""}, "tables to include")
 
 	bindFlagToViper(config.ShowAllConstraintsKey)
 	bindFlagToViper(config.UseAllTablesKey)
@@ -78,6 +79,8 @@ func init() {
 	bindFlagToViper(config.ConnectionStringKey)
 	bindFlagToViper(config.SchemaKey)
 	bindFlagToViper(config.OutputFileNameKey)
+	bindFlagToViper(config.SelectedTablesKey)
+
 }
 
 func bindFlagToViper(key string) {
