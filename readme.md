@@ -24,7 +24,9 @@ the [Changelog](https://github.com/KarnerTh/mermerd/blob/master/changelog.md)
 </ul>
 
 ## Installation
-`go install github.com/KarnerTh/mermerd@latest`
+```sh
+go install github.com/KarnerTh/mermerd@latest
+```
 
 or
 
