@@ -74,6 +74,7 @@ via `mermerd -h`
   -o, --outputFileName string         output file name (default "result.mmd")
       --runConfig string              run configuration (replaces global configuration)
   -s, --schema string                 schema that should be used
+      --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
       --useAllTables                  use all available tables
 ```
@@ -143,6 +144,9 @@ mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public
 
 # same as previous one, but use all available tables without interaction
 mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables
+
+# same as previous one, but use a list of tables without interaction
+mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --selectedTables article,article_label
 ```
 
 ## Connection strings
