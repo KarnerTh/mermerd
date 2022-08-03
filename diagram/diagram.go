@@ -50,8 +50,9 @@ func (d diagram) Create(result *database.Result) error {
 		columnData := make([]ErdColumnData, len(table.Columns))
 		for columnIndex, column := range table.Columns {
 			columnData[columnIndex] = ErdColumnData{
-				Name:     column.Name,
-				DataType: column.DataType,
+				Name:       column.Name,
+				DataType:   column.DataType,
+				EnumValues: column.EnumValues,
 			}
 		}
 

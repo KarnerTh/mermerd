@@ -78,8 +78,9 @@ func (c mySqlConnector) GetTables(schemaName string) ([]string, error) {
 }
 
 func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+	// FIXME add support for MySQL enums
 	rows, err := c.db.Query(`
-		select column_name, data_type
+		select column_name, data_type, '' as enum_values
 		from information_schema.columns
 		where table_name = ?
 		order by ordinal_position
@@ -91,7 +92,7 @@ func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.EnumValues); err != nil {
 			return nil, err
 		}
 

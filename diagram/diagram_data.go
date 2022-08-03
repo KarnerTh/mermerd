@@ -19,8 +19,9 @@ type ErdTableData struct {
 }
 
 type ErdColumnData struct {
-	Name     string
-	DataType string
+	Name       string
+	DataType   string
+	EnumValues string
 }
 
 type ErdConstraintData struct {

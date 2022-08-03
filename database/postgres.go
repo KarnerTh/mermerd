@@ -79,10 +79,32 @@ func (c postgresConnector) GetTables(schemaName string) ([]string, error) {
 
 func (c postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
-		select column_name, data_type
-		from information_schema.columns
+		select
+			col.column_name,
+			(
+				case when col.data_type = 'USER-DEFINED'
+				then col.udt_name
+				else col.data_type
+				end
+			) as data_type,
+			coalesce(
+				string_agg(
+					enumlabel,
+					','
+					order by enumsortorder
+				),
+				''
+			) as enum_values
+		from information_schema.columns col
+		left outer join pg_type typ on col.udt_name = typ.typname
+		left outer join pg_enum enu on typ.oid = enu.enumtypid
 		where table_name = $1
-		order by ordinal_position
+		group by
+			col.column_name,
+			col.data_type,
+			col.udt_name,
+			col.ordinal_position
+		order by ordinal_position;
 		`, tableName)
 	if err != nil {
 		return nil, err
@@ -91,12 +113,13 @@ func (c postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) 
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.EnumValues); err != nil {
 			return nil, err
 		}
 
 		column.Name = SanitizeValue(column.Name)
 		column.DataType = SanitizeValue(column.DataType)
+		column.EnumValues = SanitizeValue(column.EnumValues)
 
 		columns = append(columns, column)
 	}
