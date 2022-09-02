@@ -161,7 +161,7 @@ Examples of valid connection strings:
 ## How can I write/update Mermaid-JS diagrams?
 
 * All information can be found here: [Mermaid-JS](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
-* I also recommend using an IDE with an Mermaid-JS extension,
+* I also recommend using an IDE with a Mermaid-JS extension,
   e.g. [VS Code](https://marketplace.visualstudio.com/items?itemName=tomoyukim.vscode-mermaid-editor)
 
 ## How does mermerd determine the constraints?
