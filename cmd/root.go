@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/fatih/color"
@@ -32,7 +32,7 @@ var rootCmd = &cobra.Command{
 		diagram := diagram.NewDiagram(config)
 
 		if !config.Debug() {
-			logrus.SetOutput(ioutil.Discard)
+			logrus.SetOutput(io.Discard)
 		}
 
 		result, err := analyzer.Analyze()

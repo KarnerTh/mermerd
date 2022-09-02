@@ -6,3 +6,4 @@ outputFileName: "my-db.mmd"
 connectionStringSuggestions:
   - postgresql://user:password@localhost:5432/mermerd_test
   - mysql://root:password@tcp(127.0.0.1:3306)/mermerd_test
+  - sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test
