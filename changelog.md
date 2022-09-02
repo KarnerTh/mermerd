@@ -4,10 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
+## [0.3.0] - 2022-09-02
+### Added
+- Added --selectedTables switch ([PR #12](https://github.com/KarnerTh/mermerd/pull/12))
+- Added support for MSSQL ([Issue #13](https://github.com/KarnerTh/mermerd/issues/13))
+
+### Changed
+- go 1.19 is now used
+- updated dependencies
+
+### Fixed
+- Fixed some typos and documentation
+
 ## [0.2.1] - 2022-06-03
 ### Fixed
 - Embed the template file into the binary ([Issue #10](https://github.com/KarnerTh/mermerd/issues/10))
-
 
 ## [0.2.0] - 2022-06-01
 ### Added
@@ -70,6 +81,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.3.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.3.0
 
 [0.2.1]: https://github.com/KarnerTh/mermerd/releases/tag/v0.2.1
 
