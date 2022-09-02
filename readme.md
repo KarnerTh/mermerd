@@ -35,7 +35,7 @@ for your operating system. To be able to use it globally on your system, add the
 
 ## Features
 
-* Supports PostgreSQL MySQL, and MSSQL
+* Supports PostgreSQL, MySQL and MSSQL
 * Select from available schemas
 * Select only the tables you are interested in
 * Show only the constraints that you are interested in
