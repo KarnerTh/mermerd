@@ -100,6 +100,7 @@ omitConstraintLabels: false
 connectionStringSuggestions:
   - postgresql://user:password@localhost:5432/yourDb
   - mysql://root:password@tcp(127.0.0.1:3306)/yourDb
+  - sqlserver://user:password@localhost:1433?database=yourDb
 ```
 
 ## Use a predefined run configuration (e.g. for CI/CD)
