@@ -27,14 +27,14 @@ func (c *mySqlConnector) Connect() error {
 	return nil
 }
 
-func (c mySqlConnector) Close() {
+func (c *mySqlConnector) Close() {
 	err := c.db.Close()
 	if err != nil {
 		fmt.Println("could not close database connection", err)
 	}
 }
 
-func (c mySqlConnector) GetSchemas() ([]string, error) {
+func (c *mySqlConnector) GetSchemas() ([]string, error) {
 	rows, err := c.db.Query("select schema_name from information_schema.schemata")
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (c mySqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c mySqlConnector) GetTables(schemaName string) ([]string, error) {
+func (c *mySqlConnector) GetTables(schemaName string) ([]string, error) {
 	rows, err := c.db.Query(`
 		select table_name
 		from information_schema.tables
@@ -77,7 +77,7 @@ func (c mySqlConnector) GetTables(schemaName string) ([]string, error) {
 	return tables, nil
 }
 
-func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select column_name, data_type
 		from information_schema.columns
@@ -104,7 +104,7 @@ func (c mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	return columns, nil
 }
 
-func (c mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
+func (c *mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 		select c.TABLE_NAME,
 			   c.REFERENCED_TABLE_NAME,

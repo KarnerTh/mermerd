@@ -22,3 +22,16 @@ services:
       - "3306:3306"
     volumes:
       - ./db-table-setup.sql:/docker-entrypoint-initdb.d/1.sql
+  mermerd-mssql-test-db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "securePassword1!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./db-table-setup.sql:/usr/src/app/db-table-setup.sql
+      - ./mssql/mssql-setup.sql:/usr/src/app/mssql-setup.sql
+      - ./mssql/entrypoint.sh:/usr/src/app/entrypoint.sh
+    working_dir: /usr/src/app
+    command: sh -c './entrypoint.sh & /opt/mssql/bin/sqlservr;'

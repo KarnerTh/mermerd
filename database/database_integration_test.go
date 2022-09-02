@@ -28,6 +28,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 			connectionString: "mysql://user:password@tcp(127.0.0.1:3306)/mermerd_test",
 			schema:           "mermerd_test",
 		},
+		{
+			dbType:           MsSql,
+			connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test",
+			schema:           "dbo",
+		},
 	}
 
 	for _, testCase := range testCases {

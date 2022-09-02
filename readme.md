@@ -35,7 +35,7 @@ for your operating system. To be able to use it globally on your system, add the
 
 ## Features
 
-* Supports PostgreSQL and MySQL
+* Supports PostgreSQL MySQL, and MSSQL
 * Select from available schemas
 * Select only the tables you are interested in
 * Show only the constraints that you are interested in
@@ -155,6 +155,7 @@ Examples of valid connection strings:
 
 * `postgresql://user:password@localhost:5432/yourDb`
 * `mysql://root:password@tcp(127.0.0.1:3306)/yourDb`
+* `sqlserver://user:password@localhost:1433?database=yourDb` 
 
 ## How can I write/update Mermaid-JS diagrams?
 

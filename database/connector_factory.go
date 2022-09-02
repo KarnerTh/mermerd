@@ -27,6 +27,11 @@ func (connectorFactory) NewConnector(connectionString string) (Connector, error)
 			dbType:           MySql,
 			connectionString: strings.ReplaceAll(connectionString, "mysql://", ""),
 		}, nil
+	case strings.HasPrefix(connectionString, "sqlserver"):
+		return &mssqlConnector{
+			dbType:           MsSql,
+			connectionString: connectionString,
+		}, nil
 	default:
 		return nil, errors.New("could not create connector for db")
 	}
