@@ -14,5 +14,6 @@ jobs:
           go-version: 1.19
       - name: Install tparse for pretty test results
         run: go install github.com/mfridman/tparse@latest
+      - run: docker logs test-mermerd-postgres-test-db-1
       - name: Run test
         run: make test-all
