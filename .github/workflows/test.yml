@@ -6,6 +6,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Prepare Postgres certs
+        run: sudo chown 0:70 test/postgres-ssl/server.key; sudo chmod 640 test/postgres-ssl/server.key
       - name: Start container with test databases
         run: docker-compose -f test/docker-compose.yaml up
       - name: Set up Go
