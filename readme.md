@@ -42,6 +42,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Interactive cli (multiselect, search for tables and schemas, etc.)
 * Use it in CI/CD pipeline via a run configuration
 * Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown
+* Show primary and foreign keys
 
 ## Why would I need it / Why should I care?
 
