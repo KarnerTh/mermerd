@@ -37,12 +37,14 @@ var rootCmd = &cobra.Command{
 
 		result, err := analyzer.Analyze()
 		if err != nil {
+			logrus.Error(err)
 			util.ShowError()
 			os.Exit(1)
 		}
 
 		err = diagram.Create(result)
 		if err != nil {
+			logrus.Error(err)
 			util.ShowError()
 			os.Exit(1)
 		}
@@ -101,4 +103,12 @@ func initConfig() {
 	}
 
 	_ = viper.ReadInConfig()
+
+	// expand all environment variables (https://github.com/spf13/viper/issues/119#issuecomment-417638360)
+	for _, k := range viper.AllKeys() {
+		value := viper.Get(k)
+		if _, ok := value.(string); ok {
+			viper.Set(k, os.ExpandEnv(viper.GetString(k)))
+		}
+	}
 }

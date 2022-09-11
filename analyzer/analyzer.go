@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"errors"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/KarnerTh/mermerd/config"

@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,6 +25,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 			schema:           "public",
 		},
 		{
+			dbType:           Postgres,
+			connectionString: "postgresql://user:password@localhost:5432/mermerd_test?sslmode=verify-full&sslrootcert=../test/postgres-ssl/ca.crt&sslcert=../test/postgres-ssl/client.crt&sslkey=../test/postgres-ssl/client.key",
+			schema:           "public",
+		},
+		{
 			dbType:           MySql,
 			connectionString: "mysql://user:password@tcp(127.0.0.1:3306)/mermerd_test",
 			schema:           "mermerd_test",
@@ -38,8 +44,12 @@ func TestDatabaseIntegrations(t *testing.T) {
 	for _, testCase := range testCases {
 		connector, _ := connectorFactory.NewConnector(testCase.connectionString)
 
-		getConnectionAndConnect := func() Connector {
-			_ = connector.Connect()
+		getConnectionAndConnect := func(t *testing.T) Connector {
+			err := connector.Connect()
+			if err != nil {
+				logrus.Error(err)
+				t.FailNow()
+			}
 			return connector
 		}
 
@@ -57,7 +67,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 			t.Run("GetSchemas", func(t *testing.T) {
 				// Arrange
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 
 				// Act
 				schemas, err := connector.GetSchemas()
@@ -69,7 +79,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 			t.Run("GetTables", func(t *testing.T) {
 				// Arrange
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 				schema := testCase.schema
 
 				// Act
@@ -90,7 +100,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 			})
 
 			t.Run("GetColumns", func(t *testing.T) {
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 				testCases := []struct {
 					tableName       string
 					expectedColumns []string
@@ -125,7 +135,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 			})
 
 			t.Run("GetConstraints", func(t *testing.T) {
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 
 				t.Run("One-to-one relation", func(t *testing.T) {
 					// Arrange

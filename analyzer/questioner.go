@@ -1,6 +1,8 @@
 package analyzer
 
 import (
+	"os"
+
 	"github.com/AlecAivazis/survey/v2"
 )
 
@@ -26,7 +28,11 @@ func (q questioner) AskConnectionQuestion(suggestions []string) (string, error) 
 	}
 
 	err := survey.AskOne(&question, &result, survey.WithValidator(survey.Required))
-	return result, err
+	if err != nil {
+		return "", err
+	}
+
+	return os.ExpandEnv(result), nil
 }
 
 func (q questioner) AskSchemaQuestion(schemas []string) (string, error) {
