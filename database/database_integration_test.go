@@ -24,6 +24,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 			schema:           "public",
 		},
 		{
+			dbType:           Postgres,
+			connectionString: "postgresql://user:password@localhost:5433/mermerd_test?sslmode=verify-full&sslrootcert=../test/postgres-ssl/ca.crt&sslcert=../test/postgres-ssl/client.crt&sslkey=../test/postgres-ssl/client.key",
+			schema:           "public",
+		},
+		{
 			dbType:           MySql,
 			connectionString: "mysql://user:password@tcp(127.0.0.1:3306)/mermerd_test",
 			schema:           "mermerd_test",

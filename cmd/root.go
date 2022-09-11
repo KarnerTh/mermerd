@@ -37,12 +37,14 @@ var rootCmd = &cobra.Command{
 
 		result, err := analyzer.Analyze()
 		if err != nil {
+			logrus.Error(err)
 			util.ShowError()
 			os.Exit(1)
 		}
 
 		err = diagram.Create(result)
 		if err != nil {
+			logrus.Error(err)
 			util.ShowError()
 			os.Exit(1)
 		}
