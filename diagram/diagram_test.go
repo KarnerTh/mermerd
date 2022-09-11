@@ -40,3 +40,60 @@ func TestGetRelation(t *testing.T) {
 		})
 	}
 }
+
+func TestGetAttributeKey(t *testing.T) {
+	testCases := []struct {
+		column                  database.ColumnResult
+		expectedAttributeResult ErdAttributeKey
+	}{
+		{
+			column: database.ColumnResult{
+				Name:      "",
+				DataType:  "",
+				IsPrimary: true,
+				IsForeign: false,
+			},
+			expectedAttributeResult: primaryKey,
+		},
+		{
+			column: database.ColumnResult{
+				Name:      "",
+				DataType:  "",
+				IsPrimary: false,
+				IsForeign: true,
+			},
+			expectedAttributeResult: foreignKey,
+		},
+		{
+			column: database.ColumnResult{
+				Name:      "",
+				DataType:  "",
+				IsPrimary: true,
+				IsForeign: true,
+			},
+			expectedAttributeResult: primaryKey,
+		},
+		{
+			column: database.ColumnResult{
+				Name:      "",
+				DataType:  "",
+				IsPrimary: false,
+				IsForeign: false,
+			},
+			expectedAttributeResult: none,
+		},
+	}
+
+	for index, testCase := range testCases {
+		t.Run(fmt.Sprintf("run #%d", index), func(t *testing.T) {
+			// Arrange
+			column := testCase.column
+
+			// Act
+			result := getAttributeKey(column)
+
+			// Assert
+			assert.Equal(t, testCase.expectedAttributeResult, result)
+		})
+	}
+}
