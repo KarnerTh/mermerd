@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,7 +45,10 @@ func TestDatabaseIntegrations(t *testing.T) {
 		connector, _ := connectorFactory.NewConnector(testCase.connectionString)
 
 		getConnectionAndConnect := func() Connector {
-			_ = connector.Connect()
+			err := connector.Connect()
+			if err != nil {
+				logrus.Error(err)
+			}
 			return connector
 		}
 
