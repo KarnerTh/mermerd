@@ -44,10 +44,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 	for _, testCase := range testCases {
 		connector, _ := connectorFactory.NewConnector(testCase.connectionString)
 
-		getConnectionAndConnect := func() Connector {
+		getConnectionAndConnect := func(t *testing.T) Connector {
 			err := connector.Connect()
 			if err != nil {
 				logrus.Error(err)
+				t.FailNow()
 			}
 			return connector
 		}
@@ -66,7 +67,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 			t.Run("GetSchemas", func(t *testing.T) {
 				// Arrange
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 
 				// Act
 				schemas, err := connector.GetSchemas()
@@ -78,7 +79,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 			t.Run("GetTables", func(t *testing.T) {
 				// Arrange
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 				schema := testCase.schema
 
 				// Act
@@ -99,7 +100,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 			})
 
 			t.Run("GetColumns", func(t *testing.T) {
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 				testCases := []struct {
 					tableName       string
 					expectedColumns []string
@@ -134,7 +135,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 			})
 
 			t.Run("GetConstraints", func(t *testing.T) {
-				connector := getConnectionAndConnect()
+				connector := getConnectionAndConnect(t)
 
 				t.Run("One-to-one relation", func(t *testing.T) {
 					// Arrange
