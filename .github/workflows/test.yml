@@ -9,7 +9,7 @@ jobs:
       - name: Prepare Postgres certs
         run: sudo chown 0:70 test/postgres-ssl/server.key; sudo chmod 640 test/postgres-ssl/server.key
       - name: Start container with test databases
-        run: docker-compose -f test/docker-compose.yaml up
+        run: docker-compose -f test/docker-compose.yaml up -d
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
