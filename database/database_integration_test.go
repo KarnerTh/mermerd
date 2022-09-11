@@ -8,6 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type columnTestResult struct {
+	Name      string
+	isPrimary bool
+	isForeign bool
+}
+
 func TestDatabaseIntegrations(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
@@ -103,33 +109,59 @@ func TestDatabaseIntegrations(t *testing.T) {
 				connector := getConnectionAndConnect(t)
 				testCases := []struct {
 					tableName       string
-					expectedColumns []string
+					expectedColumns []columnTestResult
 				}{
-					{tableName: "article", expectedColumns: []string{"id", "title"}},
-					{tableName: "article_detail", expectedColumns: []string{"id", "created_at"}},
-					{tableName: "article_comment", expectedColumns: []string{"id", "article_id", "comment"}},
-					{tableName: "label", expectedColumns: []string{"id", "label"}},
-					{tableName: "article_label", expectedColumns: []string{"article_id", "label_id"}},
-					{tableName: "test_1_a", expectedColumns: []string{"id", "xid"}},
-					{tableName: "test_1_b", expectedColumns: []string{"aid", "bid"}},
+					{tableName: "article", expectedColumns: []columnTestResult{
+						{Name: "id", isPrimary: true, isForeign: false},
+						{Name: "title", isPrimary: false, isForeign: false},
+					}},
+					{tableName: "article_detail", expectedColumns: []columnTestResult{
+						{Name: "id", isPrimary: true, isForeign: true},
+						{Name: "created_at", isPrimary: false, isForeign: false},
+					}},
+					{tableName: "article_comment", expectedColumns: []columnTestResult{
+						{Name: "id", isPrimary: true, isForeign: false},
+						{Name: "article_id", isPrimary: false, isForeign: true},
+						{Name: "comment", isPrimary: false, isForeign: false},
+					}},
+					{tableName: "label", expectedColumns: []columnTestResult{
+						{Name: "id", isPrimary: true, isForeign: false},
+						{Name: "label", isPrimary: false, isForeign: false},
+					}},
+					{tableName: "article_label", expectedColumns: []columnTestResult{
+						{Name: "article_id", isPrimary: true, isForeign: true},
+						{Name: "label_id", isPrimary: true, isForeign: true},
+					}},
+					{tableName: "test_1_a", expectedColumns: []columnTestResult{
+						{Name: "id", isPrimary: true, isForeign: false},
+						{Name: "xid", isPrimary: true, isForeign: false},
+					}},
+					{tableName: "test_1_b", expectedColumns: []columnTestResult{
+						{Name: "aid", isPrimary: true, isForeign: true},
+						{Name: "bid", isPrimary: true, isForeign: true},
+					}},
 				}
 
 				for index, testCase := range testCases {
 					t.Run(fmt.Sprintf("run #%d", index), func(t *testing.T) {
 						// Arrange
 						tableName := testCase.tableName
-						var columnNames []string
+						var columnResult []columnTestResult
 
 						// Act
 						columns, err := connector.GetColumns(tableName)
 
 						// Assert
 						for _, column := range columns {
-							columnNames = append(columnNames, column.Name)
+							columnResult = append(columnResult, columnTestResult{
+								Name:      column.Name,
+								isPrimary: column.IsPrimary,
+								isForeign: column.IsForeign,
+							})
 						}
 
 						assert.Nil(t, err)
-						assert.ElementsMatch(t, testCase.expectedColumns, columnNames)
+						assert.ElementsMatch(t, testCase.expectedColumns, columnResult)
 					})
 				}
 			})

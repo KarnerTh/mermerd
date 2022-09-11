@@ -11,8 +11,10 @@ type TableResult struct {
 }
 
 type ColumnResult struct {
-	Name     string
-	DataType string
+	Name      string
+	DataType  string
+	IsPrimary bool
+	IsForeign bool
 }
 
 type ConstraintResultList []ConstraintResult

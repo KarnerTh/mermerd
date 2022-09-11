@@ -79,10 +79,22 @@ func (c *mySqlConnector) GetTables(schemaName string) ([]string, error) {
 
 func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
-		select column_name, data_type
-		from information_schema.columns
-		where table_name = ?
-		order by ordinal_position
+		select c.column_name,
+			   c.data_type,
+			   (select count(*)
+				from information_schema.KEY_COLUMN_USAGE
+				where table_name = c.table_name
+				  and column_name = c.column_name
+				  and constraint_name = 'PRIMARY')        as is_primary,
+			   (select count(*)
+				from information_schema.key_column_usage cu
+						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+				where cu.column_name = c.column_name
+				  and cu.table_name = c.table_name
+				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign
+		from information_schema.columns c
+		where c.table_name = ?
+		order by c.ordinal_position;
 		`, tableName)
 	if err != nil {
 		return nil, err
@@ -91,7 +103,7 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign); err != nil {
 			return nil, err
 		}
 
