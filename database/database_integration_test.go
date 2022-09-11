@@ -26,7 +26,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 		},
 		{
 			dbType:           Postgres,
-			connectionString: "postgresql://user:password@localhost:5433/mermerd_test?sslmode=verify-full&sslrootcert=../test/postgres-ssl/ca.crt&sslcert=../test/postgres-ssl/client.crt&sslkey=../test/postgres-ssl/client.key",
+			connectionString: "postgresql://user:password@localhost:5432/mermerd_test?sslmode=verify-full&sslrootcert=../test/postgres-ssl/ca.crt&sslcert=../test/postgres-ssl/client.crt&sslkey=../test/postgres-ssl/client.key",
 			schema:           "public",
 		},
 		{
