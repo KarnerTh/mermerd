@@ -9,14 +9,14 @@ openssl req -new -x509 -days 10000 -nodes -out ca.crt \
 openssl req -new -nodes -out server.csr \
   -keyout server.key \
   -subj "/CN=localhost" \
-  -addext "subjectAltName = DNS:localhost"
+  -addext "subjectAltName = DNS:localhost,IP:127.0.0.1"
 
 openssl x509 -req -in server.csr -days 10000 \
     -CA ca.crt \
     -CAkey ca.key \
     -CAcreateserial \
     -out server.crt \
-    -extfile <(printf "subjectAltName=DNS:localhost")
+    -extfile <(printf "subjectAltName=DNS:localhost,IP:127.0.0.1")
 
 rm server.csr
 
@@ -29,7 +29,7 @@ openssl x509 -req -in client.csr -days 10000 \
       -CAkey ca.key \
       -CAcreateserial \
       -out client.crt \
-      -extfile <(printf "subjectAltName=DNS:localhost")
+      -extfile <(printf "subjectAltName=DNS:localhost,IP:127.0.0.1")
 
 rm client.csr
 
