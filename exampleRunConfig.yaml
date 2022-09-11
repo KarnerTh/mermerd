@@ -14,3 +14,4 @@ outputFileName: "my-db.mmd"
 encloseWithMermaidBackticks: false
 debug: false
 omitConstraintLabels: false
+omitAttributeKeys: false

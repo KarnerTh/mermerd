@@ -13,6 +13,7 @@ const (
 	EncloseWithMermaidBackticksKey = "encloseWithMermaidBackticks"
 	DebugKey                       = "debug"
 	OmitConstraintLabelsKey        = "omitConstraintLabels"
+	OmitAttributeKeysKey           = "omitAttributeKeys"
 )
 
 type config struct{}
@@ -28,6 +29,7 @@ type MermerdConfig interface {
 	EncloseWithMermaidBackticks() bool
 	Debug() bool
 	OmitConstraintLabels() bool
+	OmitAttributeKeys() bool
 }
 
 func NewConfig() MermerdConfig {
@@ -72,4 +74,8 @@ func (c config) Debug() bool {
 
 func (c config) OmitConstraintLabels() bool {
 	return viper.GetBool(OmitConstraintLabelsKey)
+}
+
+func (c config) OmitAttributeKeys() bool {
+	return viper.GetBool(OmitAttributeKeysKey)
 }

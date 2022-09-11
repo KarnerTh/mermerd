@@ -49,10 +49,15 @@ func (d diagram) Create(result *database.Result) error {
 
 		columnData := make([]ErdColumnData, len(table.Columns))
 		for columnIndex, column := range table.Columns {
+			attributeKey := getAttributeKey(column)
+			if d.config.OmitAttributeKeys() {
+				attributeKey = none
+			}
+
 			columnData[columnIndex] = ErdColumnData{
 				Name:         column.Name,
 				DataType:     column.DataType,
-				AttributeKey: getAttributeKey(column),
+				AttributeKey: attributeKey,
 			}
 		}
 

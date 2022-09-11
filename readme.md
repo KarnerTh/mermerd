@@ -70,6 +70,7 @@ via `mermerd -h`
       --debug                         show debug logs        
   -e, --encloseWithMermaidBackticks   enclose output with mermaid backticks (needed for e.g. in markdown viewer)
   -h, --help                          help for mermerd
+      --omitAttributeKeys             omit the attribute keys (PK, FK)
       --omitConstraintLabels          omit the constraint labels
   -o, --outputFileName string         output file name (default "result.mmd")
       --runConfig string              run configuration (replaces global configuration)
@@ -95,6 +96,7 @@ encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
 debug: false
 omitConstraintLabels: false
+omitAttributeKeys: false
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -126,6 +128,7 @@ encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
 debug: true
 omitConstraintLabels: true
+omitAttributeKeys: true
 ```
 
 ## Example usages
@@ -203,4 +206,3 @@ or via the Makefile targets
 
 * [ ] Support `}o--o|` relation (currently displayed as `}o--||`)
 * [ ] Take unique constraints into account
-* [ ] Support ERD Attributes for FK and PK
