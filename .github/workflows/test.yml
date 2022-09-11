@@ -16,6 +16,5 @@ jobs:
           go-version: 1.19
       - name: Install tparse for pretty test results
         run: go install github.com/mfridman/tparse@latest
-      - run: docker ps
       - name: Run test
         run: make test-all
