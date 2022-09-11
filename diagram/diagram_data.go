@@ -7,6 +7,14 @@ const (
 	relationManyToOne ErdRelationType = "}o--||"
 )
 
+type ErdAttributeKey string
+
+const (
+	primaryKey ErdAttributeKey = "PK"
+	foreignKey ErdAttributeKey = "FK"
+	none       ErdAttributeKey = ""
+)
+
 type ErdDiagramData struct {
 	EncloseWithMermaidBackticks bool
 	Tables                      []ErdTableData
@@ -19,8 +27,9 @@ type ErdTableData struct {
 }
 
 type ErdColumnData struct {
-	Name     string
-	DataType string
+	Name         string
+	DataType     string
+	AttributeKey ErdAttributeKey
 }
 
 type ErdConstraintData struct {

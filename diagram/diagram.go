@@ -49,9 +49,15 @@ func (d diagram) Create(result *database.Result) error {
 
 		columnData := make([]ErdColumnData, len(table.Columns))
 		for columnIndex, column := range table.Columns {
+			attributeKey := getAttributeKey(column)
+			if d.config.OmitAttributeKeys() {
+				attributeKey = none
+			}
+
 			columnData[columnIndex] = ErdColumnData{
-				Name:     column.Name,
-				DataType: column.DataType,
+				Name:         column.Name,
+				DataType:     column.DataType,
+				AttributeKey: attributeKey,
 			}
 		}
 
@@ -109,4 +115,16 @@ func tableNameInSlice(slice []ErdTableData, tableName string) bool {
 	}
 
 	return false
+}
+
+func getAttributeKey(column database.ColumnResult) ErdAttributeKey {
+	if column.IsPrimary {
+		return primaryKey
+	}
+
+	if column.IsForeign {
+		return foreignKey
+	}
+
+	return none
 }
