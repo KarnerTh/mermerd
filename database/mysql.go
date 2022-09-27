@@ -81,12 +81,12 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
-			   (select count(*)
+			   (select count(*) > 0
 				from information_schema.KEY_COLUMN_USAGE
 				where table_name = c.table_name
 				  and column_name = c.column_name
 				  and constraint_name = 'PRIMARY')        as is_primary,
-			   (select count(*)
+			   (select count(*) > 0
 				from information_schema.key_column_usage cu
 						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
 				where cu.column_name = c.column_name
