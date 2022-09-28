@@ -81,13 +81,13 @@ func (c *mssqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
-			   (select count(*) > 0
+			   (select IIF(count(*) > 0, 1, 0)
 				from information_schema.key_column_usage cu
 						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
 				where cu.column_name = c.column_name
 				  and cu.table_name = c.table_name
 				  and tc.constraint_type = 'PRIMARY KEY') as is_primary,
-			   (select count(*) > 0
+			   (select IIF(count(*) > 0, 1, 0)
 				from information_schema.key_column_usage cu
 						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
 				where cu.column_name = c.column_name
