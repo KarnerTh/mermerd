@@ -79,23 +79,35 @@ func (c *postgresConnector) GetTables(schemaName string) ([]string, error) {
 
 func (c *postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
-		select c.column_name,
-			   c.data_type,
-			   (select count(*) > 0
-				from information_schema.key_column_usage cu
-						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
-				where cu.column_name = c.column_name
-				  and cu.table_name = c.table_name
-				  and tc.constraint_type = 'PRIMARY KEY') as is_primary,
-			   (select count(*) > 0
-				from information_schema.key_column_usage cu
-						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
-				where cu.column_name = c.column_name
-				  and cu.table_name = c.table_name
-				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign
-		from information_schema.columns c
-		where c.table_name = $1
-		order by c.ordinal_position;
+        select c.column_name,
+               (case
+                    when c.data_type = 'USER-DEFINED'
+                        then c.udt_name
+                    else c.data_type
+                   end)                                                        as data_type,
+               (select count(*) > 0
+                from information_schema.key_column_usage cu
+                         left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+                where cu.column_name = c.column_name
+                  and cu.table_name = c.table_name
+                  and tc.constraint_type = 'PRIMARY KEY')                      as is_primary,
+               (select count(*) > 0
+                from information_schema.key_column_usage cu
+                         left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+                where cu.column_name = c.column_name
+                  and cu.table_name = c.table_name
+                  and tc.constraint_type = 'FOREIGN KEY')                      as is_foreign,
+               coalesce(string_agg(enumlabel, ',' order by enumsortorder), '') as enum_values
+        from information_schema.columns c
+                 left join pg_type typ on c.udt_name = typ.typname
+                 left join pg_enum enu on typ.oid = enu.enumtypid
+        where c.table_name = $1
+        group by c.column_name,
+                 c.table_name,
+                 c.data_type,
+                 c.udt_name,
+                 c.ordinal_position
+        order by c.ordinal_position;
 		`, tableName)
 	if err != nil {
 		return nil, err
@@ -104,7 +116,7 @@ func (c *postgresConnector) GetColumns(tableName string) ([]ColumnResult, error)
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.EnumValues); err != nil {
 			return nil, err
 		}
 

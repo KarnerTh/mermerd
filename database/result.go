@@ -11,10 +11,11 @@ type TableResult struct {
 }
 
 type ColumnResult struct {
-	Name      string
-	DataType  string
-	IsPrimary bool
-	IsForeign bool
+	Name       string
+	DataType   string
+	IsPrimary  bool
+	IsForeign  bool
+	EnumValues string
 }
 
 type ConstraintResultList []ConstraintResult

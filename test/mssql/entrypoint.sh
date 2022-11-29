@@ -11,5 +11,6 @@ echo importing data...
 # run the sql scripts to create the test database
 /opt/mssql-tools/bin/sqlcmd -S 0.0.0.0 -U sa -P $password -i ./mssql-setup.sql
 /opt/mssql-tools/bin/sqlcmd -S 0.0.0.0 -U sa -P $password -d mermerd_test -i ./db-table-setup.sql
+/opt/mssql-tools/bin/sqlcmd -S 0.0.0.0 -U sa -P $password -d mermerd_test -i ./mssql-enum-setup.sql
 
 echo importing done

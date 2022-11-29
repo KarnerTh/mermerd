@@ -14,6 +14,17 @@ type columnTestResult struct {
 	isForeign bool
 }
 
+type connectionParameter struct {
+	connectionString string
+	schema           string
+}
+
+var (
+	testConnectionPostgres connectionParameter = connectionParameter{connectionString: "postgresql://user:password@localhost:5432/mermerd_test", schema: "public"}
+	testConnectionMySql    connectionParameter = connectionParameter{connectionString: "mysql://user:password@tcp(127.0.0.1:3306)/mermerd_test", schema: "mermerd_test"}
+	testConnectionMsSql    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test", schema: "dbo"}
+)
+
 func TestDatabaseIntegrations(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
@@ -27,18 +38,18 @@ func TestDatabaseIntegrations(t *testing.T) {
 	}{
 		{
 			dbType:           Postgres,
-			connectionString: "postgresql://user:password@localhost:5432/mermerd_test",
-			schema:           "public",
+			connectionString: testConnectionPostgres.connectionString,
+			schema:           testConnectionPostgres.schema,
 		},
 		{
 			dbType:           MySql,
-			connectionString: "mysql://user:password@tcp(127.0.0.1:3306)/mermerd_test",
-			schema:           "mermerd_test",
+			connectionString: testConnectionMySql.connectionString,
+			schema:           testConnectionMySql.schema,
 		},
 		{
 			dbType:           MsSql,
-			connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test",
-			schema:           "dbo",
+			connectionString: testConnectionMsSql.connectionString,
+			schema:           testConnectionMsSql.schema,
 		},
 	}
 
@@ -95,6 +106,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 					"article_label",
 					"test_1_a",
 					"test_1_b",
+					"test_2_enum",
 				}
 				assert.Nil(t, err)
 				assert.ElementsMatch(t, expectedResult, tables)

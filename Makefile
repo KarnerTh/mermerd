@@ -20,6 +20,10 @@ test-all:
 test-unit:
 	go test --short $(test_target) -cover -json | tparse -all
 
+.PHONY: test-cleanup
+test-cleanup:
+	go clean -testcache
+
 .PHONY: publish-package
 publish-package:
 	GOPROXY=proxy.golang.org go list -m github.com/KarnerTh/mermerd@$(GIT_TAG)

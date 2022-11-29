@@ -57,6 +57,7 @@ func (d diagram) Create(result *database.Result) error {
 			columnData[columnIndex] = ErdColumnData{
 				Name:         column.Name,
 				DataType:     column.DataType,
+				EnumValues:   column.EnumValues,
 				AttributeKey: attributeKey,
 			}
 		}
