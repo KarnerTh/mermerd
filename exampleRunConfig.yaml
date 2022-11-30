@@ -15,3 +15,4 @@ encloseWithMermaidBackticks: false
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
+showEnumValues: false

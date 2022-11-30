@@ -43,6 +43,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Use it in CI/CD pipeline via a run configuration
 * Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown
 * Show primary and foreign keys
+* Show enum values of enum column
 
 ## Why would I need it / Why should I care?
 
@@ -78,6 +79,7 @@ via `mermerd -h`
   -s, --schema string                 schema that should be used
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
+      --showEnumValues                show enum values in description column
       --useAllTables                  use all available tables
 ```
 
@@ -98,6 +100,7 @@ outputFileName: "my-db.mmd"
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
+showEnumValues: false
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -130,6 +133,7 @@ outputFileName: "my-db.mmd"
 debug: true
 omitConstraintLabels: true
 omitAttributeKeys: true
+showEnumValues: true
 ```
 
 ## Example usages

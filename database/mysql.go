@@ -91,7 +91,8 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
 				where cu.column_name = c.column_name
 				  and cu.table_name = c.table_name
-				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign
+				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign,
+        case when c.data_type = 'enum' then REPLACE(REPLACE(REPLACE(REPLACE(c.column_type, 'enum', ''), '\'', ''), '(', ''), ')', '') else '' end as enum_values
 		from information_schema.columns c
 		where c.table_name = ?
 		order by c.ordinal_position;
@@ -103,7 +104,7 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.EnumValues); err != nil {
 			return nil, err
 		}
 

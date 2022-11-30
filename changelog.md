@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
+## [0.5.0] - 2022-12-xx
+### Added
+- Support enum description ([Issue #15](https://github.com/KarnerTh/mermerd/issues/15))
+
 ## [0.4.1] - 2022-09-28
 ### Fixed
 - Fix wrong column format for `is_primary` ([Issue #24](https://github.com/KarnerTh/mermerd/issues/24))
@@ -94,6 +98,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.5.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.5.0
 
 [0.4.1]: https://github.com/KarnerTh/mermerd/releases/tag/v0.4.1
 

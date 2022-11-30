@@ -68,6 +68,7 @@ func init() {
 	rootCmd.Flags().Bool(config.DebugKey, false, "show debug logs")
 	rootCmd.Flags().Bool(config.OmitConstraintLabelsKey, false, "omit the constraint labels")
 	rootCmd.Flags().Bool(config.OmitAttributeKeysKey, false, "omit the attribute keys (PK, FK)")
+	rootCmd.Flags().Bool(config.ShowEnumValuesKey, false, "show enum values in description column")
 	rootCmd.Flags().BoolP(config.EncloseWithMermaidBackticksKey, "e", false, "enclose output with mermaid backticks (needed for e.g. in markdown viewer)")
 	rootCmd.Flags().StringP(config.ConnectionStringKey, "c", "", "connection string that should be used")
 	rootCmd.Flags().StringP(config.SchemaKey, "s", "", "schema that should be used")
@@ -84,7 +85,7 @@ func init() {
 	bindFlagToViper(config.SchemaKey)
 	bindFlagToViper(config.OutputFileNameKey)
 	bindFlagToViper(config.SelectedTablesKey)
-
+	bindFlagToViper(config.ShowEnumValuesKey)
 }
 
 func bindFlagToViper(key string) {

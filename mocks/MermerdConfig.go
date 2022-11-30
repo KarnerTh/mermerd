@@ -153,6 +153,20 @@ func (_m *MermerdConfig) ShowAllConstraints() bool {
 	return r0
 }
 
+// ShowEnumValues provides a mock function with given fields:
+func (_m *MermerdConfig) ShowEnumValues() bool {
+	ret := _m.Called()
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func() bool); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // UseAllTables provides a mock function with given fields:
 func (_m *MermerdConfig) UseAllTables() bool {
 	ret := _m.Called()

@@ -54,9 +54,15 @@ func (d diagram) Create(result *database.Result) error {
 				attributeKey = none
 			}
 
+			var enumValues string
+			if d.config.ShowEnumValues() {
+				enumValues = column.EnumValues
+			}
+
 			columnData[columnIndex] = ErdColumnData{
 				Name:         column.Name,
 				DataType:     column.DataType,
+				EnumValues:   enumValues,
 				AttributeKey: attributeKey,
 			}
 		}
