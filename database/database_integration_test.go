@@ -2,9 +2,9 @@ package database
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -98,15 +98,16 @@ func TestDatabaseIntegrations(t *testing.T) {
 				tables, err := connector.GetTables(schema)
 
 				// Assert
-				expectedResult := []string{
-					"article",
-					"article_detail",
-					"article_comment",
-					"label",
-					"article_label",
-					"test_1_a",
-					"test_1_b",
-					"test_2_enum",
+				expectedResult := []TableNameResult{
+					{Schema: schema[0], Name: "article"},
+					{Schema: schema[0], Name: "article_detail"},
+					{Schema: schema[0], Name: "article_comment"},
+					{Schema: schema[0], Name: "label"},
+					{Schema: schema[0], Name: "article_label"},
+					{Schema: schema[0], Name: "test_1_a"},
+					{Schema: schema[0], Name: "test_1_b"},
+					{Schema: schema[0], Name: "test_2_enum"},
+					{Schema: schema[0], Name: "test_3_a"},
 				}
 				assert.Nil(t, err)
 				assert.ElementsMatch(t, expectedResult, tables)

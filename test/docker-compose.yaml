@@ -11,6 +11,7 @@ services:
     volumes:
       - ./db-table-setup.sql:/docker-entrypoint-initdb.d/1.sql
       - ./postgres/postgres-enum-setup.sql:/docker-entrypoint-initdb.d/2.sql
+      - ./postgres/postgres-multiple-databases.sql:/docker-entrypoint-initdb.d/3.sql
   mermerd-mysql-test-db:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
@@ -36,6 +37,7 @@ services:
       - ./db-table-setup.sql:/usr/src/app/db-table-setup.sql
       - ./mssql/mssql-setup.sql:/usr/src/app/mssql-setup.sql
       - ./mssql/mssql-enum-setup.sql:/usr/src/app/mssql-enum-setup.sql
+      - ./mssql/mssql-multiple-databases.sql:/usr/src/app/mssql-multiple-databases.sql
       - ./mssql/entrypoint.sh:/usr/src/app/entrypoint.sh
     working_dir: /usr/src/app
     command: sh -c './entrypoint.sh & /opt/mssql/bin/sqlservr;'
