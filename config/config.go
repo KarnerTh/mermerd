@@ -22,7 +22,7 @@ type config struct{}
 type MermerdConfig interface {
 	ShowAllConstraints() bool
 	UseAllTables() bool
-	Schema() string
+	Schemas() []string
 	ConnectionString() string
 	OutputFileName() string
 	ConnectionStringSuggestions() []string
@@ -46,8 +46,8 @@ func (c config) UseAllTables() bool {
 	return viper.GetBool(UseAllTablesKey)
 }
 
-func (c config) Schema() string {
-	return viper.GetString(SchemaKey)
+func (c config) Schemas() []string {
+	return viper.GetStringSlice(SchemaKey)
 }
 
 func (c config) ConnectionString() string {

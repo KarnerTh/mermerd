@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
@@ -53,31 +54,35 @@ func (c *postgresConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c *postgresConnector) GetTables(schemaName string) ([]string, error) {
+func (c *postgresConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
+	// possible sql injection
+	schemaSearch := strings.Join(schemaNames, ",")
 	rows, err := c.db.Query(`
-		select table_name
+		select table_schema, table_name
 		from information_schema.tables
 		where table_type = 'BASE TABLE'
-		  and table_schema = $1
-		`, schemaName)
+		  and table_schema in ($1)
+		`, schemaSearch)
 	if err != nil {
 		return nil, err
 	}
 
-	var tables []string
+	var tables []TableNameResult
 	for rows.Next() {
-		var table string
-		if err = rows.Scan(&table); err != nil {
+		var table TableNameResult
+		if err = rows.Scan(&table.Schema, &table.Name); err != nil {
 			return nil, err
 		}
 
-		tables = append(tables, SanitizeValue(table))
+		table.Name = SanitizeValue(table.Name)
+
+		tables = append(tables, table)
 	}
 
 	return tables, nil
 }
 
-func (c *postgresConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+func (c *postgresConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
         select c.column_name,
                (case
@@ -108,7 +113,7 @@ func (c *postgresConnector) GetColumns(tableName string) ([]ColumnResult, error)
                  c.udt_name,
                  c.ordinal_position
         order by c.ordinal_position;
-		`, tableName)
+		`, tableName.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +134,7 @@ func (c *postgresConnector) GetColumns(tableName string) ([]ColumnResult, error)
 	return columns, nil
 }
 
-func (c *postgresConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
+func (c *postgresConnector) GetConstraints(tableName TableNameResult) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 	select fk.table_name,
 		   pk.table_name,
@@ -158,7 +163,7 @@ func (c *postgresConnector) GetConstraints(tableName string) ([]ConstraintResult
 			 inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
 			 inner join information_schema.key_column_usage kcu on c.constraint_name = kcu.constraint_name
 	where fk.table_name = $1 or pk.table_name = $1;
-		`, tableName)
+		`, tableName.Name)
 	if err != nil {
 		return nil, err
 	}

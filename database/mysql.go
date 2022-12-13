@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -53,31 +54,38 @@ func (c *mySqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c *mySqlConnector) GetTables(schemaName string) ([]string, error) {
+func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
+	args := make([]any, len(schemaNames))
+	for i, schemaName := range schemaNames {
+		args[i] = schemaName
+	}
+
 	rows, err := c.db.Query(`
-		select table_name
+		select table_schema, table_name
 		from information_schema.tables
 		where table_type = 'BASE TABLE'
-		  and table_schema = ?
-		`, schemaName)
+		  and table_schema in (?`+strings.Repeat(",?", len(schemaNames)-1)+`)
+		`, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	var tables []string
+	var tables []TableNameResult
 	for rows.Next() {
-		var table string
-		if err = rows.Scan(&table); err != nil {
+		var table TableNameResult
+		if err = rows.Scan(&table.Schema, &table.Name); err != nil {
 			return nil, err
 		}
 
-		tables = append(tables, SanitizeValue(table))
+		table.Name = SanitizeValue(table.Name)
+
+		tables = append(tables, table)
 	}
 
 	return tables, nil
 }
 
-func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+func (c *mySqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
@@ -96,7 +104,7 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 		from information_schema.columns c
 		where c.table_name = ?
 		order by c.ordinal_position;
-		`, tableName)
+		`, tableName.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +125,7 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	return columns, nil
 }
 
-func (c *mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
+func (c *mySqlConnector) GetConstraints(tableName TableNameResult) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 		select c.TABLE_NAME,
 			   c.REFERENCED_TABLE_NAME,
@@ -140,7 +148,7 @@ func (c *mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, e
 		from information_schema.REFERENTIAL_CONSTRAINTS c
     		inner join information_schema.KEY_COLUMN_USAGE kcu on c.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
 		where c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?
-		`, tableName, tableName)
+		`, tableName.Name, tableName.Name)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 
@@ -19,11 +20,10 @@ type analyzer struct {
 
 type Analyzer interface {
 	Analyze() (*database.Result, error)
-
 	GetConnectionString() (string, error)
-	GetSchema(db database.Connector) (string, error)
-	GetTables(db database.Connector, selectedSchema string) ([]string, error)
-	GetColumnsAndConstraints(db database.Connector, selectedTables []string) ([]database.TableResult, error)
+	GetSchemas(db database.Connector) ([]string, error)
+	GetTables(db database.Connector, selectedSchemas []string) ([]database.TableNameResult, error)
+	GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableNameResult) ([]database.TableResult, error)
 }
 
 func NewAnalyzer(config config.MermerdConfig, connectorFactory database.ConnectorFactory, questioner Questioner) Analyzer {
@@ -49,12 +49,12 @@ func (a analyzer) Analyze() (*database.Result, error) {
 	defer db.Close()
 	a.loadingSpinner.Stop()
 
-	selectedSchema, err := a.GetSchema(db)
+	selectedSchemas, err := a.GetSchemas(db)
 	if err != nil {
 		return nil, err
 	}
 
-	selectedTables, err := a.GetTables(db, selectedSchema)
+	selectedTables, err := a.GetTables(db, selectedSchemas)
 	if err != nil {
 		return nil, err
 	}
@@ -75,8 +75,8 @@ func (a analyzer) GetConnectionString() (string, error) {
 	return a.questioner.AskConnectionQuestion(a.config.ConnectionStringSuggestions())
 }
 
-func (a analyzer) GetSchema(db database.Connector) (string, error) {
-	if selectedSchema := a.config.Schema(); selectedSchema != "" {
+func (a analyzer) GetSchemas(db database.Connector) ([]string, error) {
+	if selectedSchema := a.config.Schemas(); len(selectedSchema) > 0 {
 		return selectedSchema, nil
 	}
 
@@ -85,32 +85,43 @@ func (a analyzer) GetSchema(db database.Connector) (string, error) {
 	a.loadingSpinner.Stop()
 	if err != nil {
 		logrus.Error("Getting schemas failed", " | ", err)
-		return "", err
+		return []string{}, err
 	}
 
 	logrus.WithField("count", len(schemas)).Info("Got schemas")
 
 	switch len(schemas) {
 	case 0:
-		return "", errors.New("no schemas available")
+		return []string{}, errors.New("no schemas available")
 	case 1:
-		return schemas[0], nil
+		return schemas, nil
 	default:
 		return a.questioner.AskSchemaQuestion(schemas)
 	}
 }
 
-func (a analyzer) GetTables(db database.Connector, selectedSchema string) ([]string, error) {
+func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]database.TableNameResult, error) {
 	if selectedTables := a.config.SelectedTables(); len(selectedTables) > 0 {
-		return selectedTables, nil
+		return util.Map2(selectedTables, func(value string) database.TableNameResult {
+			res, err := database.ParseTableName(value)
+			if err != nil {
+				logrus.Error("Could not parse table name", value)
+			}
+
+			return res
+		}), nil
 	}
 
 	a.loadingSpinner.Start("Getting tables")
-	tables, err := db.GetTables(selectedSchema)
+	tables, err := db.GetTables(selectedSchemas)
 	a.loadingSpinner.Stop()
 	if err != nil {
 		logrus.Error("Getting tables failed", " | ", err)
 		return nil, err
+	}
+
+	if len(tables) == 0 {
+		logrus.Error("No tables found")
 	}
 
 	logrus.WithField("count", len(tables)).Info("Got tables")
@@ -118,11 +129,25 @@ func (a analyzer) GetTables(db database.Connector, selectedSchema string) ([]str
 	if a.config.UseAllTables() {
 		return tables, nil
 	} else {
-		return a.questioner.AskTableQuestion(tables)
+		tableNames := util.Map2(tables, func(table database.TableNameResult) string {
+			return fmt.Sprintf("%s.%s", table.Schema, table.Name)
+		})
+		surveyResult, err := a.questioner.AskTableQuestion(tableNames)
+		if err != nil {
+			return []database.TableNameResult{}, err
+		}
+		return util.Map2(surveyResult, func(value string) database.TableNameResult {
+			res, err := database.ParseTableName(value)
+			if err != nil {
+				logrus.Error("Could not parse table name", value)
+			}
+
+			return res
+		}), nil
 	}
 }
 
-func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []string) ([]database.TableResult, error) {
+func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableNameResult) ([]database.TableResult, error) {
 	var tableResults []database.TableResult
 	a.loadingSpinner.Start("Getting columns and constraints")
 	for _, table := range selectedTables {

@@ -34,22 +34,22 @@ func TestDatabaseIntegrations(t *testing.T) {
 	testCases := []struct {
 		dbType           DbType
 		connectionString string
-		schema           string
+		schema           []string
 	}{
 		{
 			dbType:           Postgres,
 			connectionString: testConnectionPostgres.connectionString,
-			schema:           testConnectionPostgres.schema,
+			schema:           []string{testConnectionPostgres.schema},
 		},
 		{
 			dbType:           MySql,
 			connectionString: testConnectionMySql.connectionString,
-			schema:           testConnectionMySql.schema,
+			schema:           []string{testConnectionMySql.schema},
 		},
 		{
 			dbType:           MsSql,
 			connectionString: testConnectionMsSql.connectionString,
-			schema:           testConnectionMsSql.schema,
+			schema:           []string{testConnectionMsSql.schema},
 		},
 	}
 
@@ -152,7 +152,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				for index, testCase := range testCases {
 					t.Run(fmt.Sprintf("run #%d", index), func(t *testing.T) {
 						// Arrange
-						tableName := testCase.tableName
+						tableName := TableNameResult{Name: testCase.tableName}
 						var columnResult []columnTestResult
 
 						// Act
@@ -178,7 +178,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("One-to-one relation", func(t *testing.T) {
 					// Arrange
-					tableName := "article_detail"
+					tableName := TableNameResult{Name: "article_detail"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)
@@ -193,7 +193,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("Many-to-one relation #1", func(t *testing.T) {
 					// Arrange
-					tableName := "article_comment"
+					tableName := TableNameResult{Name: "article_comment"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)
@@ -208,8 +208,8 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("Many-to-one relation #2", func(t *testing.T) {
 					// Arrange
-					pkTableName := "article"
-					fkTableName := "article_label"
+					pkTableName := TableNameResult{Name: "article"}
+					fkTableName := TableNameResult{Name: "article_label"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(pkTableName)
@@ -218,7 +218,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 					assert.Nil(t, err)
 					var constraint *ConstraintResult
 					for _, item := range constraintResults {
-						if item.FkTable == fkTableName {
+						if item.FkTable == fkTableName.Name {
 							constraint = &item
 							break
 						}
@@ -231,7 +231,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				// Multiple primary keys (https://github.com/KarnerTh/mermerd/issues/8)
 				t.Run("Test 1 (Issue #8)", func(t *testing.T) {
 					// Arrange
-					pkTableName := "test_1_b"
+					pkTableName := TableNameResult{Name: "test_1_b"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(pkTableName)

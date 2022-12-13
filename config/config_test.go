@@ -39,7 +39,7 @@ connectionStringSuggestions:
 	// Assert
 	assert.Nil(t, err)
 	assert.Equal(t, "connectionStringExample", config.ConnectionString())
-	assert.Equal(t, "public", config.Schema())
+	assert.ElementsMatch(t, []string{"public"}, config.Schemas())
 	assert.Equal(t, false, config.UseAllTables())
 	assert.ElementsMatch(t, []string{"city", "customer"}, config.SelectedTables())
 	assert.Equal(t, true, config.ShowAllConstraints())

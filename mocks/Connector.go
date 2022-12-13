@@ -32,11 +32,11 @@ func (_m *Connector) Connect() error {
 }
 
 // GetColumns provides a mock function with given fields: tableName
-func (_m *Connector) GetColumns(tableName string) ([]database.ColumnResult, error) {
+func (_m *Connector) GetColumns(tableName database.TableNameResult) ([]database.ColumnResult, error) {
 	ret := _m.Called(tableName)
 
 	var r0 []database.ColumnResult
-	if rf, ok := ret.Get(0).(func(string) []database.ColumnResult); ok {
+	if rf, ok := ret.Get(0).(func(database.TableNameResult) []database.ColumnResult); ok {
 		r0 = rf(tableName)
 	} else {
 		if ret.Get(0) != nil {
@@ -45,7 +45,7 @@ func (_m *Connector) GetColumns(tableName string) ([]database.ColumnResult, erro
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
+	if rf, ok := ret.Get(1).(func(database.TableNameResult) error); ok {
 		r1 = rf(tableName)
 	} else {
 		r1 = ret.Error(1)
@@ -55,11 +55,11 @@ func (_m *Connector) GetColumns(tableName string) ([]database.ColumnResult, erro
 }
 
 // GetConstraints provides a mock function with given fields: tableName
-func (_m *Connector) GetConstraints(tableName string) ([]database.ConstraintResult, error) {
+func (_m *Connector) GetConstraints(tableName database.TableNameResult) ([]database.ConstraintResult, error) {
 	ret := _m.Called(tableName)
 
 	var r0 []database.ConstraintResult
-	if rf, ok := ret.Get(0).(func(string) []database.ConstraintResult); ok {
+	if rf, ok := ret.Get(0).(func(database.TableNameResult) []database.ConstraintResult); ok {
 		r0 = rf(tableName)
 	} else {
 		if ret.Get(0) != nil {
@@ -68,7 +68,7 @@ func (_m *Connector) GetConstraints(tableName string) ([]database.ConstraintResu
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
+	if rf, ok := ret.Get(1).(func(database.TableNameResult) error); ok {
 		r1 = rf(tableName)
 	} else {
 		r1 = ret.Error(1)
@@ -114,22 +114,22 @@ func (_m *Connector) GetSchemas() ([]string, error) {
 	return r0, r1
 }
 
-// GetTables provides a mock function with given fields: schemaName
-func (_m *Connector) GetTables(schemaName string) ([]string, error) {
-	ret := _m.Called(schemaName)
+// GetTables provides a mock function with given fields: schemaNames
+func (_m *Connector) GetTables(schemaNames []string) ([]database.TableNameResult, error) {
+	ret := _m.Called(schemaNames)
 
-	var r0 []string
-	if rf, ok := ret.Get(0).(func(string) []string); ok {
-		r0 = rf(schemaName)
+	var r0 []database.TableNameResult
+	if rf, ok := ret.Get(0).(func([]string) []database.TableNameResult); ok {
+		r0 = rf(schemaNames)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]string)
+			r0 = ret.Get(0).([]database.TableNameResult)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(schemaName)
+	if rf, ok := ret.Get(1).(func([]string) error); ok {
+		r1 = rf(schemaNames)
 	} else {
 		r1 = ret.Error(1)
 	}

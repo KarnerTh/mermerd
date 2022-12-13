@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/denisenkom/go-mssqldb"
 )
@@ -53,31 +54,35 @@ func (c *mssqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c *mssqlConnector) GetTables(schemaName string) ([]string, error) {
+func (c *mssqlConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
+	// possible sql injection
+	schemaSearch := strings.Join(schemaNames, ",")
 	rows, err := c.db.Query(`
-		select table_name
+		select table_schema, table_name
 		from information_schema.tables
 		where table_type = 'BASE TABLE'
-		  and table_schema = @p1
-		`, schemaName)
+		  and table_schema in (@p1)
+		`, schemaSearch)
 	if err != nil {
 		return nil, err
 	}
 
-	var tables []string
+	var tables []TableNameResult
 	for rows.Next() {
-		var table string
-		if err = rows.Scan(&table); err != nil {
+		var table TableNameResult
+		if err = rows.Scan(&table.Schema, &table.Name); err != nil {
 			return nil, err
 		}
 
-		tables = append(tables, SanitizeValue(table))
+		table.Name = SanitizeValue(table.Name)
+
+		tables = append(tables, table)
 	}
 
 	return tables, nil
 }
 
-func (c *mssqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+func (c *mssqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
@@ -96,7 +101,7 @@ func (c *mssqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 		from information_schema.columns c
 		where c.table_name = @p1
 		order by c.ordinal_position;
-		`, tableName)
+		`, tableName.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +122,7 @@ func (c *mssqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	return columns, nil
 }
 
-func (c *mssqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
+func (c *mssqlConnector) GetConstraints(tableName TableNameResult) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 select fk.table_name,
        pk.table_name,
@@ -145,7 +150,7 @@ from information_schema.referential_constraints c
          inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
          inner join information_schema.key_column_usage kcu on c.constraint_name = kcu.constraint_name
 where fk.table_name = @p1 or pk.table_name = @p1;
-		`, tableName)
+		`, tableName.Name)
 	if err != nil {
 		return nil, err
 	}

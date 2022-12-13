@@ -31,14 +31,16 @@ func (_m *Questioner) AskConnectionQuestion(suggestions []string) (string, error
 }
 
 // AskSchemaQuestion provides a mock function with given fields: schemas
-func (_m *Questioner) AskSchemaQuestion(schemas []string) (string, error) {
+func (_m *Questioner) AskSchemaQuestion(schemas []string) ([]string, error) {
 	ret := _m.Called(schemas)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func([]string) string); ok {
+	var r0 []string
+	if rf, ok := ret.Get(0).(func([]string) []string); ok {
 		r0 = rf(schemas)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
 	}
 
 	var r1 error

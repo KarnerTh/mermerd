@@ -24,6 +24,7 @@ services:
     volumes:
       - ./db-table-setup.sql:/docker-entrypoint-initdb.d/1.sql
       - ./mysql/mysql-enum-setup.sql:/docker-entrypoint-initdb.d/2.sql
+      - ./mysql/mysql-multiple-databases.sql:/docker-entrypoint-initdb.d/3.sql
   mermerd-mssql-test-db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:

@@ -13,7 +13,7 @@ type Connector interface {
 	Close()
 	GetDbType() DbType
 	GetSchemas() ([]string, error)
-	GetTables(schemaName string) ([]string, error)
-	GetColumns(tableName string) ([]ColumnResult, error)
-	GetConstraints(tableName string) ([]ConstraintResult, error)
+	GetTables(schemaNames []string) ([]TableNameResult, error)
+	GetColumns(tableName TableNameResult) ([]ColumnResult, error)
+	GetConstraints(tableName TableNameResult) ([]ConstraintResult, error)
 }

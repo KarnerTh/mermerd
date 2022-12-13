@@ -21,7 +21,7 @@ func TestPostgresEnums(t *testing.T) {
 		logrus.Error(err)
 		t.FailNow()
 	}
-	columns, err := connector.GetColumns("test_2_enum")
+  columns, err := connector.GetColumns(TableNameResult{Name: "test_2_enum"})
 
 	// Assert
 	for _, column := range columns {

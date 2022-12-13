@@ -53,27 +53,27 @@ func TestAnalyzer_GetSchema(t *testing.T) {
 		// Arrange
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
-		configMock.On("Schema").Return("configuredSchema").Once()
+		configMock.On("Schemas").Return([]string{"configuredSchema"}).Once()
 
 		// Act
-		result, err := analyzer.GetSchema(&connectorMock)
+		result, err := analyzer.GetSchemas(&connectorMock)
 
 		// Assert
 		configMock.AssertExpectations(t)
 		connectorMock.AssertExpectations(t)
 		assert.Nil(t, err)
-		assert.Equal(t, "configuredSchema", result)
+		assert.ElementsMatch(t, []string{"configuredSchema"}, result)
 	})
 
 	t.Run("No schema available return error", func(t *testing.T) {
 		// Arrange
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
-		configMock.On("Schema").Return("").Once()
+		configMock.On("Schemas").Return([]string{}).Once()
 		connectorMock.On("GetSchemas").Return([]string{}, nil).Once()
 
 		// Act
-		result, err := analyzer.GetSchema(&connectorMock)
+		result, err := analyzer.GetSchemas(&connectorMock)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -86,36 +86,36 @@ func TestAnalyzer_GetSchema(t *testing.T) {
 		// Arrange
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
-		configMock.On("Schema").Return("").Once()
+		configMock.On("Schemas").Return([]string{}).Once()
 		connectorMock.On("GetSchemas").Return([]string{"onlyItem"}, nil).Once()
 
 		// Act
-		result, err := analyzer.GetSchema(&connectorMock)
+		result, err := analyzer.GetSchemas(&connectorMock)
 
 		// Assert
 		configMock.AssertExpectations(t)
 		connectorMock.AssertExpectations(t)
 		assert.Nil(t, err)
-		assert.Equal(t, "onlyItem", result)
+		assert.ElementsMatch(t, []string{"onlyItem"}, result)
 	})
 
 	t.Run("Use value from questioner", func(t *testing.T) {
 		// Arrange
 		analyzer, configMock, _, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
-		configMock.On("Schema").Return("").Once()
+		configMock.On("Schemas").Return([]string{}).Once()
 		connectorMock.On("GetSchemas").Return([]string{"first", "second"}, nil).Once()
-		questionerMock.On("AskSchemaQuestion", []string{"first", "second"}).Return("first", nil).Once()
+		questionerMock.On("AskSchemaQuestion", []string{"first", "second"}).Return([]string{"first"}, nil).Once()
 
 		// Act
-		result, err := analyzer.GetSchema(&connectorMock)
+		result, err := analyzer.GetSchemas(&connectorMock)
 
 		// Assert
 		configMock.AssertExpectations(t)
 		connectorMock.AssertExpectations(t)
 		questionerMock.AssertExpectations(t)
 		assert.Nil(t, err)
-		assert.Equal(t, "first", result)
+		assert.ElementsMatch(t, []string{"first"}, result)
 	})
 }
 
@@ -127,13 +127,14 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		configMock.On("SelectedTables").Return([]string{"configuredTable"}).Once()
 
 		// Act
-		result, err := analyzer.GetTables(&connectorMock, "validSchema")
+		result, err := analyzer.GetTables(&connectorMock, []string{"validSchema"})
 
 		// Assert
 		configMock.AssertExpectations(t)
 		connectorMock.AssertExpectations(t)
 		assert.Nil(t, err)
-		assert.ElementsMatch(t, []string{"configuredTable"}, result)
+		assert.Len(t, result, 1)
+		assert.Equal(t, "configuredTable", result[0].Name)
 	})
 
 	t.Run("Use all available tables", func(t *testing.T) {
@@ -141,17 +142,19 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("SelectedTables").Return([]string{}).Once()
-		connectorMock.On("GetTables", "validSchema").Return([]string{"tableA", "tableB"}, nil).Once()
+		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableNameResult{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
 		configMock.On("UseAllTables").Return(true).Once()
 
 		// Act
-		result, err := analyzer.GetTables(&connectorMock, "validSchema")
+		result, err := analyzer.GetTables(&connectorMock, []string{"validSchema"})
 
 		// Assert
 		configMock.AssertExpectations(t)
 		connectorMock.AssertExpectations(t)
 		assert.Nil(t, err)
-		assert.ElementsMatch(t, []string{"tableA", "tableB"}, result)
+		assert.Len(t, result, 2)
+		assert.Equal(t, "tableA", result[0].Name)
+		assert.Equal(t, "tableB", result[1].Name)
 	})
 
 	t.Run("Use value from questioner", func(t *testing.T) {
@@ -159,19 +162,20 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		analyzer, configMock, _, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("SelectedTables").Return([]string{}).Once()
-		connectorMock.On("GetTables", "validSchema").Return([]string{"tableA", "tableB"}, nil).Once()
+		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableNameResult{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
 		configMock.On("UseAllTables").Return(false).Once()
-		questionerMock.On("AskTableQuestion", []string{"tableA", "tableB"}).Return([]string{"tableA"}, nil).Once()
+		questionerMock.On("AskTableQuestion", []string{"validSchema.tableA", "validSchema.tableB"}).Return([]string{"validSchema.tableA"}, nil).Once()
 
 		// Act
-		result, err := analyzer.GetTables(&connectorMock, "validSchema")
+		result, err := analyzer.GetTables(&connectorMock, []string{"validSchema"})
 
 		// Assert
 		configMock.AssertExpectations(t)
 		connectorMock.AssertExpectations(t)
 		questionerMock.AssertExpectations(t)
 		assert.Nil(t, err)
-		assert.ElementsMatch(t, []string{"tableA"}, result)
+		assert.Len(t, result, 1)
+		assert.Equal(t, "tableA", result[0].Name)
 	})
 }
 
@@ -184,9 +188,9 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		connectionFactoryMock.On("NewConnector", "validConnectionString").Return(&connectorMock, nil).Once()
 		connectorMock.On("Connect").Return(nil).Once()
 		connectorMock.On("Close").Return().Once()
-		configMock.On("Schema").Return("validSchema").Once()
-		configMock.On("SelectedTables").Return([]string{"tableA", "tableB"}).Once()
-		connectorMock.On("GetColumns", "tableA").Return([]database.ColumnResult{
+		configMock.On("Schemas").Return([]string{"validSchema"}).Once()
+		configMock.On("SelectedTables").Return([]string{"validSchema.tableA", "validSchema.tableB"}).Once()
+		connectorMock.On("GetColumns", database.TableNameResult{Schema: "validSchema", Name: "tableA"}).Return([]database.ColumnResult{
 			{
 				Name:     "fieldA",
 				DataType: "int",
@@ -196,7 +200,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				DataType: "string",
 			},
 		}, nil).Once()
-		connectorMock.On("GetColumns", "tableB").Return([]database.ColumnResult{
+		connectorMock.On("GetColumns", database.TableNameResult{Schema: "validSchema", Name: "tableB"}).Return([]database.ColumnResult{
 			{
 				Name:     "fieldC",
 				DataType: "int",
@@ -206,14 +210,14 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				DataType: "string",
 			},
 		}, nil).Once()
-		connectorMock.On("GetConstraints", "tableA").Return([]database.ConstraintResult{{
+		connectorMock.On("GetConstraints", database.TableNameResult{Schema: "validSchema", Name: "tableA"}).Return([]database.ConstraintResult{{
 			FkTable:        "tableA",
 			PkTable:        "tableB",
 			ConstraintName: "testConstraint",
 			IsPrimary:      false,
 			HasMultiplePK:  false,
 		}}, nil).Once()
-		connectorMock.On("GetConstraints", "tableB").Return([]database.ConstraintResult{{
+		connectorMock.On("GetConstraints", database.TableNameResult{Schema: "validSchema", Name: "tableB"}).Return([]database.ConstraintResult{{
 			FkTable:        "tableA",
 			PkTable:        "tableB",
 			ConstraintName: "testConstraint",
