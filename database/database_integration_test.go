@@ -34,22 +34,22 @@ func TestDatabaseIntegrations(t *testing.T) {
 	testCases := []struct {
 		dbType           DbType
 		connectionString string
-		schema           []string
+		schema           string
 	}{
 		{
 			dbType:           Postgres,
 			connectionString: testConnectionPostgres.connectionString,
-			schema:           []string{testConnectionPostgres.schema},
+			schema:           testConnectionPostgres.schema,
 		},
 		{
 			dbType:           MySql,
 			connectionString: testConnectionMySql.connectionString,
-			schema:           []string{testConnectionMySql.schema},
+			schema:           testConnectionMySql.schema,
 		},
 		{
 			dbType:           MsSql,
 			connectionString: testConnectionMsSql.connectionString,
-			schema:           []string{testConnectionMsSql.schema},
+			schema:           testConnectionMsSql.schema,
 		},
 	}
 
@@ -95,19 +95,19 @@ func TestDatabaseIntegrations(t *testing.T) {
 				schema := testCase.schema
 
 				// Act
-				tables, err := connector.GetTables(schema)
+				tables, err := connector.GetTables([]string{schema})
 
 				// Assert
 				expectedResult := []TableNameResult{
-					{Schema: schema[0], Name: "article"},
-					{Schema: schema[0], Name: "article_detail"},
-					{Schema: schema[0], Name: "article_comment"},
-					{Schema: schema[0], Name: "label"},
-					{Schema: schema[0], Name: "article_label"},
-					{Schema: schema[0], Name: "test_1_a"},
-					{Schema: schema[0], Name: "test_1_b"},
-					{Schema: schema[0], Name: "test_2_enum"},
-					{Schema: schema[0], Name: "test_3_a"},
+					{Schema: schema, Name: "article"},
+					{Schema: schema, Name: "article_detail"},
+					{Schema: schema, Name: "article_comment"},
+					{Schema: schema, Name: "label"},
+					{Schema: schema, Name: "article_label"},
+					{Schema: schema, Name: "test_1_a"},
+					{Schema: schema, Name: "test_1_b"},
+					{Schema: schema, Name: "test_2_enum"},
+					{Schema: schema, Name: "test_3_a"},
 				}
 				assert.Nil(t, err)
 				assert.ElementsMatch(t, expectedResult, tables)
@@ -153,7 +153,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				for index, subTestCase := range subTestCases {
 					t.Run(fmt.Sprintf("run #%d", index), func(t *testing.T) {
 						// Arrange
-						tableName := TableNameResult{Schema: testCase.schema[0], Name: subTestCase.tableName}
+						tableName := TableNameResult{Schema: testCase.schema, Name: subTestCase.tableName}
 						var columnResult []columnTestResult
 
 						// Act
@@ -179,7 +179,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("One-to-one relation", func(t *testing.T) {
 					// Arrange
-					tableName := TableNameResult{Schema: testCase.schema[0], Name: "article_detail"}
+					tableName := TableNameResult{Schema: testCase.schema, Name: "article_detail"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)
@@ -194,7 +194,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("Many-to-one relation #1", func(t *testing.T) {
 					// Arrange
-					tableName := TableNameResult{Schema: testCase.schema[0], Name: "article_comment"}
+					tableName := TableNameResult{Schema: testCase.schema, Name: "article_comment"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)
@@ -209,8 +209,8 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("Many-to-one relation #2", func(t *testing.T) {
 					// Arrange
-					pkTableName := TableNameResult{Schema: testCase.schema[0], Name: "article"}
-					fkTableName := TableNameResult{Schema: testCase.schema[0], Name: "article_label"}
+					pkTableName := TableNameResult{Schema: testCase.schema, Name: "article"}
+					fkTableName := TableNameResult{Schema: testCase.schema, Name: "article_label"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(pkTableName)
@@ -232,7 +232,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				// Multiple primary keys (https://github.com/KarnerTh/mermerd/issues/8)
 				t.Run("Multiple primary keys (Issue #8)", func(t *testing.T) {
 					// Arrange
-					pkTableName := TableNameResult{Schema: testCase.schema[0], Name: "test_1_b"}
+					pkTableName := TableNameResult{Schema: testCase.schema, Name: "test_1_b"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(pkTableName)
