@@ -5,6 +5,7 @@ package main
 /// - TableNameResponse model?
 /// - Aufteilung
 /// - config abwärtskompatibel?
+/// - auf schema einschränken bei der abfrage
 
 import (
 	"fmt"

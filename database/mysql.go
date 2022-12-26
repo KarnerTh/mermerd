@@ -59,7 +59,6 @@ func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableNameResult, err
 	for i, schemaName := range schemaNames {
 		args[i] = schemaName
 	}
-
 	rows, err := c.db.Query(`
 		select table_schema, table_name
 		from information_schema.tables
@@ -102,9 +101,9 @@ func (c *mySqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, 
 				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign,
         case when c.data_type = 'enum' then REPLACE(REPLACE(REPLACE(REPLACE(c.column_type, 'enum', ''), '\'', ''), '(', ''), ')', '') else '' end as enum_values
 		from information_schema.columns c
-		where c.table_name = ?
+		where c.table_name = ? and c.TABLE_SCHEMA = ?
 		order by c.ordinal_position;
-		`, tableName.Name)
+		`, tableName.Name, tableName.Schema)
 	if err != nil {
 		return nil, err
 	}
@@ -147,8 +146,8 @@ func (c *mySqlConnector) GetConstraints(tableName TableNameResult) ([]Constraint
 			   ) "hasMultiplePk"
 		from information_schema.REFERENTIAL_CONSTRAINTS c
     		inner join information_schema.KEY_COLUMN_USAGE kcu on c.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
-		where c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?
-		`, tableName.Name, tableName.Name)
+		where c.CONSTRAINT_SCHEMA = ? and (c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?)
+		`, tableName.Schema, tableName.Name, tableName.Name)
 	if err != nil {
 		return nil, err
 	}
