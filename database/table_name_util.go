@@ -5,11 +5,15 @@ import (
 	"strings"
 )
 
-func ParseTableName(value string) (TableNameResult, error) {
+func ParseTableName(value string, selectedSchemas []string) (TableNameResult, error) {
 	parts := strings.Split(value, ".")
 
 	if len(parts) == 1 {
-		return TableNameResult{Schema: "", Name: parts[0]}, nil
+		if len(selectedSchemas) != 1 {
+			return TableNameResult{}, errors.New("Could not parse table name")
+		}
+
+		return TableNameResult{Schema: selectedSchemas[0], Name: parts[0]}, nil
 	}
 
 	if len(parts) == 2 {
