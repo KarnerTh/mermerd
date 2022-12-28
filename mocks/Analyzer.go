@@ -36,11 +36,11 @@ func (_m *Analyzer) Analyze() (*database.Result, error) {
 }
 
 // GetColumnsAndConstraints provides a mock function with given fields: db, selectedTables
-func (_m *Analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []string) ([]database.TableResult, error) {
+func (_m *Analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error) {
 	ret := _m.Called(db, selectedTables)
 
 	var r0 []database.TableResult
-	if rf, ok := ret.Get(0).(func(database.Connector, []string) []database.TableResult); ok {
+	if rf, ok := ret.Get(0).(func(database.Connector, []database.TableDetail) []database.TableResult); ok {
 		r0 = rf(db, selectedTables)
 	} else {
 		if ret.Get(0) != nil {
@@ -49,7 +49,7 @@ func (_m *Analyzer) GetColumnsAndConstraints(db database.Connector, selectedTabl
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(database.Connector, []string) error); ok {
+	if rf, ok := ret.Get(1).(func(database.Connector, []database.TableDetail) error); ok {
 		r1 = rf(db, selectedTables)
 	} else {
 		r1 = ret.Error(1)
@@ -79,15 +79,17 @@ func (_m *Analyzer) GetConnectionString() (string, error) {
 	return r0, r1
 }
 
-// GetSchema provides a mock function with given fields: db
-func (_m *Analyzer) GetSchema(db database.Connector) (string, error) {
+// GetSchemas provides a mock function with given fields: db
+func (_m *Analyzer) GetSchemas(db database.Connector) ([]string, error) {
 	ret := _m.Called(db)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func(database.Connector) string); ok {
+	var r0 []string
+	if rf, ok := ret.Get(0).(func(database.Connector) []string); ok {
 		r0 = rf(db)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
 	}
 
 	var r1 error
@@ -100,22 +102,22 @@ func (_m *Analyzer) GetSchema(db database.Connector) (string, error) {
 	return r0, r1
 }
 
-// GetTables provides a mock function with given fields: db, selectedSchema
-func (_m *Analyzer) GetTables(db database.Connector, selectedSchema string) ([]string, error) {
-	ret := _m.Called(db, selectedSchema)
+// GetTables provides a mock function with given fields: db, selectedSchemas
+func (_m *Analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]database.TableDetail, error) {
+	ret := _m.Called(db, selectedSchemas)
 
-	var r0 []string
-	if rf, ok := ret.Get(0).(func(database.Connector, string) []string); ok {
-		r0 = rf(db, selectedSchema)
+	var r0 []database.TableDetail
+	if rf, ok := ret.Get(0).(func(database.Connector, []string) []database.TableDetail); ok {
+		r0 = rf(db, selectedSchemas)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]string)
+			r0 = ret.Get(0).([]database.TableDetail)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(database.Connector, string) error); ok {
-		r1 = rf(db, selectedSchema)
+	if rf, ok := ret.Get(1).(func(database.Connector, []string) error); ok {
+		r1 = rf(db, selectedSchemas)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -15,6 +15,7 @@ const (
 	OmitConstraintLabelsKey        = "omitConstraintLabels"
 	OmitAttributeKeysKey           = "omitAttributeKeys"
 	ShowEnumValuesKey              = "showEnumValues"
+	UseAllSchemasKey               = "useAllSchemas"
 )
 
 type config struct{}
@@ -22,7 +23,7 @@ type config struct{}
 type MermerdConfig interface {
 	ShowAllConstraints() bool
 	UseAllTables() bool
-	Schema() string
+	Schemas() []string
 	ConnectionString() string
 	OutputFileName() string
 	ConnectionStringSuggestions() []string
@@ -32,6 +33,7 @@ type MermerdConfig interface {
 	OmitConstraintLabels() bool
 	OmitAttributeKeys() bool
 	ShowEnumValues() bool
+	UseAllSchemas() bool
 }
 
 func NewConfig() MermerdConfig {
@@ -46,8 +48,8 @@ func (c config) UseAllTables() bool {
 	return viper.GetBool(UseAllTablesKey)
 }
 
-func (c config) Schema() string {
-	return viper.GetString(SchemaKey)
+func (c config) Schemas() []string {
+	return viper.GetStringSlice(SchemaKey)
 }
 
 func (c config) ConnectionString() string {
@@ -84,4 +86,8 @@ func (c config) OmitAttributeKeys() bool {
 
 func (c config) ShowEnumValues() bool {
 	return viper.GetBool(ShowEnumValuesKey)
+}
+
+func (c config) UseAllSchemas() bool {
+	return viper.GetBool(UseAllSchemasKey)
 }

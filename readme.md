@@ -80,6 +80,7 @@ via `mermerd -h`
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
       --showEnumValues                show enum values in description column
+      --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
 ```
 
@@ -117,7 +118,13 @@ shown below) and start mermerd via `mermerd --runConfig yourRunConfig.yaml`
 ```yaml
 # Connection properties
 connectionString: "postgresql://user:password@localhost:5432/yourDb"
-schema: "public"
+
+# Define what schemas should be used
+useAllSchemas: true
+# or
+schema: 
+  - "public"
+  - "other_db"
 
 # Define what tables should be used
 useAllTables: true

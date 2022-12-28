@@ -21,7 +21,7 @@ func TestMysqlEnums(t *testing.T) {
 		logrus.Error(err)
 		t.FailNow()
 	}
-	columns, err := connector.GetColumns("test_2_enum")
+	columns, err := connector.GetColumns(TableDetail{Schema: "mermerd_test", Name: "test_2_enum"})
 
 	// Assert
 	for _, column := range columns {

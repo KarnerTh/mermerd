@@ -16,6 +16,7 @@ func TestSanitizeValue(t *testing.T) {
 		{inputValue: "numbers are allowed 7", expectedResult: "numbers_are_allowed_7"},
 		{inputValue: "valid_stays_valid", expectedResult: "valid_stays_valid"},
 		{inputValue: "valid-stays-valid", expectedResult: "valid-stays-valid"},
+		{inputValue: "dots.are.allowed", expectedResult: "dots.are.allowed"},
 		{inputValue: "symbols_$_are_&_not_§_allowed", expectedResult: "symbols__are__not__allowed"},
 		{inputValue: "also: not allowed", expectedResult: "also_not_allowed"},
 	}

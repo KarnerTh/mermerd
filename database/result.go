@@ -5,9 +5,14 @@ type Result struct {
 }
 
 type TableResult struct {
-	TableName   string
+	Table       TableDetail
 	Columns     []ColumnResult
 	Constraints ConstraintResultList
+}
+
+type TableDetail struct {
+	Schema string
+	Name   string
 }
 
 type ColumnResult struct {

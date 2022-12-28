@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -53,31 +54,37 @@ func (c *mySqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c *mySqlConnector) GetTables(schemaName string) ([]string, error) {
+func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableDetail, error) {
+	args := make([]any, len(schemaNames))
+	for i, schemaName := range schemaNames {
+		args[i] = schemaName
+	}
 	rows, err := c.db.Query(`
-		select table_name
+		select table_schema, table_name
 		from information_schema.tables
 		where table_type = 'BASE TABLE'
-		  and table_schema = ?
-		`, schemaName)
+		  and table_schema in (?`+strings.Repeat(",?", len(schemaNames)-1)+`)
+		`, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	var tables []string
+	var tables []TableDetail
 	for rows.Next() {
-		var table string
-		if err = rows.Scan(&table); err != nil {
+		var table TableDetail
+		if err = rows.Scan(&table.Schema, &table.Name); err != nil {
 			return nil, err
 		}
 
-		tables = append(tables, SanitizeValue(table))
+		table.Name = SanitizeValue(table.Name)
+
+		tables = append(tables, table)
 	}
 
 	return tables, nil
 }
 
-func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
+func (c *mySqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
@@ -94,9 +101,9 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign,
         case when c.data_type = 'enum' then REPLACE(REPLACE(REPLACE(REPLACE(c.column_type, 'enum', ''), '\'', ''), '(', ''), ')', '') else '' end as enum_values
 		from information_schema.columns c
-		where c.table_name = ?
+		where c.table_name = ? and c.TABLE_SCHEMA = ?
 		order by c.ordinal_position;
-		`, tableName)
+		`, tableName.Name, tableName.Schema)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +124,7 @@ func (c *mySqlConnector) GetColumns(tableName string) ([]ColumnResult, error) {
 	return columns, nil
 }
 
-func (c *mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, error) {
+func (c *mySqlConnector) GetConstraints(tableName TableDetail) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 		select c.TABLE_NAME,
 			   c.REFERENCED_TABLE_NAME,
@@ -139,8 +146,8 @@ func (c *mySqlConnector) GetConstraints(tableName string) ([]ConstraintResult, e
 			   ) "hasMultiplePk"
 		from information_schema.REFERENTIAL_CONSTRAINTS c
     		inner join information_schema.KEY_COLUMN_USAGE kcu on c.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
-		where c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?
-		`, tableName, tableName)
+		where c.CONSTRAINT_SCHEMA = ? and (c.TABLE_NAME = ? or c.REFERENCED_TABLE_NAME = ?)
+		`, tableName.Schema, tableName.Name, tableName.Name)
 	if err != nil {
 		return nil, err
 	}

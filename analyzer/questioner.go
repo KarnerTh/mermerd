@@ -10,7 +10,7 @@ type questioner struct{}
 
 type Questioner interface {
 	AskConnectionQuestion(suggestions []string) (string, error)
-	AskSchemaQuestion(schemas []string) (string, error)
+	AskSchemaQuestion(schemas []string) ([]string, error)
 	AskTableQuestion(tables []string) ([]string, error)
 }
 
@@ -35,14 +35,14 @@ func (q questioner) AskConnectionQuestion(suggestions []string) (string, error) 
 	return os.ExpandEnv(result), nil
 }
 
-func (q questioner) AskSchemaQuestion(schemas []string) (string, error) {
-	var result string
-	question := &survey.Select{
-		Message: "Choose a schema:",
+func (q questioner) AskSchemaQuestion(schemas []string) ([]string, error) {
+	var result []string
+	question := &survey.MultiSelect{
+		Message: "Choose schemas:",
 		Options: schemas,
 	}
 
-	err := survey.AskOne(question, &result)
+	err := survey.AskOne(question, &result, survey.WithValidator(survey.MinItems(1)))
 	return result, err
 }
 
