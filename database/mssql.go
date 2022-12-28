@@ -55,14 +55,18 @@ func (c *mssqlConnector) GetSchemas() ([]string, error) {
 }
 
 func (c *mssqlConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
-	// possible sql injection
-	schemaSearch := strings.Join(schemaNames, ",")
+	args := make([]any, len(schemaNames))
+	searchPlaceholder := make([]string, len(schemaNames))
+	for i, schemaName := range schemaNames {
+		args[i] = schemaName
+		searchPlaceholder[i] = fmt.Sprintf("@p%d", i+1)
+	}
 	rows, err := c.db.Query(`
 		select table_schema, table_name
 		from information_schema.tables
 		where table_type = 'BASE TABLE'
-		  and table_schema in (@p1)
-		`, schemaSearch)
+		  and table_schema in(`+strings.Join(searchPlaceholder, ",")+`) 
+		`, args...)
 	if err != nil {
 		return nil, err
 	}

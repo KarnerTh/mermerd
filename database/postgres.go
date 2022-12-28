@@ -55,13 +55,12 @@ func (c *postgresConnector) GetSchemas() ([]string, error) {
 }
 
 func (c *postgresConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
-	// possible sql injection
-	schemaSearch := strings.Join(schemaNames, ",")
+	schemaSearch := "{" + strings.Join(schemaNames, ",") + "}"
 	rows, err := c.db.Query(`
 		select table_schema, table_name
 		from information_schema.tables
 		where table_type = 'BASE TABLE'
-		  and table_schema in ($1)
+    and table_schema = ANY($1::varchar[])
 		`, schemaSearch)
 	if err != nil {
 		return nil, err

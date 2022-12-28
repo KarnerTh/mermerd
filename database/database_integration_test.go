@@ -21,7 +21,7 @@ type connectionParameter struct {
 
 var (
 	testConnectionPostgres connectionParameter = connectionParameter{connectionString: "postgresql://user:password@localhost:5432/mermerd_test", schema: "public"}
-	testConnectionMySql    connectionParameter = connectionParameter{connectionString: "mysql://user:password@tcp(127.0.0.1:3306)/mermerd_test", schema: "mermerd_test"}
+	testConnectionMySql    connectionParameter = connectionParameter{connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/mermerd_test", schema: "mermerd_test"}
 	testConnectionMsSql    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test", schema: "dbo"}
 )
 
@@ -250,9 +250,52 @@ func TestDatabaseIntegrations(t *testing.T) {
 				})
 			})
 
-			// t.Run("Multiple schemas (Issue #23)", func(t *testing.T) {
-			//
-			// })
+			t.Run("Multiple schemas (Issue #23)", func(t *testing.T) {
+				connector := getConnectionAndConnect(t)
+
+				t.Run("GetTables", func(t *testing.T) {
+					// Arrange
+					secondSchema := "other_db"
+					schemas := []string{testCase.schema, secondSchema}
+
+					// Act
+					tables, err := connector.GetTables(schemas)
+
+					// Assert
+					expectedResult := []TableNameResult{
+						{Schema: testCase.schema, Name: "article"},
+						{Schema: testCase.schema, Name: "article_detail"},
+						{Schema: testCase.schema, Name: "article_comment"},
+						{Schema: testCase.schema, Name: "label"},
+						{Schema: testCase.schema, Name: "article_label"},
+						{Schema: testCase.schema, Name: "test_1_a"},
+						{Schema: testCase.schema, Name: "test_1_b"},
+						{Schema: testCase.schema, Name: "test_2_enum"},
+						{Schema: testCase.schema, Name: "test_3_a"},
+						{Schema: secondSchema, Name: "test_3_b"},
+						{Schema: secondSchema, Name: "test_3_c"},
+					}
+					assert.Nil(t, err)
+					assert.ElementsMatch(t, expectedResult, tables)
+				})
+
+				t.Run("GetCrossSchemaConstraints", func(t *testing.T) {
+					// Arrange
+					tableName := TableNameResult{Schema: "other_db", Name: "test_3_b"}
+
+					// Act
+					constraintResults, err := connector.GetConstraints(tableName)
+
+					// Assert
+					assert.Nil(t, err)
+					assert.Len(t, constraintResults, 1)
+					assert.False(t, constraintResults[0].IsPrimary)
+					assert.False(t, constraintResults[0].HasMultiplePK)
+					assert.Equal(t, constraintResults[0].ColumnName, "aid")
+					assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
+					assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
+				})
+			})
 		})
 	}
 }
