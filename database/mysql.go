@@ -54,7 +54,7 @@ func (c *mySqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
+func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableDetail, error) {
 	args := make([]any, len(schemaNames))
 	for i, schemaName := range schemaNames {
 		args[i] = schemaName
@@ -69,9 +69,9 @@ func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableNameResult, err
 		return nil, err
 	}
 
-	var tables []TableNameResult
+	var tables []TableDetail
 	for rows.Next() {
-		var table TableNameResult
+		var table TableDetail
 		if err = rows.Scan(&table.Schema, &table.Name); err != nil {
 			return nil, err
 		}
@@ -84,7 +84,7 @@ func (c *mySqlConnector) GetTables(schemaNames []string) ([]TableNameResult, err
 	return tables, nil
 }
 
-func (c *mySqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, error) {
+func (c *mySqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
@@ -124,7 +124,7 @@ func (c *mySqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, 
 	return columns, nil
 }
 
-func (c *mySqlConnector) GetConstraints(tableName TableNameResult) ([]ConstraintResult, error) {
+func (c *mySqlConnector) GetConstraints(tableName TableDetail) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 		select c.TABLE_NAME,
 			   c.REFERENCED_TABLE_NAME,

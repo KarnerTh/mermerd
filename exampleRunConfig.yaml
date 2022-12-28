@@ -2,6 +2,7 @@
 connectionString: "postgresql://user:password@localhost:5432/mermerd_test"
 schema: 
   - "public"
+  - "other_db"
 
 # Define what tables should be used
 #useAllTables: true

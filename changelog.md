@@ -7,6 +7,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0
 ## [0.5.0] - 2022-12-xx
 ### Added
 - Support enum description ([Issue #15](https://github.com/KarnerTh/mermerd/issues/15))
+- Support multiple schemas ([Issue #23](https://github.com/KarnerTh/mermerd/issues/23))
 
 ## [0.4.1] - 2022-09-28
 ### Fixed

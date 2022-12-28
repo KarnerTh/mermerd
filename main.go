@@ -1,15 +1,6 @@
 package main
 
-/// TODO:  test
-/// - tests
-/// - TableNameResponse model?
-/// - Aufteilung
-/// - config abwärtskompatibel?
-/// - auf schema einschränken bei der abfrage
-
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 
 	"github.com/KarnerTh/mermerd/cmd"
@@ -22,10 +13,8 @@ var (
 )
 
 func main() {
-  test := "abc"
 	viper.Set("version", version)
 	viper.Set("commit", commit)
-  fmt.Print(test)
 
 	cmd.Execute()
 }

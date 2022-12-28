@@ -22,8 +22,8 @@ type Analyzer interface {
 	Analyze() (*database.Result, error)
 	GetConnectionString() (string, error)
 	GetSchemas(db database.Connector) ([]string, error)
-	GetTables(db database.Connector, selectedSchemas []string) ([]database.TableNameResult, error)
-	GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableNameResult) ([]database.TableResult, error)
+	GetTables(db database.Connector, selectedSchemas []string) ([]database.TableDetail, error)
+	GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error)
 }
 
 func NewAnalyzer(config config.MermerdConfig, connectorFactory database.ConnectorFactory, questioner Questioner) Analyzer {
@@ -100,9 +100,9 @@ func (a analyzer) GetSchemas(db database.Connector) ([]string, error) {
 	}
 }
 
-func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]database.TableNameResult, error) {
+func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]database.TableDetail, error) {
 	if selectedTables := a.config.SelectedTables(); len(selectedTables) > 0 {
-		return util.Map2(selectedTables, func(value string) database.TableNameResult {
+		return util.Map2(selectedTables, func(value string) database.TableDetail {
 			res, err := database.ParseTableName(value, selectedSchemas)
 			if err != nil {
 				logrus.Error("Could not parse table name", value)
@@ -129,14 +129,14 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 	if a.config.UseAllTables() {
 		return tables, nil
 	} else {
-		tableNames := util.Map2(tables, func(table database.TableNameResult) string {
+		tableNames := util.Map2(tables, func(table database.TableDetail) string {
 			return fmt.Sprintf("%s.%s", table.Schema, table.Name)
 		})
 		surveyResult, err := a.questioner.AskTableQuestion(tableNames)
 		if err != nil {
-			return []database.TableNameResult{}, err
+			return []database.TableDetail{}, err
 		}
-		return util.Map2(surveyResult, func(value string) database.TableNameResult {
+		return util.Map2(surveyResult, func(value string) database.TableDetail {
 			res, err := database.ParseTableName(value, selectedSchemas)
 			if err != nil {
 				logrus.Error("Could not parse table name", value)
@@ -147,7 +147,7 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 	}
 }
 
-func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableNameResult) ([]database.TableResult, error) {
+func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error) {
 	var tableResults []database.TableResult
 	a.loadingSpinner.Start("Getting columns and constraints")
 	for _, table := range selectedTables {
@@ -163,7 +163,7 @@ func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables
 			return nil, err
 		}
 
-		tableResults = append(tableResults, database.TableResult{TableName: table, Columns: columns, Constraints: constraints})
+		tableResults = append(tableResults, database.TableResult{Table: table, Columns: columns, Constraints: constraints})
 	}
 	a.loadingSpinner.Stop()
 	columnCount, constraintCount := getTableResultStats(tableResults)

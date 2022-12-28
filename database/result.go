@@ -5,12 +5,12 @@ type Result struct {
 }
 
 type TableResult struct {
-	TableName   TableNameResult
+	Table       TableDetail
 	Columns     []ColumnResult
 	Constraints ConstraintResultList
 }
 
-type TableNameResult struct {
+type TableDetail struct {
 	Schema string
 	Name   string
 }

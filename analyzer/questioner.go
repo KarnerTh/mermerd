@@ -38,7 +38,7 @@ func (q questioner) AskConnectionQuestion(suggestions []string) (string, error) 
 func (q questioner) AskSchemaQuestion(schemas []string) ([]string, error) {
 	var result []string
 	question := &survey.MultiSelect{
-		Message: "Choose a schema:",
+		Message: "Choose schemas:",
 		Options: schemas,
 	}
 

@@ -98,7 +98,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				tables, err := connector.GetTables([]string{schema})
 
 				// Assert
-				expectedResult := []TableNameResult{
+				expectedResult := []TableDetail{
 					{Schema: schema, Name: "article"},
 					{Schema: schema, Name: "article_detail"},
 					{Schema: schema, Name: "article_comment"},
@@ -153,7 +153,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				for index, subTestCase := range subTestCases {
 					t.Run(fmt.Sprintf("run #%d", index), func(t *testing.T) {
 						// Arrange
-						tableName := TableNameResult{Schema: testCase.schema, Name: subTestCase.tableName}
+						tableName := TableDetail{Schema: testCase.schema, Name: subTestCase.tableName}
 						var columnResult []columnTestResult
 
 						// Act
@@ -179,7 +179,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("One-to-one relation", func(t *testing.T) {
 					// Arrange
-					tableName := TableNameResult{Schema: testCase.schema, Name: "article_detail"}
+					tableName := TableDetail{Schema: testCase.schema, Name: "article_detail"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)
@@ -194,7 +194,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("Many-to-one relation #1", func(t *testing.T) {
 					// Arrange
-					tableName := TableNameResult{Schema: testCase.schema, Name: "article_comment"}
+					tableName := TableDetail{Schema: testCase.schema, Name: "article_comment"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)
@@ -209,8 +209,8 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("Many-to-one relation #2", func(t *testing.T) {
 					// Arrange
-					pkTableName := TableNameResult{Schema: testCase.schema, Name: "article"}
-					fkTableName := TableNameResult{Schema: testCase.schema, Name: "article_label"}
+					pkTableName := TableDetail{Schema: testCase.schema, Name: "article"}
+					fkTableName := TableDetail{Schema: testCase.schema, Name: "article_label"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(pkTableName)
@@ -232,7 +232,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 				// Multiple primary keys (https://github.com/KarnerTh/mermerd/issues/8)
 				t.Run("Multiple primary keys (Issue #8)", func(t *testing.T) {
 					// Arrange
-					pkTableName := TableNameResult{Schema: testCase.schema, Name: "test_1_b"}
+					pkTableName := TableDetail{Schema: testCase.schema, Name: "test_1_b"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(pkTableName)
@@ -262,7 +262,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 					tables, err := connector.GetTables(schemas)
 
 					// Assert
-					expectedResult := []TableNameResult{
+					expectedResult := []TableDetail{
 						{Schema: testCase.schema, Name: "article"},
 						{Schema: testCase.schema, Name: "article_detail"},
 						{Schema: testCase.schema, Name: "article_comment"},
@@ -281,7 +281,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 
 				t.Run("GetCrossSchemaConstraints", func(t *testing.T) {
 					// Arrange
-					tableName := TableNameResult{Schema: "other_db", Name: "test_3_b"}
+					tableName := TableDetail{Schema: "other_db", Name: "test_3_b"}
 
 					// Act
 					constraintResults, err := connector.GetConstraints(tableName)

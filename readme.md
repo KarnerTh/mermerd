@@ -117,7 +117,9 @@ shown below) and start mermerd via `mermerd --runConfig yourRunConfig.yaml`
 ```yaml
 # Connection properties
 connectionString: "postgresql://user:password@localhost:5432/yourDb"
-schema: "public"
+schema: 
+  - "public"
+  - "other_db"
 
 # Define what tables should be used
 useAllTables: true

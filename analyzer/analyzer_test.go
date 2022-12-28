@@ -142,7 +142,7 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("SelectedTables").Return([]string{}).Once()
-		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableNameResult{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
+		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableDetail{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
 		configMock.On("UseAllTables").Return(true).Once()
 
 		// Act
@@ -162,7 +162,7 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		analyzer, configMock, _, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("SelectedTables").Return([]string{}).Once()
-		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableNameResult{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
+		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableDetail{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
 		configMock.On("UseAllTables").Return(false).Once()
 		questionerMock.On("AskTableQuestion", []string{"validSchema.tableA", "validSchema.tableB"}).Return([]string{"validSchema.tableA"}, nil).Once()
 
@@ -190,7 +190,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		connectorMock.On("Close").Return().Once()
 		configMock.On("Schemas").Return([]string{"validSchema"}).Once()
 		configMock.On("SelectedTables").Return([]string{"validSchema.tableA", "validSchema.tableB"}).Once()
-		connectorMock.On("GetColumns", database.TableNameResult{Schema: "validSchema", Name: "tableA"}).Return([]database.ColumnResult{
+		connectorMock.On("GetColumns", database.TableDetail{Schema: "validSchema", Name: "tableA"}).Return([]database.ColumnResult{
 			{
 				Name:     "fieldA",
 				DataType: "int",
@@ -200,7 +200,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				DataType: "string",
 			},
 		}, nil).Once()
-		connectorMock.On("GetColumns", database.TableNameResult{Schema: "validSchema", Name: "tableB"}).Return([]database.ColumnResult{
+		connectorMock.On("GetColumns", database.TableDetail{Schema: "validSchema", Name: "tableB"}).Return([]database.ColumnResult{
 			{
 				Name:     "fieldC",
 				DataType: "int",
@@ -210,14 +210,14 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				DataType: "string",
 			},
 		}, nil).Once()
-		connectorMock.On("GetConstraints", database.TableNameResult{Schema: "validSchema", Name: "tableA"}).Return([]database.ConstraintResult{{
+		connectorMock.On("GetConstraints", database.TableDetail{Schema: "validSchema", Name: "tableA"}).Return([]database.ConstraintResult{{
 			FkTable:        "tableA",
 			PkTable:        "tableB",
 			ConstraintName: "testConstraint",
 			IsPrimary:      false,
 			HasMultiplePK:  false,
 		}}, nil).Once()
-		connectorMock.On("GetConstraints", database.TableNameResult{Schema: "validSchema", Name: "tableB"}).Return([]database.ConstraintResult{{
+		connectorMock.On("GetConstraints", database.TableDetail{Schema: "validSchema", Name: "tableB"}).Return([]database.ConstraintResult{{
 			FkTable:        "tableA",
 			PkTable:        "tableB",
 			ConstraintName: "testConstraint",

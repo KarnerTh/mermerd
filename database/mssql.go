@@ -54,7 +54,7 @@ func (c *mssqlConnector) GetSchemas() ([]string, error) {
 	return schemas, nil
 }
 
-func (c *mssqlConnector) GetTables(schemaNames []string) ([]TableNameResult, error) {
+func (c *mssqlConnector) GetTables(schemaNames []string) ([]TableDetail, error) {
 	args := make([]any, len(schemaNames))
 	searchPlaceholder := make([]string, len(schemaNames))
 	for i, schemaName := range schemaNames {
@@ -71,9 +71,9 @@ func (c *mssqlConnector) GetTables(schemaNames []string) ([]TableNameResult, err
 		return nil, err
 	}
 
-	var tables []TableNameResult
+	var tables []TableDetail
 	for rows.Next() {
-		var table TableNameResult
+		var table TableDetail
 		if err = rows.Scan(&table.Schema, &table.Name); err != nil {
 			return nil, err
 		}
@@ -86,7 +86,7 @@ func (c *mssqlConnector) GetTables(schemaNames []string) ([]TableNameResult, err
 	return tables, nil
 }
 
-func (c *mssqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, error) {
+func (c *mssqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, error) {
 	rows, err := c.db.Query(`
 		select c.column_name,
 			   c.data_type,
@@ -103,9 +103,9 @@ func (c *mssqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, 
 				  and cu.table_name = c.table_name
 				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign
 		from information_schema.columns c
-		where c.table_name = @p1
+		where c.table_name = @p1 and c.TABLE_SCHEMA = @p2
 		order by c.ordinal_position;
-		`, tableName.Name)
+		`, tableName.Name, tableName.Schema)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (c *mssqlConnector) GetColumns(tableName TableNameResult) ([]ColumnResult, 
 	return columns, nil
 }
 
-func (c *mssqlConnector) GetConstraints(tableName TableNameResult) ([]ConstraintResult, error) {
+func (c *mssqlConnector) GetConstraints(tableName TableDetail) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 select fk.table_name,
        pk.table_name,
@@ -153,8 +153,8 @@ from information_schema.referential_constraints c
          inner join information_schema.table_constraints fk on c.constraint_name = fk.constraint_name
          inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
          inner join information_schema.key_column_usage kcu on c.constraint_name = kcu.constraint_name
-where fk.table_name = @p1 or pk.table_name = @p1;
-		`, tableName.Name)
+where c.CONSTRAINT_SCHEMA = @p1 and (fk.table_name = @p2 or pk.table_name = @p2);
+		`, tableName.Schema, tableName.Name)
 	if err != nil {
 		return nil, err
 	}

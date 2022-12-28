@@ -36,11 +36,11 @@ func (_m *Analyzer) Analyze() (*database.Result, error) {
 }
 
 // GetColumnsAndConstraints provides a mock function with given fields: db, selectedTables
-func (_m *Analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableNameResult) ([]database.TableResult, error) {
+func (_m *Analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error) {
 	ret := _m.Called(db, selectedTables)
 
 	var r0 []database.TableResult
-	if rf, ok := ret.Get(0).(func(database.Connector, []database.TableNameResult) []database.TableResult); ok {
+	if rf, ok := ret.Get(0).(func(database.Connector, []database.TableDetail) []database.TableResult); ok {
 		r0 = rf(db, selectedTables)
 	} else {
 		if ret.Get(0) != nil {
@@ -49,7 +49,7 @@ func (_m *Analyzer) GetColumnsAndConstraints(db database.Connector, selectedTabl
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(database.Connector, []database.TableNameResult) error); ok {
+	if rf, ok := ret.Get(1).(func(database.Connector, []database.TableDetail) error); ok {
 		r1 = rf(db, selectedTables)
 	} else {
 		r1 = ret.Error(1)
@@ -103,15 +103,15 @@ func (_m *Analyzer) GetSchemas(db database.Connector) ([]string, error) {
 }
 
 // GetTables provides a mock function with given fields: db, selectedSchemas
-func (_m *Analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]database.TableNameResult, error) {
+func (_m *Analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]database.TableDetail, error) {
 	ret := _m.Called(db, selectedSchemas)
 
-	var r0 []database.TableNameResult
-	if rf, ok := ret.Get(0).(func(database.Connector, []string) []database.TableNameResult); ok {
+	var r0 []database.TableDetail
+	if rf, ok := ret.Get(0).(func(database.Connector, []string) []database.TableDetail); ok {
 		r0 = rf(db, selectedSchemas)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]database.TableNameResult)
+			r0 = ret.Get(0).([]database.TableDetail)
 		}
 	}
 
