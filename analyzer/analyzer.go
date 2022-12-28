@@ -89,6 +89,9 @@ func (a analyzer) GetSchemas(db database.Connector) ([]string, error) {
 	}
 
 	logrus.WithField("count", len(schemas)).Info("Got schemas")
+	if a.config.UseAllSchemas() {
+		return schemas, nil
+	}
 
 	switch len(schemas) {
 	case 0:
@@ -128,23 +131,23 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 
 	if a.config.UseAllTables() {
 		return tables, nil
-	} else {
-		tableNames := util.Map2(tables, func(table database.TableDetail) string {
-			return fmt.Sprintf("%s.%s", table.Schema, table.Name)
-		})
-		surveyResult, err := a.questioner.AskTableQuestion(tableNames)
-		if err != nil {
-			return []database.TableDetail{}, err
-		}
-		return util.Map2(surveyResult, func(value string) database.TableDetail {
-			res, err := database.ParseTableName(value, selectedSchemas)
-			if err != nil {
-				logrus.Error("Could not parse table name", value)
-			}
-
-			return res
-		}), nil
 	}
+
+	tableNames := util.Map2(tables, func(table database.TableDetail) string {
+		return fmt.Sprintf("%s.%s", table.Schema, table.Name)
+	})
+	surveyResult, err := a.questioner.AskTableQuestion(tableNames)
+	if err != nil {
+		return []database.TableDetail{}, err
+	}
+	return util.Map2(surveyResult, func(value string) database.TableDetail {
+		res, err := database.ParseTableName(value, selectedSchemas)
+		if err != nil {
+			logrus.Error("Could not parse table name", value)
+		}
+
+		return res
+	}), nil
 }
 
 func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error) {

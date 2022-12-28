@@ -1,5 +1,8 @@
 # Connection properties
 connectionString: "postgresql://user:password@localhost:5432/mermerd_test"
+
+# Define what tables should be used
+#useAllSchemas: true
 schema: 
   - "public"
   - "other_db"

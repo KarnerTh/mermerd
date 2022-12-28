@@ -65,11 +65,30 @@ func TestAnalyzer_GetSchema(t *testing.T) {
 		assert.ElementsMatch(t, []string{"configuredSchema"}, result)
 	})
 
+	t.Run("Use all available schema", func(t *testing.T) {
+		// Arrange
+		analyzer, configMock, _, _ := getAnalyzerWithMocks()
+		connectorMock := mocks.Connector{}
+		configMock.On("UseAllSchemas").Return(true).Once()
+		configMock.On("Schemas").Return([]string{}).Once()
+		connectorMock.On("GetSchemas").Return([]string{"schema1", "schema2"}, nil).Once()
+
+		// Act
+		result, err := analyzer.GetSchemas(&connectorMock)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		connectorMock.AssertExpectations(t)
+		assert.Nil(t, err)
+		assert.ElementsMatch(t, []string{"schema1", "schema2"}, result)
+	})
+
 	t.Run("No schema available return error", func(t *testing.T) {
 		// Arrange
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("Schemas").Return([]string{}).Once()
+		configMock.On("UseAllSchemas").Return(false).Once()
 		connectorMock.On("GetSchemas").Return([]string{}, nil).Once()
 
 		// Act
@@ -87,6 +106,7 @@ func TestAnalyzer_GetSchema(t *testing.T) {
 		analyzer, configMock, _, _ := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("Schemas").Return([]string{}).Once()
+		configMock.On("UseAllSchemas").Return(false).Once()
 		connectorMock.On("GetSchemas").Return([]string{"onlyItem"}, nil).Once()
 
 		// Act
@@ -104,6 +124,7 @@ func TestAnalyzer_GetSchema(t *testing.T) {
 		analyzer, configMock, _, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("Schemas").Return([]string{}).Once()
+		configMock.On("UseAllSchemas").Return(false).Once()
 		connectorMock.On("GetSchemas").Return([]string{"first", "second"}, nil).Once()
 		questionerMock.On("AskSchemaQuestion", []string{"first", "second"}).Return([]string{"first"}, nil).Once()
 

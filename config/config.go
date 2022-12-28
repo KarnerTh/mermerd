@@ -15,6 +15,7 @@ const (
 	OmitConstraintLabelsKey        = "omitConstraintLabels"
 	OmitAttributeKeysKey           = "omitAttributeKeys"
 	ShowEnumValuesKey              = "showEnumValues"
+	UseAllSchemasKey               = "useAllSchemas"
 )
 
 type config struct{}
@@ -32,6 +33,7 @@ type MermerdConfig interface {
 	OmitConstraintLabels() bool
 	OmitAttributeKeys() bool
 	ShowEnumValues() bool
+	UseAllSchemas() bool
 }
 
 func NewConfig() MermerdConfig {
@@ -84,4 +86,8 @@ func (c config) OmitAttributeKeys() bool {
 
 func (c config) ShowEnumValues() bool {
 	return viper.GetBool(ShowEnumValuesKey)
+}
+
+func (c config) UseAllSchemas() bool {
+	return viper.GetBool(UseAllSchemasKey)
 }
