@@ -25,6 +25,11 @@ selectedTables:
 showAllConstraints: true
 outputFileName: "my-db.mmd"
 encloseWithMermaidBackticks: false
+debug: true
+omitConstraintLabels: true
+omitAttributeKeys: true
+showEnumValues: true
+useAllSchemas: true
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -46,4 +51,9 @@ connectionStringSuggestions:
 	assert.Equal(t, "my-db.mmd", config.OutputFileName())
 	assert.Equal(t, false, config.EncloseWithMermaidBackticks())
 	assert.ElementsMatch(t, []string{"suggestion1", "suggestion2"}, config.ConnectionStringSuggestions())
+	assert.True(t, config.Debug())
+	assert.True(t, config.OmitConstraintLabels())
+	assert.True(t, config.OmitAttributeKeys())
+	assert.True(t, config.ShowEnumValues())
+	assert.True(t, config.UseAllSchemas())
 }
