@@ -41,3 +41,18 @@ services:
       - ./mssql/entrypoint.sh:/usr/src/app/entrypoint.sh
     working_dir: /usr/src/app
     command: sh -c './entrypoint.sh & /opt/mssql/bin/sqlservr;'
+  mermerd-azure-db-test-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "securePassword1!"
+    ports:
+      - "1434:1433"
+    volumes:
+      - ./db-table-setup.sql:/usr/src/app/db-table-setup.sql
+      - ./mssql/mssql-setup.sql:/usr/src/app/mssql-setup.sql
+      - ./mssql/mssql-enum-setup.sql:/usr/src/app/mssql-enum-setup.sql
+      - ./mssql/mssql-multiple-databases.sql:/usr/src/app/mssql-multiple-databases.sql
+      - ./mssql/entrypoint.sh:/usr/src/app/entrypoint.sh
+    working_dir: /usr/src/app
+    command: sh -c './entrypoint.sh & /opt/mssql/bin/sqlservr;'

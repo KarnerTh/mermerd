@@ -1,6 +1,6 @@
 #!/bin/bash
 # Source: https://cardano.github.io/blog/2017/11/15/mssql-docker-container
-wait_time=15s
+wait_time=30s
 password=securePassword1!
 
 # wait for SQL Server to come up

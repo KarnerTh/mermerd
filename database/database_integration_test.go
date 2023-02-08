@@ -23,6 +23,7 @@ var (
 	testConnectionPostgres connectionParameter = connectionParameter{connectionString: "postgresql://user:password@localhost:5432/mermerd_test", schema: "public"}
 	testConnectionMySql    connectionParameter = connectionParameter{connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/mermerd_test", schema: "mermerd_test"}
 	testConnectionMsSql    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test", schema: "dbo"}
+	testConnectionAzure    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1434?database=mermerd_test", schema: "dbo"}
 )
 
 func TestDatabaseIntegrations(t *testing.T) {
@@ -50,6 +51,12 @@ func TestDatabaseIntegrations(t *testing.T) {
 			dbType:           MsSql,
 			connectionString: testConnectionMsSql.connectionString,
 			schema:           testConnectionMsSql.schema,
+		},
+		{
+			// Azure SQL is the same as MSSQL
+			dbType:           MsSql,
+			connectionString: testConnectionAzure.connectionString,
+			schema:           testConnectionAzure.schema,
 		},
 	}
 
