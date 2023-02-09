@@ -14,7 +14,7 @@ import (
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
 	"github.com/KarnerTh/mermerd/diagram"
-	"github.com/KarnerTh/mermerd/util"
+	"github.com/KarnerTh/mermerd/presentation"
 )
 
 var runConfig string
@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Short: "Create Mermaid ERD diagrams from existing tables",
 	Long:  "Create Mermaid ERD diagrams from existing tables",
 	Run: func(cmd *cobra.Command, args []string) {
-		util.ShowIntro()
+		presentation.ShowIntro()
 		config := config.NewConfig()
 		connectorFactory := database.NewConnectorFactory()
 		questioner := analyzer.NewQuestioner()
@@ -38,18 +38,18 @@ var rootCmd = &cobra.Command{
 		result, err := analyzer.Analyze()
 		if err != nil {
 			logrus.Error(err)
-			util.ShowError()
+			presentation.ShowError()
 			os.Exit(1)
 		}
 
 		err = diagram.Create(result)
 		if err != nil {
 			logrus.Error(err)
-			util.ShowError()
+			presentation.ShowError()
 			os.Exit(1)
 		}
 
-		util.ShowSuccess(config.OutputFileName())
+		presentation.ShowSuccess(config.OutputFileName())
 	},
 }
 

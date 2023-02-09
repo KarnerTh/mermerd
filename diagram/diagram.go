@@ -49,22 +49,7 @@ func (d diagram) Create(result *database.Result) error {
 
 		columnData := make([]ErdColumnData, len(table.Columns))
 		for columnIndex, column := range table.Columns {
-			attributeKey := getAttributeKey(column)
-			if d.config.OmitAttributeKeys() {
-				attributeKey = none
-			}
-
-			var enumValues string
-			if d.config.ShowEnumValues() {
-				enumValues = column.EnumValues
-			}
-
-			columnData[columnIndex] = ErdColumnData{
-				Name:         column.Name,
-				DataType:     column.DataType,
-				EnumValues:   enumValues,
-				AttributeKey: attributeKey,
-			}
+			columnData[columnIndex] = getColumnData(d.config, column)
 		}
 
 		tableData[tableIndex] = ErdTableData{
@@ -75,21 +60,11 @@ func (d diagram) Create(result *database.Result) error {
 
 	var constraints []ErdConstraintData
 	for _, constraint := range allConstraints {
-		if (!tableNameInSlice(tableData, constraint.PkTable) || !tableNameInSlice(tableData, constraint.FkTable)) && !d.config.ShowAllConstraints() {
+		if shouldSkipConstraint(d.config, tableData, constraint) {
 			continue
 		}
 
-		constraintLabel := constraint.ColumnName
-		if d.config.OmitConstraintLabels() {
-			constraintLabel = ""
-		}
-
-		constraints = append(constraints, ErdConstraintData{
-			PkTableName:     constraint.PkTable,
-			FkTableName:     constraint.FkTable,
-			Relation:        getRelation(constraint),
-			ConstraintLabel: constraintLabel,
-		})
+		constraints = append(constraints, getConstraintData(d.config, constraint))
 	}
 
 	diagramData := ErdDiagramData{
@@ -103,34 +78,4 @@ func (d diagram) Create(result *database.Result) error {
 		return err
 	}
 	return nil
-}
-
-func getRelation(constraint database.ConstraintResult) ErdRelationType {
-	if constraint.IsPrimary && !constraint.HasMultiplePK {
-		return relationOneToOne
-	} else {
-		return relationManyToOne
-	}
-}
-
-func tableNameInSlice(slice []ErdTableData, tableName string) bool {
-	for _, sliceItem := range slice {
-		if sliceItem.Name == tableName {
-			return true
-		}
-	}
-
-	return false
-}
-
-func getAttributeKey(column database.ColumnResult) ErdAttributeKey {
-	if column.IsPrimary {
-		return primaryKey
-	}
-
-	if column.IsForeign {
-		return foreignKey
-	}
-
-	return none
 }

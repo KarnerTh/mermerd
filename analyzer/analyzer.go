@@ -8,11 +8,12 @@ import (
 
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
+	"github.com/KarnerTh/mermerd/presentation"
 	"github.com/KarnerTh/mermerd/util"
 )
 
 type analyzer struct {
-	loadingSpinner   util.LoadingSpinner
+	loadingSpinner   presentation.LoadingSpinner
 	config           config.MermerdConfig
 	connectorFactory database.ConnectorFactory
 	questioner       Questioner
@@ -27,7 +28,7 @@ type Analyzer interface {
 }
 
 func NewAnalyzer(config config.MermerdConfig, connectorFactory database.ConnectorFactory, questioner Questioner) Analyzer {
-	loadingSpinner := util.NewLoadingSpinner()
+	loadingSpinner := presentation.NewLoadingSpinner()
 	return analyzer{loadingSpinner, config, connectorFactory, questioner}
 }
 
