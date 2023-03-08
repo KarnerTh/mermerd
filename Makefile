@@ -11,9 +11,13 @@ create-mocks:
 	mockery --all
 
 # https://github.com/mfridman/tparse is needed
+.PHONY: test-all-tparse
+test-all-tparse:
+	go test $(test_target) -cover -json | tparse -all
+
 .PHONY: test-all
 test-all:
-	go test $(test_target) -cover -json | tparse -all
+	go test $(test_target) -cover -json
 
 # https://github.com/mfridman/tparse is needed
 .PHONY: test-unit
