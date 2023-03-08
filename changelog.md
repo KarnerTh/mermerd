@@ -9,7 +9,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0
 - Support schema prefix ([Issue #30](https://github.com/KarnerTh/mermerd/issues/30))
 
 ### Changed
-- go 1.20 is now used
 - updated dependencies
 
 ## [0.5.0] - 2022-12-28
