@@ -4,6 +4,8 @@ outputFileName: "my-db.mmd"
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
+showSchemaPrefix: true
+schemaPrefixSeparator: "_"
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:

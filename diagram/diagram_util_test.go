@@ -262,3 +262,50 @@ func TestGetConstraintData(t *testing.T) {
 		assert.Equal(t, result.ConstraintLabel, "")
 	})
 }
+
+func TestGetTableName(t *testing.T) {
+	t.Run("Do not show schema prefix if config not active", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("ShowSchemaPrefix").Return(false).Once()
+		tableDetail := database.TableDetail{Schema: "SchemaName", Name: "TableName"}
+
+		// Act
+		result := getTableName(&configMock, tableDetail)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, "TableName", result)
+	})
+
+	t.Run("Show schema prefix if config is active", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("ShowSchemaPrefix").Return(true).Once()
+		configMock.On("SchemaPrefixSeparator").Return("_").Once()
+		tableDetail := database.TableDetail{Schema: "SchemaName", Name: "TableName"}
+
+		// Act
+		result := getTableName(&configMock, tableDetail)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, "SchemaName_TableName", result)
+	})
+
+	t.Run("Show escaped schema prefix if config is active and separator is a full stop", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("ShowSchemaPrefix").Return(true).Once()
+		configMock.On("SchemaPrefixSeparator").Return(".").Once()
+		tableDetail := database.TableDetail{Schema: "SchemaName", Name: "TableName"}
+
+		// Act
+		result := getTableName(&configMock, tableDetail)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, "\"SchemaName.TableName\"", result)
+	})
+
+}

@@ -77,9 +77,11 @@ via `mermerd -h`
   -o, --outputFileName string         output file name (default "result.mmd")
       --runConfig string              run configuration (replaces global configuration)
   -s, --schema string                 schema that should be used
+      --schemaPrefixSeparator string  the separator that should be used between schema and table name (default ".")
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
       --showEnumValues                show enum values in description column
+      --showSchemaPrefix              show schema prefix in table name
       --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
 ```
@@ -102,6 +104,8 @@ debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
 showEnumValues: false
+showSchemaPrefix: true
+schemaPrefixSeparator: "_"
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -141,6 +145,8 @@ debug: true
 omitConstraintLabels: true
 omitAttributeKeys: true
 showEnumValues: true
+showSchemaPrefix: true
+schemaPrefixSeparator: "_"
 ```
 
 ## Example usages

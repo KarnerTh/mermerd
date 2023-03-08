@@ -21,3 +21,5 @@ debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
 showEnumValues: false
+showSchemaPrefix: true
+schemaPrefixSeparator: "_"
