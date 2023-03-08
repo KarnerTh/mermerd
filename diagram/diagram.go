@@ -53,7 +53,7 @@ func (d diagram) Create(result *database.Result) error {
 		}
 
 		tableData[tableIndex] = ErdTableData{
-			Name:    table.Table.Name,
+			Name:    getTableName(d.config, table.Table),
 			Columns: columnData,
 		}
 	}

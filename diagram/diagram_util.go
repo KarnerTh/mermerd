@@ -1,6 +1,8 @@
 package diagram
 
 import (
+	"fmt"
+
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
 )
@@ -75,4 +77,20 @@ func getConstraintData(config config.MermerdConfig, constraint database.Constrai
 		Relation:        getRelation(constraint),
 		ConstraintLabel: constraintLabel,
 	}
+}
+
+func getTableName(config config.MermerdConfig, table database.TableDetail) string {
+	if !config.ShowSchemaPrefix() {
+		return table.Name
+	}
+
+	separator := config.SchemaPrefixSeparator()
+	name := fmt.Sprintf("%s%s%s", table.Schema, separator, table.Name)
+
+	// if fullstop is used the table name needs to be escaped with quote marks
+	if separator == "." {
+		return fmt.Sprintf("\"%s\"", name)
+	}
+
+	return name
 }

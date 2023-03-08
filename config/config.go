@@ -16,6 +16,8 @@ const (
 	OmitAttributeKeysKey           = "omitAttributeKeys"
 	ShowEnumValuesKey              = "showEnumValues"
 	UseAllSchemasKey               = "useAllSchemas"
+	ShowSchemaPrefix               = "showSchemaPrefix"
+	SchemaPrefixSeparator          = "schemaPrefixSeparator"
 )
 
 type config struct{}
@@ -34,6 +36,8 @@ type MermerdConfig interface {
 	OmitAttributeKeys() bool
 	ShowEnumValues() bool
 	UseAllSchemas() bool
+	ShowSchemaPrefix() bool
+	SchemaPrefixSeparator() string
 }
 
 func NewConfig() MermerdConfig {
@@ -90,4 +94,12 @@ func (c config) ShowEnumValues() bool {
 
 func (c config) UseAllSchemas() bool {
 	return viper.GetBool(UseAllSchemasKey)
+}
+
+func (c config) ShowSchemaPrefix() bool {
+	return viper.GetBool(ShowSchemaPrefix)
+}
+
+func (c config) SchemaPrefixSeparator() string {
+	return viper.GetString(SchemaPrefixSeparator)
 }

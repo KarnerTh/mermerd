@@ -30,6 +30,8 @@ omitConstraintLabels: true
 omitAttributeKeys: true
 showEnumValues: true
 useAllSchemas: true
+showSchemaPrefix: true
+schemaPrefixSeparator: "_"
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -56,4 +58,6 @@ connectionStringSuggestions:
 	assert.True(t, config.OmitAttributeKeys())
 	assert.True(t, config.ShowEnumValues())
 	assert.True(t, config.UseAllSchemas())
+	assert.True(t, config.ShowSchemaPrefix())
+	assert.Equal(t, "_", config.SchemaPrefixSeparator())
 }
