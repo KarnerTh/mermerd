@@ -84,7 +84,7 @@ func getTableName(config config.MermerdConfig, table database.TableDetail) strin
 		return table.Name
 	}
 
-  separator := config.SchemaPrefixSeparator();
+	separator := config.SchemaPrefixSeparator()
 	name := fmt.Sprintf("%s%s%s", table.Schema, separator, table.Name)
 
 	// if fullstop is used the table name needs to be escaped with quote marks
