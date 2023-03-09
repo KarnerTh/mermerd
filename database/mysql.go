@@ -127,7 +127,9 @@ func (c *mySqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, erro
 func (c *mySqlConnector) GetConstraints(tableName TableDetail) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 		select c.TABLE_NAME,
+         kcu.TABLE_SCHEMA,
 			   c.REFERENCED_TABLE_NAME,
+         kcu.REFERENCED_TABLE_SCHEMA,
 			   c.CONSTRAINT_NAME,
        		   kcu.COLUMN_NAME,
 			   (
@@ -157,7 +159,9 @@ func (c *mySqlConnector) GetConstraints(tableName TableDetail) ([]ConstraintResu
 		var constraint ConstraintResult
 		err = rows.Scan(
 			&constraint.FkTable,
+			&constraint.FkSchema,
 			&constraint.PkTable,
+			&constraint.PkSchema,
 			&constraint.ConstraintName,
 			&constraint.ColumnName,
 			&constraint.IsPrimary,

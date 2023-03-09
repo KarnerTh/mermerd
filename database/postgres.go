@@ -136,7 +136,9 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
 func (c *postgresConnector) GetConstraints(tableName TableDetail) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 	select fk.table_name,
+       fk.table_schema,
 		   pk.table_name,
+       pk.table_schema,
 		   c.constraint_name,
 		   kcu.column_name,
 		   coalesce(
@@ -172,7 +174,9 @@ func (c *postgresConnector) GetConstraints(tableName TableDetail) ([]ConstraintR
 		var constraint ConstraintResult
 		err = rows.Scan(
 			&constraint.FkTable,
+			&constraint.FkSchema,
 			&constraint.PkTable,
+			&constraint.PkSchema,
 			&constraint.ConstraintName,
 			&constraint.ColumnName,
 			&constraint.IsPrimary,

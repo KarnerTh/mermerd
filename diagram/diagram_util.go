@@ -72,8 +72,8 @@ func getConstraintData(config config.MermerdConfig, constraint database.Constrai
 	}
 
 	return ErdConstraintData{
-		PkTableName:     constraint.PkTable,
-		FkTableName:     constraint.FkTable,
+		PkTableName:     getTableName(config, database.TableDetail{Schema: constraint.PkSchema, Name: constraint.PkTable}),
+		FkTableName:     getTableName(config, database.TableDetail{Schema: constraint.FkSchema, Name: constraint.FkTable}),
 		Relation:        getRelation(constraint),
 		ConstraintLabel: constraintLabel,
 	}

@@ -286,7 +286,7 @@ func TestDatabaseIntegrations(t *testing.T) {
 					assert.ElementsMatch(t, expectedResult, tables)
 				})
 
-				t.Run("GetCrossSchemaConstraints", func(t *testing.T) {
+				t.Run("Get Cross-Schema-Constraints", func(t *testing.T) {
 					// Arrange
 					tableName := TableDetail{Schema: "other_db", Name: "test_3_b"}
 
@@ -301,6 +301,22 @@ func TestDatabaseIntegrations(t *testing.T) {
 					assert.Equal(t, constraintResults[0].ColumnName, "aid")
 					assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
 					assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
+				})
+
+				t.Run("Get schema from FK and PK table", func(t *testing.T) {
+					// Arrange
+					tableName := TableDetail{Schema: "other_db", Name: "test_3_b"}
+
+					// Act
+					constraintResults, err := connector.GetConstraints(tableName)
+
+					// Assert
+					assert.Nil(t, err)
+					assert.Len(t, constraintResults, 1)
+					assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
+					assert.Equal(t, constraintResults[0].FkSchema, "other_db")
+					assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
+					assert.Equal(t, constraintResults[0].PkSchema, testCase.schema)
 				})
 			})
 		})

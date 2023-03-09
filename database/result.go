@@ -26,7 +26,9 @@ type ColumnResult struct {
 type ConstraintResultList []ConstraintResult
 type ConstraintResult struct {
 	FkTable        string
+	FkSchema       string
 	PkTable        string
+	PkSchema       string
 	ConstraintName string
 	ColumnName     string
 	IsPrimary      bool

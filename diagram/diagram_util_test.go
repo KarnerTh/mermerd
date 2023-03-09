@@ -252,6 +252,7 @@ func TestGetConstraintData(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitConstraintLabels").Return(true).Once()
+		configMock.On("ShowSchemaPrefix").Return(false).Twice()
 		constraint := database.ConstraintResult{ColumnName: "Column1"}
 
 		// Act

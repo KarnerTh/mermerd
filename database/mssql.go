@@ -129,7 +129,9 @@ func (c *mssqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, erro
 func (c *mssqlConnector) GetConstraints(tableName TableDetail) ([]ConstraintResult, error) {
 	rows, err := c.db.Query(`
 select fk.table_name,
+       fk.table_schema,
        pk.table_name,
+       pk.table_schema,
        c.constraint_name,
        kcu.column_name,
        coalesce(
@@ -164,7 +166,9 @@ where c.CONSTRAINT_SCHEMA = @p1 and (fk.table_name = @p2 or pk.table_name = @p2)
 		var constraint ConstraintResult
 		err = rows.Scan(
 			&constraint.FkTable,
+			&constraint.FkSchema,
 			&constraint.PkTable,
+			&constraint.PkSchema,
 			&constraint.ConstraintName,
 			&constraint.ColumnName,
 			&constraint.IsPrimary,
