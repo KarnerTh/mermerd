@@ -21,6 +21,7 @@ type ColumnResult struct {
 	IsPrimary  bool
 	IsForeign  bool
 	EnumValues string
+	Comment    string
 }
 
 type ConstraintResultList []ConstraintResult

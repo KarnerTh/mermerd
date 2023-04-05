@@ -29,7 +29,7 @@ type ErdTableData struct {
 type ErdColumnData struct {
 	Name         string
 	DataType     string
-	EnumValues   string
+	Description  string
 	AttributeKey ErdAttributeKey
 }
 

@@ -43,15 +43,20 @@ func getColumnData(config config.MermerdConfig, column database.ColumnResult) Er
 		attributeKey = none
 	}
 
-	var enumValues string
-	if config.ShowEnumValues() {
-		enumValues = column.EnumValues
+	var description string
+	var showDescriptions = config.ShowDescriptions()
+	if showDescriptions == "enumValues" {
+		description = column.EnumValues
+	} else if showDescriptions == "columnComments" {
+		description = column.Comment
+	} else {
+
 	}
 
 	return ErdColumnData{
 		Name:         column.Name,
 		DataType:     column.DataType,
-		EnumValues:   enumValues,
+		Description:  description,
 		AttributeKey: attributeKey,
 	}
 }

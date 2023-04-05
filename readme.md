@@ -44,6 +44,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown
 * Show primary and foreign keys
 * Show enum values of enum column
+* Show column comments
 
 ## Why would I need it / Why should I care?
 
@@ -80,7 +81,7 @@ via `mermerd -h`
       --schemaPrefixSeparator string  the separator that should be used between schema and table name (default ".")
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
-      --showEnumValues                show enum values in description column
+      --showDescriptions string       show 'enumValues' or 'columnComments' in description column
       --showSchemaPrefix              show schema prefix in table name
       --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
@@ -103,7 +104,7 @@ outputFileName: "my-db.mmd"
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
-showEnumValues: false
+showDescriptions: "enumValues"
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
 
@@ -144,7 +145,7 @@ outputFileName: "my-db.mmd"
 debug: true
 omitConstraintLabels: true
 omitAttributeKeys: true
-showEnumValues: true
+showDescriptions: "columnComments"
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
 ```
