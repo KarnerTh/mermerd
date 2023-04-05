@@ -101,16 +101,21 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
                 where cu.column_name = c.column_name
                   and cu.table_name = c.table_name
                   and tc.constraint_type = 'FOREIGN KEY')                      as is_foreign,
-               coalesce(string_agg(enumlabel, ',' order by enumsortorder), '') as enum_values
+               coalesce(string_agg(enumlabel, ',' order by enumsortorder), '') as enum_values,
+               coalesce(pd.description, '')                   				   as comment
         from information_schema.columns c
                  left join pg_type typ on c.udt_name = typ.typname
                  left join pg_enum enu on typ.oid = enu.enumtypid
+                 left join pg_class cls on c.table_name = cls.relname
+				 left join pg_namespace ns on cls.relnamespace = ns.oid
+				 left join pg_description pd on cls.oid = pd.objoid and c.ordinal_position = pd.objsubid
         where c.table_name = $1  and c.table_schema = $2
         group by c.column_name,
                  c.table_name,
                  c.data_type,
                  c.udt_name,
-                 c.ordinal_position
+                 c.ordinal_position,
+         		 pd.description
         order by c.ordinal_position;
 		`, tableName.Name, tableName.Schema)
 	if err != nil {
@@ -120,7 +125,7 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.EnumValues); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.EnumValues, &column.Comment); err != nil {
 			return nil, err
 		}
 
