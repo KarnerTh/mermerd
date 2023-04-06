@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
+## [0.7.0] - 2023-04-06
+### Added
+- Support column comments ([PR #32](https://github.com/KarnerTh/mermerd/pull/32))
+
+### Changed
+- **Breaking change:** In order to support different descriptions the `--showEnumValues` flag was replaced
+by `--showDescriptions enumValues` (for details see [PR #32](https://github.com/KarnerTh/mermerd/pull/32))
+
 ## [0.6.1] - 2023-03-09
 ### Fixed
 - Fixed wrong table name in constraints if schema prefix was used
@@ -110,6 +118,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.7.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.7.0
 
 [0.6.1]: https://github.com/KarnerTh/mermerd/releases/tag/v0.6.1
 
