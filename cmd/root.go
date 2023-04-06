@@ -75,7 +75,7 @@ func init() {
 	rootCmd.Flags().StringP(config.SchemaKey, "s", "", "schema that should be used")
 	rootCmd.Flags().StringP(config.OutputFileNameKey, "o", "result.mmd", "output file name")
 	rootCmd.Flags().String(config.SchemaPrefixSeparator, ".", "the separator that should be used between schema and table name")
-	rootCmd.Flags().StringSlice(config.ShowDescriptionsKey, []string{""}, "show 'enumValues' and/or 'columnComments' in description column")
+	rootCmd.Flags().StringSlice(config.ShowDescriptionsKey, []string{""}, "show 'enumValues' and/or 'columnComments' in the description column")
 	rootCmd.Flags().StringSlice(config.SelectedTablesKey, []string{""}, "tables to include")
 
 	bindFlagToViper(config.ShowAllConstraintsKey)

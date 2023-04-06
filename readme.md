@@ -81,7 +81,7 @@ via `mermerd -h`
       --schemaPrefixSeparator string  the separator that should be used between schema and table name (default ".")
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
-      --showDescriptions strings      show 'enumValues' and/or 'columnComments' in description column
+      --showDescriptions strings      show 'enumValues' and/or 'columnComments' in the description column
       --showSchemaPrefix              show schema prefix in table name
       --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
