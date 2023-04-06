@@ -136,11 +136,11 @@ func TestGetColumnData(t *testing.T) {
 		Comment:    comment,
 	}
 
-	t.Run("Get all fields with enum values", func(t *testing.T) {
+	t.Run("Get all fields", func(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(false).Once()
-		configMock.On("ShowDescriptions").Return("enumValues").Once()
+		configMock.On("ShowDescriptions").Return([]string{"enumValues", "columnComments"}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -148,15 +148,31 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, enumValues, result.Description)
+		assert.Equal(t, "<"+enumValues+"> "+comment, result.Description)
 		assert.Equal(t, primaryKey, result.AttributeKey)
 	})
 
-	t.Run("Get all fields with comments", func(t *testing.T) {
+	t.Run("Get all fields with enum values", func(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(false).Once()
-		configMock.On("ShowDescriptions").Return("columnComments").Once()
+		configMock.On("ShowDescriptions").Return([]string{"enumValues"}).Once()
+
+		// Act
+		result := getColumnData(&configMock, column)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, columnName, result.Name)
+		assert.Equal(t, "<"+enumValues+">", result.Description)
+		assert.Equal(t, primaryKey, result.AttributeKey)
+	})
+
+	t.Run("Get all fields with column comments", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("OmitAttributeKeys").Return(false).Once()
+		configMock.On("ShowDescriptions").Return([]string{"columnComments"}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -172,7 +188,7 @@ func TestGetColumnData(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(false).Once()
-		configMock.On("ShowDescriptions").Return("").Once()
+		configMock.On("ShowDescriptions").Return([]string{""}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -188,7 +204,7 @@ func TestGetColumnData(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(true).Once()
-		configMock.On("ShowDescriptions").Return("enumValues").Once()
+		configMock.On("ShowDescriptions").Return([]string{"enumValues", "columnComments"}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -196,7 +212,7 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, enumValues, result.Description)
+		assert.Equal(t, "<"+enumValues+"> "+comment, result.Description)
 		assert.Equal(t, none, result.AttributeKey)
 	})
 
@@ -204,7 +220,7 @@ func TestGetColumnData(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(true).Once()
-		configMock.On("ShowDescriptions").Return("").Once()
+		configMock.On("ShowDescriptions").Return([]string{""}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)

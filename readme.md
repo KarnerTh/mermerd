@@ -81,7 +81,7 @@ via `mermerd -h`
       --schemaPrefixSeparator string  the separator that should be used between schema and table name (default ".")
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
-      --showDescriptions string       show 'enumValues' or 'columnComments' in description column
+      --showDescriptions strings      show 'enumValues' and/or 'columnComments' in description column
       --showSchemaPrefix              show schema prefix in table name
       --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
@@ -145,7 +145,9 @@ outputFileName: "my-db.mmd"
 debug: true
 omitConstraintLabels: true
 omitAttributeKeys: true
-showDescriptions: "columnComments"
+showDescriptions:
+  - enumValues
+  - columnComments
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
 ```
@@ -170,6 +172,9 @@ mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAll
 
 # same as previous one, but use a list of tables without interaction
 mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --selectedTables article,article_label
+
+# show enum values and column comments in the description column
+mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables --showDescriptions enumValues,columnComments
 ```
 
 ## Connection strings

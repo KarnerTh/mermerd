@@ -34,7 +34,7 @@ type MermerdConfig interface {
 	Debug() bool
 	OmitConstraintLabels() bool
 	OmitAttributeKeys() bool
-	ShowDescriptions() string
+	ShowDescriptions() []string
 	UseAllSchemas() bool
 	ShowSchemaPrefix() bool
 	SchemaPrefixSeparator() string
@@ -88,8 +88,8 @@ func (c config) OmitAttributeKeys() bool {
 	return viper.GetBool(OmitAttributeKeysKey)
 }
 
-func (c config) ShowDescriptions() string {
-	return viper.GetString(ShowDescriptionsKey)
+func (c config) ShowDescriptions() []string {
+	return viper.GetStringSlice(ShowDescriptionsKey)
 }
 
 func (c config) UseAllSchemas() bool {

@@ -20,6 +20,8 @@ encloseWithMermaidBackticks: false
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
-showDescriptions: "enumValues"
+showDescriptions:
+  - enumValues
+  - columnComments
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"

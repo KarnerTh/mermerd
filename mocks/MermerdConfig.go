@@ -170,14 +170,16 @@ func (_m *MermerdConfig) ShowAllConstraints() bool {
 }
 
 // ShowDescriptions provides a mock function with given fields:
-func (_m *MermerdConfig) ShowDescriptions() string {
+func (_m *MermerdConfig) ShowDescriptions() []string {
 	ret := _m.Called()
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
+	var r0 []string
+	if rf, ok := ret.Get(0).(func() []string); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
 	}
 
 	return r0
