@@ -3,7 +3,7 @@ erDiagram
 {{- range .Tables}}
     {{.Name}} {
     {{- range .Columns}}
-        {{.DataType}} {{.Name}} {{.AttributeKey}} {{- if .EnumValues}}"{{.EnumValues}}"{{end -}}
+        {{.DataType}} {{.Name}} {{.AttributeKey}} {{- if .Description}}"{{.Description}}"{{end -}}
     {{- end}}
     }
 {{end -}}

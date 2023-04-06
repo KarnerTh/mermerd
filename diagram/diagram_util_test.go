@@ -128,17 +128,19 @@ func TestTableNameInSlice(t *testing.T) {
 func TestGetColumnData(t *testing.T) {
 	columnName := "testColumn"
 	enumValues := "a,b"
+	comment := "comment"
 	column := database.ColumnResult{
 		Name:       columnName,
 		IsPrimary:  true,
 		EnumValues: enumValues,
+		Comment:    comment,
 	}
 
 	t.Run("Get all fields", func(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(false).Once()
-		configMock.On("ShowEnumValues").Return(true).Once()
+		configMock.On("ShowDescriptions").Return([]string{"enumValues", "columnComments"}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -146,15 +148,15 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, enumValues, result.EnumValues)
+		assert.Equal(t, "<"+enumValues+"> "+comment, result.Description)
 		assert.Equal(t, primaryKey, result.AttributeKey)
 	})
 
-	t.Run("Get all fields except enum values", func(t *testing.T) {
+	t.Run("Get all fields with enum values", func(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(false).Once()
-		configMock.On("ShowEnumValues").Return(false).Once()
+		configMock.On("ShowDescriptions").Return([]string{"enumValues"}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -162,7 +164,39 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, "", result.EnumValues)
+		assert.Equal(t, "<"+enumValues+">", result.Description)
+		assert.Equal(t, primaryKey, result.AttributeKey)
+	})
+
+	t.Run("Get all fields with column comments", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("OmitAttributeKeys").Return(false).Once()
+		configMock.On("ShowDescriptions").Return([]string{"columnComments"}).Once()
+
+		// Act
+		result := getColumnData(&configMock, column)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, columnName, result.Name)
+		assert.Equal(t, comment, result.Description)
+		assert.Equal(t, primaryKey, result.AttributeKey)
+	})
+
+	t.Run("Get all fields except description", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("OmitAttributeKeys").Return(false).Once()
+		configMock.On("ShowDescriptions").Return([]string{""}).Once()
+
+		// Act
+		result := getColumnData(&configMock, column)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, columnName, result.Name)
+		assert.Equal(t, "", result.Description)
 		assert.Equal(t, primaryKey, result.AttributeKey)
 	})
 
@@ -170,7 +204,7 @@ func TestGetColumnData(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(true).Once()
-		configMock.On("ShowEnumValues").Return(true).Once()
+		configMock.On("ShowDescriptions").Return([]string{"enumValues", "columnComments"}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -178,7 +212,7 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, enumValues, result.EnumValues)
+		assert.Equal(t, "<"+enumValues+"> "+comment, result.Description)
 		assert.Equal(t, none, result.AttributeKey)
 	})
 
@@ -186,7 +220,7 @@ func TestGetColumnData(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitAttributeKeys").Return(true).Once()
-		configMock.On("ShowEnumValues").Return(false).Once()
+		configMock.On("ShowDescriptions").Return([]string{""}).Once()
 
 		// Act
 		result := getColumnData(&configMock, column)
@@ -194,7 +228,7 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, "", result.EnumValues)
+		assert.Equal(t, "", result.Description)
 		assert.Equal(t, none, result.AttributeKey)
 	})
 }

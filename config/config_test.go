@@ -28,7 +28,9 @@ encloseWithMermaidBackticks: false
 debug: true
 omitConstraintLabels: true
 omitAttributeKeys: true
-showEnumValues: true
+showDescriptions:
+  - enumValues
+  - columnComments
 useAllSchemas: true
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
@@ -56,7 +58,7 @@ connectionStringSuggestions:
 	assert.True(t, config.Debug())
 	assert.True(t, config.OmitConstraintLabels())
 	assert.True(t, config.OmitAttributeKeys())
-	assert.True(t, config.ShowEnumValues())
+	assert.ElementsMatch(t, []string{"enumValues", "columnComments"}, config.ShowDescriptions())
 	assert.True(t, config.UseAllSchemas())
 	assert.True(t, config.ShowSchemaPrefix())
 	assert.Equal(t, "_", config.SchemaPrefixSeparator())

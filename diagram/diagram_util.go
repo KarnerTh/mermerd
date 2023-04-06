@@ -2,6 +2,8 @@ package diagram
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"strings"
 
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
@@ -43,17 +45,29 @@ func getColumnData(config config.MermerdConfig, column database.ColumnResult) Er
 		attributeKey = none
 	}
 
-	var enumValues string
-	if config.ShowEnumValues() {
-		enumValues = column.EnumValues
-	}
-
 	return ErdColumnData{
 		Name:         column.Name,
 		DataType:     column.DataType,
-		EnumValues:   enumValues,
+		Description:  getDescription(config.ShowDescriptions(), column),
 		AttributeKey: attributeKey,
 	}
+}
+
+func getDescription(options []string, column database.ColumnResult) string {
+	var description []string
+	for _, option := range options {
+		switch option {
+		case "enumValues":
+			if column.EnumValues != "" {
+				description = append(description, "<"+column.EnumValues+">")
+			}
+		case "columnComments":
+			description = append(description, column.Comment)
+		default:
+			logrus.Errorf("Could not parse option %q", option)
+		}
+	}
+	return strings.TrimSpace(strings.Join(description, " "))
 }
 
 func shouldSkipConstraint(config config.MermerdConfig, tables []ErdTableData, constraint database.ConstraintResult) bool {

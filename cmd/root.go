@@ -69,13 +69,13 @@ func init() {
 	rootCmd.Flags().Bool(config.DebugKey, false, "show debug logs")
 	rootCmd.Flags().Bool(config.OmitConstraintLabelsKey, false, "omit the constraint labels")
 	rootCmd.Flags().Bool(config.OmitAttributeKeysKey, false, "omit the attribute keys (PK, FK)")
-	rootCmd.Flags().Bool(config.ShowEnumValuesKey, false, "show enum values in description column")
 	rootCmd.Flags().Bool(config.ShowSchemaPrefix, false, "show schema prefix in table name")
 	rootCmd.Flags().BoolP(config.EncloseWithMermaidBackticksKey, "e", false, "enclose output with mermaid backticks (needed for e.g. in markdown viewer)")
 	rootCmd.Flags().StringP(config.ConnectionStringKey, "c", "", "connection string that should be used")
 	rootCmd.Flags().StringP(config.SchemaKey, "s", "", "schema that should be used")
 	rootCmd.Flags().StringP(config.OutputFileNameKey, "o", "result.mmd", "output file name")
 	rootCmd.Flags().String(config.SchemaPrefixSeparator, ".", "the separator that should be used between schema and table name")
+	rootCmd.Flags().StringSlice(config.ShowDescriptionsKey, []string{""}, "show 'enumValues' and/or 'columnComments' in the description column")
 	rootCmd.Flags().StringSlice(config.SelectedTablesKey, []string{""}, "tables to include")
 
 	bindFlagToViper(config.ShowAllConstraintsKey)
@@ -89,7 +89,7 @@ func init() {
 	bindFlagToViper(config.SchemaKey)
 	bindFlagToViper(config.OutputFileNameKey)
 	bindFlagToViper(config.SelectedTablesKey)
-	bindFlagToViper(config.ShowEnumValuesKey)
+	bindFlagToViper(config.ShowDescriptionsKey)
 	bindFlagToViper(config.ShowSchemaPrefix)
 	bindFlagToViper(config.SchemaPrefixSeparator)
 }

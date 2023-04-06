@@ -14,7 +14,7 @@ const (
 	DebugKey                       = "debug"
 	OmitConstraintLabelsKey        = "omitConstraintLabels"
 	OmitAttributeKeysKey           = "omitAttributeKeys"
-	ShowEnumValuesKey              = "showEnumValues"
+	ShowDescriptionsKey            = "showDescriptions"
 	UseAllSchemasKey               = "useAllSchemas"
 	ShowSchemaPrefix               = "showSchemaPrefix"
 	SchemaPrefixSeparator          = "schemaPrefixSeparator"
@@ -34,7 +34,7 @@ type MermerdConfig interface {
 	Debug() bool
 	OmitConstraintLabels() bool
 	OmitAttributeKeys() bool
-	ShowEnumValues() bool
+	ShowDescriptions() []string
 	UseAllSchemas() bool
 	ShowSchemaPrefix() bool
 	SchemaPrefixSeparator() string
@@ -88,8 +88,8 @@ func (c config) OmitAttributeKeys() bool {
 	return viper.GetBool(OmitAttributeKeysKey)
 }
 
-func (c config) ShowEnumValues() bool {
-	return viper.GetBool(ShowEnumValuesKey)
+func (c config) ShowDescriptions() []string {
+	return viper.GetStringSlice(ShowDescriptionsKey)
 }
 
 func (c config) UseAllSchemas() bool {
