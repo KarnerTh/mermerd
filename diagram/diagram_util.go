@@ -2,8 +2,9 @@ package diagram
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
@@ -62,12 +63,16 @@ func getDescription(options []string, column database.ColumnResult) string {
 				description = append(description, "<"+column.EnumValues+">")
 			}
 		case "columnComments":
-			description = append(description, column.Comment)
+			description = append(description, escapeComments(column.Comment))
 		default:
 			logrus.Errorf("Could not parse option %q", option)
 		}
 	}
 	return strings.TrimSpace(strings.Join(description, " "))
+}
+
+func escapeComments(str string) string {
+	return strings.ReplaceAll(str, `"`, "#quot;")
 }
 
 func shouldSkipConstraint(config config.MermerdConfig, tables []ErdTableData, constraint database.ConstraintResult) bool {
