@@ -2,9 +2,8 @@ package diagram
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/sirupsen/logrus"
+	"strings"
 
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
@@ -71,6 +70,9 @@ func getDescription(options []string, column database.ColumnResult) string {
 	return strings.TrimSpace(strings.Join(description, " "))
 }
 
+// escapeComments escapes invalid characters in comments.
+// mermaid does not support quote marks ("), as it uses this to mark the comment, as such these need to be replaced
+// with `#quot;`.
 func escapeComments(str string) string {
 	return strings.ReplaceAll(str, `"`, "#quot;")
 }

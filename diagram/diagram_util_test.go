@@ -128,7 +128,9 @@ func TestTableNameInSlice(t *testing.T) {
 func TestGetColumnData(t *testing.T) {
 	columnName := "testColumn"
 	enumValues := "a,b"
-	comment := "comment"
+	comment := `{"comment":"detail"}`
+	expectedComment := "{#quot;comment#quot;:#quot;detail#quot;}"
+
 	column := database.ColumnResult{
 		Name:       columnName,
 		IsPrimary:  true,
@@ -148,7 +150,7 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, "<"+enumValues+"> "+comment, result.Description)
+		assert.Equal(t, "<"+enumValues+"> "+expectedComment, result.Description)
 		assert.Equal(t, primaryKey, result.AttributeKey)
 	})
 
@@ -180,7 +182,7 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, comment, result.Description)
+		assert.Equal(t, expectedComment, result.Description)
 		assert.Equal(t, primaryKey, result.AttributeKey)
 	})
 
@@ -212,7 +214,7 @@ func TestGetColumnData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
-		assert.Equal(t, "<"+enumValues+"> "+comment, result.Description)
+		assert.Equal(t, "<"+enumValues+"> "+expectedComment, result.Description)
 		assert.Equal(t, none, result.AttributeKey)
 	})
 
