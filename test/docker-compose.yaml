@@ -12,6 +12,7 @@ services:
       - ./db-table-setup.sql:/docker-entrypoint-initdb.d/1.sql
       - ./postgres/postgres-enum-setup.sql:/docker-entrypoint-initdb.d/2.sql
       - ./postgres/postgres-multiple-databases.sql:/docker-entrypoint-initdb.d/3.sql
+      - ./postgres/postgres-not-unique-constraint-name.sql:/docker-entrypoint-initdb.d/4.sql
   mermerd-mysql-test-db:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password

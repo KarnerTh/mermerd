@@ -116,6 +116,14 @@ func TestDatabaseIntegrations(t *testing.T) {
 					{Schema: schema, Name: "test_2_enum"},
 					{Schema: schema, Name: "test_3_a"},
 				}
+				if testCase.dbType == Postgres {
+					expectedResult = append(expectedResult, []TableDetail{
+						{Schema: schema, Name: "test_not_unique_constraint_name_a"},
+						{Schema: schema, Name: "test_not_unique_constraint_name_b"},
+						{Schema: schema, Name: "test_not_unique_constraint_name_c"},
+					}...)
+				}
+
 				assert.Nil(t, err)
 				assert.ElementsMatch(t, expectedResult, tables)
 			})
@@ -282,6 +290,15 @@ func TestDatabaseIntegrations(t *testing.T) {
 						{Schema: secondSchema, Name: "test_3_b"},
 						{Schema: secondSchema, Name: "test_3_c"},
 					}
+
+					if testCase.dbType == Postgres {
+						expectedResult = append(expectedResult, []TableDetail{
+							{Schema: testCase.schema, Name: "test_not_unique_constraint_name_a"},
+							{Schema: testCase.schema, Name: "test_not_unique_constraint_name_b"},
+							{Schema: testCase.schema, Name: "test_not_unique_constraint_name_c"},
+						}...)
+					}
+
 					assert.Nil(t, err)
 					assert.ElementsMatch(t, expectedResult, tables)
 				})
