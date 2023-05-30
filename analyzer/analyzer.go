@@ -3,6 +3,7 @@ package analyzer
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/sirupsen/logrus"
 
@@ -59,6 +60,8 @@ func (a analyzer) Analyze() (*database.Result, error) {
 	if err != nil {
 		return nil, err
 	}
+	// sort the tables so the output is more deterministic
+	sortTables(selectedTables)
 
 	tableResults, err := a.GetColumnsAndConstraints(db, selectedTables)
 	if err != nil {
@@ -66,6 +69,16 @@ func (a analyzer) Analyze() (*database.Result, error) {
 	}
 
 	return &database.Result{Tables: tableResults}, nil
+}
+
+func sortTables(tables []database.TableDetail) {
+	sort.SliceStable(tables, func(i, j int) bool {
+		if tables[i].Schema != tables[j].Schema {
+			return tables[i].Schema < tables[j].Schema
+		}
+		return tables[i].Name < tables[j].Name
+	})
+
 }
 
 func (a analyzer) GetConnectionString() (string, error) {
