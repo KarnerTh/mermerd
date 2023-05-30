@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
+## [0.8.0] - 2023-05-30
+### Changed
+- Table names are now sorted in mermaid file ([Issue #34](https://github.com/KarnerTh/mermerd/issues/34))
+
+### Fixed
+- Allow not unique constraint names for postgres ([Issue #36](https://github.com/KarnerTh/mermerd/issues/36))
+
 ## [0.7.1] - 2023-05-12
 ### Fixed
 - Fix escaping of quote marks in descriptions ([PR #33](https://github.com/KarnerTh/mermerd/pull/33))
@@ -122,6 +129,8 @@ by `--showDescriptions enumValues` (for details see [PR #32](https://github.com/
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.8.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.8.0
 
 [0.7.1]: https://github.com/KarnerTh/mermerd/releases/tag/v0.7.1
 
