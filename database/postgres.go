@@ -155,7 +155,8 @@ func (c *postgresConnector) GetConstraints(tableName TableDetail) ([]ConstraintR
 										on kc2.constraint_name = tc.constraint_name and
 										   tc.constraint_type = 'PRIMARY KEY'
 					where kc.constraint_name = c.constraint_name
-					  and kc.column_name = kcu.column_name)
+					  and kc.column_name = kcu.column_name
+            and kc.table_name = fk.table_name)
 			   , false) "isPrimary",
 		   (select COUNT(*) > 1 "hasMultiplePk"
 			from information_schema.table_constraints tc

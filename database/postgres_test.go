@@ -33,3 +33,24 @@ func TestPostgresEnums(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "apple,banana", enumValues)
 }
+
+func TestPostgresNotUniqueConstraintName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
+	// Arrange
+	tableName := TableDetail{Schema: "public", Name: "test_not_unique_constraint_name_b"}
+	connector, _ := NewConnectorFactory().NewConnector(testConnectionPostgres.connectionString)
+	if err := connector.Connect(); err != nil {
+		logrus.Error(err)
+		t.FailNow()
+	}
+
+	// Act
+	_, err := connector.GetConstraints(tableName)
+
+	// Assert
+	// we only need to check if an error is thrown
+	assert.Nil(t, err)
+}
