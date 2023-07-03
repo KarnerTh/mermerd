@@ -297,4 +297,40 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		assert.Equal(t, result.Tables[2].Table, database.TableDetail{Schema: "schemaB", Name: "tableA"})
 		assert.Equal(t, result.Tables[3].Table, database.TableDetail{Schema: "schemaB", Name: "tableB"})
 	})
+
+	t.Run("Sorts the columns", func(t *testing.T) {
+		// Arrange
+		analyzer, configMock, connectionFactoryMock, questionerMock := getAnalyzerWithMocks()
+		connectorMock := mocks.Connector{}
+		configMock.On("ConnectionString").Return("validConnectionString").Once()
+		connectionFactoryMock.On("NewConnector", "validConnectionString").Return(&connectorMock, nil).Once()
+		connectorMock.On("Connect").Return(nil).Once()
+		connectorMock.On("Close").Return().Once()
+		configMock.On("Schemas").Return([]string{"schemaA", "schemaB"}).Once()
+		// The tables returned are unsorted
+		configMock.On("SelectedTables").Return([]string{
+			"schemaA.tableA",
+		}).Once()
+		connectorMock.On("GetColumns", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ColumnResult{
+			{Name: "fieldB", DataType: "int"},
+			{Name: "fieldC", DataType: "int"},
+			{Name: "fieldA", DataType: "int"},
+		}, nil).Once()
+		connectorMock.On("GetConstraints", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ConstraintResult{}, nil).Once()
+
+		// Act
+		result, err := analyzer.Analyze()
+
+		// Assert
+		configMock.AssertExpectations(t)
+		connectionFactoryMock.AssertExpectations(t)
+		questionerMock.AssertExpectations(t)
+		connectorMock.AssertExpectations(t)
+		assert.Nil(t, err)
+		assert.NotNil(t, result)
+		// The tables are now sorted
+		assert.Equal(t, result.Tables[0].Columns[0], database.ColumnResult{Name: "fieldA", DataType: "int"})
+		assert.Equal(t, result.Tables[0].Columns[1], database.ColumnResult{Name: "fieldB", DataType: "int"})
+		assert.Equal(t, result.Tables[0].Columns[2], database.ColumnResult{Name: "fieldC", DataType: "int"})
+	})
 }
