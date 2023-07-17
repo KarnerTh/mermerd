@@ -181,6 +181,7 @@ func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables
 		}
 
 		sortColumns(columns)
+		sortConstraints(constraints)
 		tableResults = append(tableResults, database.TableResult{Table: table, Columns: columns, Constraints: constraints})
 	}
 	a.loadingSpinner.Stop()
@@ -201,5 +202,11 @@ func getTableResultStats(tableResults []database.TableResult) (columnCount int, 
 func sortColumns(columns []database.ColumnResult) {
 	sort.SliceStable(columns, func(i, j int) bool {
 		return columns[i].Name < columns[j].Name
+	})
+}
+
+func sortConstraints(constraints database.ConstraintResultList) {
+	sort.SliceStable(constraints, func(i, j int) bool {
+		return constraints[i].ConstraintName < constraints[j].ConstraintName
 	})
 }

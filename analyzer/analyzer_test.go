@@ -298,7 +298,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		assert.Equal(t, result.Tables[3].Table, database.TableDetail{Schema: "schemaB", Name: "tableB"})
 	})
 
-	t.Run("Sorts the columns", func(t *testing.T) {
+	t.Run("Sorts columns and constraints", func(t *testing.T) {
 		// Arrange
 		analyzer, configMock, connectionFactoryMock, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
@@ -306,7 +306,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		connectionFactoryMock.On("NewConnector", "validConnectionString").Return(&connectorMock, nil).Once()
 		connectorMock.On("Connect").Return(nil).Once()
 		connectorMock.On("Close").Return().Once()
-		configMock.On("Schemas").Return([]string{"schemaA", "schemaB"}).Once()
+		configMock.On("Schemas").Return([]string{"schemaA"}).Once()
 		// The tables returned are unsorted
 		configMock.On("SelectedTables").Return([]string{
 			"schemaA.tableA",
@@ -316,7 +316,11 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			{Name: "fieldC", DataType: "int"},
 			{Name: "fieldA", DataType: "int"},
 		}, nil).Once()
-		connectorMock.On("GetConstraints", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ConstraintResult{}, nil).Once()
+		connectorMock.On("GetConstraints", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ConstraintResult{
+			{ConstraintName: "constraintB"},
+			{ConstraintName: "constraintC"},
+			{ConstraintName: "constraintA"},
+		}, nil).Once()
 
 		// Act
 		result, err := analyzer.Analyze()
@@ -332,5 +336,9 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		assert.Equal(t, result.Tables[0].Columns[0], database.ColumnResult{Name: "fieldA", DataType: "int"})
 		assert.Equal(t, result.Tables[0].Columns[1], database.ColumnResult{Name: "fieldB", DataType: "int"})
 		assert.Equal(t, result.Tables[0].Columns[2], database.ColumnResult{Name: "fieldC", DataType: "int"})
+
+		assert.Equal(t, result.Tables[0].Constraints[0], database.ConstraintResult{ConstraintName: "constraintA"})
+		assert.Equal(t, result.Tables[0].Constraints[1], database.ConstraintResult{ConstraintName: "constraintB"})
+		assert.Equal(t, result.Tables[0].Constraints[2], database.ConstraintResult{ConstraintName: "constraintC"})
 	})
 }
