@@ -23,5 +23,6 @@ omitAttributeKeys: false
 showDescriptions:
   - enumValues
   - columnComments
+  - notNull
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"

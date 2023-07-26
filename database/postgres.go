@@ -101,6 +101,7 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
                 where cu.column_name = c.column_name
                   and cu.table_name = c.table_name
                   and tc.constraint_type = 'FOREIGN KEY')                      as is_foreign,
+               bool_or(c.is_nullable = 'YES')                                  as is_not_null,
                coalesce(string_agg(enumlabel, ',' order by enumsortorder), '') as enum_values,
                coalesce(pd.description, '')                   				   as comment
         from information_schema.columns c
@@ -125,7 +126,7 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.EnumValues, &column.Comment); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsNullable, &column.EnumValues, &column.Comment); err != nil {
 			return nil, err
 		}
 

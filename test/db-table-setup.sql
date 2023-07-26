@@ -1,7 +1,8 @@
 create table article
 (
     id    int          not null primary key,
-    title varchar(255) not null
+    title varchar(255) not null,
+    subtitle varchar(255)
 );
 
 create table article_detail

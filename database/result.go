@@ -20,6 +20,7 @@ type ColumnResult struct {
 	DataType   string
 	IsPrimary  bool
 	IsForeign  bool
+	IsNullable bool
 	EnumValues string
 	Comment    string
 }
