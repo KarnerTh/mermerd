@@ -298,7 +298,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		assert.Equal(t, result.Tables[3].Table, database.TableDetail{Schema: "schemaB", Name: "tableB"})
 	})
 
-	t.Run("Sorts the columns", func(t *testing.T) {
+	t.Run("Sorts columns and constraints", func(t *testing.T) {
 		// Arrange
 		analyzer, configMock, connectionFactoryMock, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
@@ -309,6 +309,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		configMock.On("Schemas").Return([]string{"schemaA", "schemaB"}).Once()
 		// The tables returned are unsorted
 		configMock.On("SelectedTables").Return([]string{
+			"schemaB.tableB",
 			"schemaA.tableA",
 		}).Once()
 		connectorMock.On("GetColumns", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ColumnResult{
@@ -316,10 +317,25 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			{Name: "fieldC", DataType: "int"},
 			{Name: "fieldA", DataType: "int"},
 		}, nil).Once()
-		connectorMock.On("GetConstraints", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ConstraintResult{}, nil).Once()
+		connectorMock.On("GetColumns", database.TableDetail{Schema: "schemaB", Name: "tableB"}).Return([]database.ColumnResult{
+			{Name: "fieldQ", DataType: "int"},
+			{Name: "fieldP", DataType: "int"},
+			{Name: "fieldR", DataType: "int"},
+		}, nil).Once()
+		// These constraints don't match the schema/table/columns. That's OK for this test - we're only testing the sorting.
+		connectorMock.On("GetConstraints", database.TableDetail{Schema: "schemaA", Name: "tableA"}).Return([]database.ConstraintResult{
+			{FkSchema: "schemaA", FkTable: "tableA", PkSchema: "schemaB", PkTable: "tableB", ConstraintName: "constraint7"},
+			{FkSchema: "schemaA", FkTable: "tableA", PkSchema: "schemaB", PkTable: "tableB", ConstraintName: "constraint6"},
+		}, nil).Once()
+		connectorMock.On("GetConstraints", database.TableDetail{Schema: "schemaB", Name: "tableB"}).Return([]database.ConstraintResult{
+			{FkSchema: "schemaB", FkTable: "tableB", PkSchema: "schemaA", PkTable: "tableA", ConstraintName: "constraint12"},
+			{FkSchema: "schemaB", FkTable: "tableB", PkSchema: "schemaB", PkTable: "tableB", ConstraintName: "constraint11"},
+			{FkSchema: "schemaB", FkTable: "tableB", PkSchema: "schemaA", PkTable: "tableA", ConstraintName: "constraint10"},
+		}, nil).Once()
 
 		// Act
 		result, err := analyzer.Analyze()
+		assert.Nil(t, err)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -328,9 +344,50 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		connectorMock.AssertExpectations(t)
 		assert.Nil(t, err)
 		assert.NotNil(t, result)
-		// The tables are now sorted
+		// The columns are now sorted
 		assert.Equal(t, result.Tables[0].Columns[0], database.ColumnResult{Name: "fieldA", DataType: "int"})
 		assert.Equal(t, result.Tables[0].Columns[1], database.ColumnResult{Name: "fieldB", DataType: "int"})
 		assert.Equal(t, result.Tables[0].Columns[2], database.ColumnResult{Name: "fieldC", DataType: "int"})
+
+		assert.Equal(t, result.Tables[1].Columns[0], database.ColumnResult{Name: "fieldP", DataType: "int"})
+		assert.Equal(t, result.Tables[1].Columns[1], database.ColumnResult{Name: "fieldQ", DataType: "int"})
+		assert.Equal(t, result.Tables[1].Columns[2], database.ColumnResult{Name: "fieldR", DataType: "int"})
+
+		assert.Equal(t, result.Tables[0].Constraints[0], database.ConstraintResult{
+			FkSchema:       "schemaA",
+			FkTable:        "tableA",
+			PkSchema:       "schemaB",
+			PkTable:        "tableB",
+			ConstraintName: "constraint6",
+		})
+		assert.Equal(t, result.Tables[0].Constraints[1], database.ConstraintResult{
+			FkSchema:       "schemaA",
+			FkTable:        "tableA",
+			PkSchema:       "schemaB",
+			PkTable:        "tableB",
+			ConstraintName: "constraint7",
+		})
+
+		assert.Equal(t, result.Tables[1].Constraints[0], database.ConstraintResult{
+			FkSchema:       "schemaB",
+			FkTable:        "tableB",
+			PkSchema:       "schemaA",
+			PkTable:        "tableA",
+			ConstraintName: "constraint10",
+		})
+		assert.Equal(t, result.Tables[1].Constraints[1], database.ConstraintResult{
+			FkSchema:       "schemaB",
+			FkTable:        "tableB",
+			PkSchema:       "schemaA",
+			PkTable:        "tableA",
+			ConstraintName: "constraint12",
+		})
+		assert.Equal(t, result.Tables[1].Constraints[2], database.ConstraintResult{
+			FkSchema:       "schemaB",
+			FkTable:        "tableB",
+			PkSchema:       "schemaB",
+			PkTable:        "tableB",
+			ConstraintName: "constraint11",
+		})
 	})
 }

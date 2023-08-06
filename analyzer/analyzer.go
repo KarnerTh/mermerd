@@ -181,6 +181,7 @@ func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables
 		}
 
 		sortColumns(columns)
+		sortConstraints(constraints)
 		tableResults = append(tableResults, database.TableResult{Table: table, Columns: columns, Constraints: constraints})
 	}
 	a.loadingSpinner.Stop()
@@ -201,5 +202,32 @@ func getTableResultStats(tableResults []database.TableResult) (columnCount int, 
 func sortColumns(columns []database.ColumnResult) {
 	sort.SliceStable(columns, func(i, j int) bool {
 		return columns[i].Name < columns[j].Name
+	})
+}
+
+func sortConstraints(constraints database.ConstraintResultList) {
+	sort.SliceStable(constraints, func(i, j int) bool {
+		if constraints[i].FkSchema != constraints[j].FkSchema {
+			return constraints[i].FkSchema < constraints[j].FkSchema
+		}
+		if constraints[i].FkTable != constraints[j].FkTable {
+			return constraints[i].FkTable < constraints[j].FkTable
+		}
+		if constraints[i].PkSchema != constraints[j].PkSchema {
+			return constraints[i].PkSchema < constraints[j].PkSchema
+		}
+		if constraints[i].PkTable != constraints[j].PkTable {
+			return constraints[i].PkTable < constraints[j].PkTable
+		}
+		if constraints[i].IsPrimary != constraints[j].IsPrimary {
+			return constraints[i].IsPrimary
+		}
+		if constraints[i].ColumnName != constraints[j].ColumnName {
+			return constraints[i].ColumnName < constraints[j].ColumnName
+		}
+		if constraints[i].HasMultiplePK != constraints[j].HasMultiplePK {
+			return constraints[i].HasMultiplePK
+		}
+		return constraints[i].ConstraintName < constraints[j].ConstraintName
 	})
 }
