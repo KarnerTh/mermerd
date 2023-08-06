@@ -45,6 +45,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Show primary and foreign keys
 * Show enum values of enum column
 * Show column comments
+* Show NOT NULL constraints
 
 ## Why would I need it / Why should I care?
 
@@ -81,7 +82,7 @@ via `mermerd -h`
       --schemaPrefixSeparator string  the separator that should be used between schema and table name (default ".")
       --selectedTables strings        tables to include
       --showAllConstraints            show all constraints, even though the table of the resulting constraint was not selected
-      --showDescriptions strings      show 'enumValues' and/or 'columnComments' in the description column
+      --showDescriptions strings      show 'notNull', enumValues' and/or 'columnComments' in the description column
       --showSchemaPrefix              show schema prefix in table name
       --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
@@ -148,6 +149,7 @@ omitAttributeKeys: true
 showDescriptions:
   - enumValues
   - columnComments
+  - notNull
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
 ```
@@ -173,8 +175,8 @@ mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAll
 # same as previous one, but use a list of tables without interaction
 mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --selectedTables article,article_label
 
-# show enum values and column comments in the description column
-mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables --showDescriptions enumValues,columnComments
+# show enum values, column comments and notNull in the description column
+mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables --showDescriptions enumValues,columnComments,notNull
 ```
 
 ## Connection strings

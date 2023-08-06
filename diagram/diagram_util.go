@@ -57,6 +57,10 @@ func getDescription(options []string, column database.ColumnResult) string {
 	var description []string
 	for _, option := range options {
 		switch option {
+		case "notNull":
+			if !column.IsNullable {
+				description = append(description, "{NOT_NULL}")
+			}
 		case "enumValues":
 			if column.EnumValues != "" {
 				description = append(description, "<"+column.EnumValues+">")

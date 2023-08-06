@@ -9,9 +9,10 @@ import (
 )
 
 type columnTestResult struct {
-	Name      string
-	isPrimary bool
-	isForeign bool
+	Name       string
+	isPrimary  bool
+	isForeign  bool
+	isNullable bool
 }
 
 type connectionParameter struct {
@@ -135,33 +136,34 @@ func TestDatabaseIntegrations(t *testing.T) {
 					expectedColumns []columnTestResult
 				}{
 					{tableName: "article", expectedColumns: []columnTestResult{
-						{Name: "id", isPrimary: true, isForeign: false},
-						{Name: "title", isPrimary: false, isForeign: false},
+						{Name: "id", isPrimary: true, isForeign: false, isNullable: false},
+						{Name: "title", isPrimary: false, isForeign: false, isNullable: false},
+						{Name: "subtitle", isPrimary: false, isForeign: false, isNullable: true},
 					}},
 					{tableName: "article_detail", expectedColumns: []columnTestResult{
-						{Name: "id", isPrimary: true, isForeign: true},
-						{Name: "created_at", isPrimary: false, isForeign: false},
+						{Name: "id", isPrimary: true, isForeign: true, isNullable: false},
+						{Name: "created_at", isPrimary: false, isForeign: false, isNullable: false},
 					}},
 					{tableName: "article_comment", expectedColumns: []columnTestResult{
-						{Name: "id", isPrimary: true, isForeign: false},
-						{Name: "article_id", isPrimary: false, isForeign: true},
-						{Name: "comment", isPrimary: false, isForeign: false},
+						{Name: "id", isPrimary: true, isForeign: false, isNullable: false},
+						{Name: "article_id", isPrimary: false, isForeign: true, isNullable: false},
+						{Name: "comment", isPrimary: false, isForeign: false, isNullable: false},
 					}},
 					{tableName: "label", expectedColumns: []columnTestResult{
-						{Name: "id", isPrimary: true, isForeign: false},
-						{Name: "label", isPrimary: false, isForeign: false},
+						{Name: "id", isPrimary: true, isForeign: false, isNullable: false},
+						{Name: "label", isPrimary: false, isForeign: false, isNullable: false},
 					}},
 					{tableName: "article_label", expectedColumns: []columnTestResult{
-						{Name: "article_id", isPrimary: true, isForeign: true},
-						{Name: "label_id", isPrimary: true, isForeign: true},
+						{Name: "article_id", isPrimary: true, isForeign: true, isNullable: false},
+						{Name: "label_id", isPrimary: true, isForeign: true, isNullable: false},
 					}},
 					{tableName: "test_1_a", expectedColumns: []columnTestResult{
-						{Name: "id", isPrimary: true, isForeign: false},
-						{Name: "xid", isPrimary: true, isForeign: false},
+						{Name: "id", isPrimary: true, isForeign: false, isNullable: false},
+						{Name: "xid", isPrimary: true, isForeign: false, isNullable: false},
 					}},
 					{tableName: "test_1_b", expectedColumns: []columnTestResult{
-						{Name: "aid", isPrimary: true, isForeign: true},
-						{Name: "bid", isPrimary: true, isForeign: true},
+						{Name: "aid", isPrimary: true, isForeign: true, isNullable: false},
+						{Name: "bid", isPrimary: true, isForeign: true, isNullable: false},
 					}},
 				}
 
@@ -177,9 +179,10 @@ func TestDatabaseIntegrations(t *testing.T) {
 						// Assert
 						for _, column := range columns {
 							columnResult = append(columnResult, columnTestResult{
-								Name:      column.Name,
-								isPrimary: column.IsPrimary,
-								isForeign: column.IsForeign,
+								Name:       column.Name,
+								isPrimary:  column.IsPrimary,
+								isForeign:  column.IsForeign,
+								isNullable: column.IsNullable,
 							})
 						}
 

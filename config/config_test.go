@@ -31,6 +31,7 @@ omitAttributeKeys: true
 showDescriptions:
   - enumValues
   - columnComments
+  - notNull
 useAllSchemas: true
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
@@ -58,7 +59,7 @@ connectionStringSuggestions:
 	assert.True(t, config.Debug())
 	assert.True(t, config.OmitConstraintLabels())
 	assert.True(t, config.OmitAttributeKeys())
-	assert.ElementsMatch(t, []string{"enumValues", "columnComments"}, config.ShowDescriptions())
+	assert.ElementsMatch(t, []string{"notNull", "enumValues", "columnComments"}, config.ShowDescriptions())
 	assert.True(t, config.UseAllSchemas())
 	assert.True(t, config.ShowSchemaPrefix())
 	assert.Equal(t, "_", config.SchemaPrefixSeparator())
