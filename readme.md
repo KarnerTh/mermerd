@@ -86,6 +86,7 @@ via `mermerd -h`
       --showSchemaPrefix              show schema prefix in table name
       --useAllSchemas                 use all available schemas
       --useAllTables                  use all available tables
+      --relationshipLabels strings    use a different label besides the column name for specific table relationships; overrides `omitConstraintLabels` if specified
 ```
 
 If the flag `--showAllConstraints` is provided, mermerd will print out all constraints of the selected tables, even when
@@ -152,6 +153,12 @@ showDescriptions:
   - notNull
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
+
+# Names must match the pattern <schema><schema_prefix><table>
+relationshipLabels:
+  ? - public_table 
+    - public_another-table
+    : label
 ```
 
 ## Example usages
