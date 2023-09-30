@@ -18,6 +18,7 @@ const (
 	UseAllSchemasKey               = "useAllSchemas"
 	ShowSchemaPrefix               = "showSchemaPrefix"
 	SchemaPrefixSeparator          = "schemaPrefixSeparator"
+	RelationshipLabelsKey          = "relationshipLabels"
 )
 
 type config struct{}
@@ -38,6 +39,7 @@ type MermerdConfig interface {
 	UseAllSchemas() bool
 	ShowSchemaPrefix() bool
 	SchemaPrefixSeparator() string
+	RelationshipLabels() []RelationshipLabel
 }
 
 func NewConfig() MermerdConfig {
@@ -70,6 +72,11 @@ func (c config) ConnectionStringSuggestions() []string {
 
 func (c config) SelectedTables() []string {
 	return viper.GetStringSlice(SelectedTablesKey)
+}
+
+func (c config) RelationshipLabels() []RelationshipLabel {
+	labels := viper.GetStringSlice(RelationshipLabelsKey)
+	return ParseLabels(labels)
 }
 
 func (c config) EncloseWithMermaidBackticks() bool {
