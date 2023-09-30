@@ -2,8 +2,9 @@ package diagram
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
@@ -91,17 +92,32 @@ func shouldSkipConstraint(config config.MermerdConfig, tables []ErdTableData, co
 }
 
 func getConstraintData(config config.MermerdConfig, constraint database.ConstraintResult) ErdConstraintData {
+	pkTableName := getTableName(config, database.TableDetail{Schema: constraint.PkSchema, Name: constraint.PkTable})
+	fkTableName := getTableName(config, database.TableDetail{Schema: constraint.FkSchema, Name: constraint.FkTable})
+
 	constraintLabel := constraint.ColumnName
 	if config.OmitConstraintLabels() {
 		constraintLabel = ""
 	}
+	if relationshipLabel := findRelationshipLabel(config, pkTableName, fkTableName); relationshipLabel != "" {
+		constraintLabel = relationshipLabel
+	}
 
 	return ErdConstraintData{
-		PkTableName:     getTableName(config, database.TableDetail{Schema: constraint.PkSchema, Name: constraint.PkTable}),
-		FkTableName:     getTableName(config, database.TableDetail{Schema: constraint.FkSchema, Name: constraint.FkTable}),
+		PkTableName:     pkTableName,
+		FkTableName:     fkTableName,
 		Relation:        getRelation(constraint),
 		ConstraintLabel: constraintLabel,
 	}
+}
+
+func findRelationshipLabel(config config.MermerdConfig, pkTableName, fkTableName string) string {
+	for _, label := range config.RelationshipLabels() {
+		if label.PkName == pkTableName && label.FkName == fkTableName {
+			return label.Label
+		}
+	}
+	return ""
 }
 
 func getTableName(config config.MermerdConfig, table database.TableDetail) string {

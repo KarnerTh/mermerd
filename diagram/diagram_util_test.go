@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/KarnerTh/mermerd/config"
 	"github.com/KarnerTh/mermerd/database"
 	"github.com/KarnerTh/mermerd/mocks"
 )
@@ -284,11 +285,27 @@ func TestShouldSkipConstraint(t *testing.T) {
 }
 
 func TestGetConstraintData(t *testing.T) {
+	t.Run("The column name is used as the constraint label", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("OmitConstraintLabels").Return(false).Once()
+		configMock.On("ShowSchemaPrefix").Return(false).Twice()
+		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{}).Once()
+		constraint := database.ConstraintResult{ColumnName: "Column1"}
+
+		// Act
+		result := getConstraintData(&configMock, constraint)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, result.ConstraintLabel, "Column1")
+	})
 	t.Run("OmitConstraintLabels should remove the constraint label", func(t *testing.T) {
 		// Arrange
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitConstraintLabels").Return(true).Once()
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
+		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{}).Once()
 		constraint := database.ConstraintResult{ColumnName: "Column1"}
 
 		// Act
@@ -297,6 +314,56 @@ func TestGetConstraintData(t *testing.T) {
 		// Assert
 		configMock.AssertExpectations(t)
 		assert.Equal(t, result.ConstraintLabel, "")
+	})
+	t.Run("If a relationship label exists, it should be used", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("OmitConstraintLabels").Return(true).Once()
+		configMock.On("ShowSchemaPrefix").Return(false).Twice()
+		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{
+			{
+				PkName: "pk",
+				FkName: "fk",
+				Label:  "relationship-label",
+			},
+		}).Once()
+		constraint := database.ConstraintResult{
+			PkTable:    "pk",
+			FkTable:    "fk",
+			ColumnName: "Column1",
+		}
+
+		// Act
+		result := getConstraintData(&configMock, constraint)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, result.ConstraintLabel, "relationship-label")
+	})
+	t.Run("If a relationship label exists, it should be used even if we don't omit constraint labels", func(t *testing.T) {
+		// Arrange
+		configMock := mocks.MermerdConfig{}
+		configMock.On("OmitConstraintLabels").Return(false).Once()
+		configMock.On("ShowSchemaPrefix").Return(false).Twice()
+		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{
+			{
+				PkName: "pk",
+				FkName: "fk",
+				Label:  "relationship-label",
+			},
+		}).Once()
+		constraint := database.ConstraintResult{
+			PkTable:    "pk",
+			FkTable:    "fk",
+			ColumnName: "Column1",
+		}
+
+		// Act
+		result := getConstraintData(&configMock, constraint)
+
+		// Assert
+		configMock.AssertExpectations(t)
+		assert.Equal(t, result.ConstraintLabel, "relationship-label")
 	})
 }
 
