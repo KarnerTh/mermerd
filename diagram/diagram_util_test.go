@@ -290,11 +290,10 @@ func TestGetConstraintData(t *testing.T) {
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitConstraintLabels").Return(false).Once()
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
-		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{}).Once()
 		constraint := database.ConstraintResult{ColumnName: "Column1"}
 
 		// Act
-		result := getConstraintData(&configMock, constraint)
+		result := getConstraintData(&configMock, &relationshipLabelMap{}, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -305,11 +304,11 @@ func TestGetConstraintData(t *testing.T) {
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitConstraintLabels").Return(true).Once()
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
-		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{}).Once()
+
 		constraint := database.ConstraintResult{ColumnName: "Column1"}
 
 		// Act
-		result := getConstraintData(&configMock, constraint)
+		result := getConstraintData(&configMock, &relationshipLabelMap{}, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -320,13 +319,14 @@ func TestGetConstraintData(t *testing.T) {
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitConstraintLabels").Return(true).Once()
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
-		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{
-			{
-				PkName: "pk",
-				FkName: "fk",
-				Label:  "relationship-label",
-			},
-		}).Once()
+
+		labelsMap := &relationshipLabelMap{}
+		labelsMap.AddRelationshipLabel(config.RelationshipLabel{
+			PkName: "pk",
+			FkName: "fk",
+			Label:  "relationship-label",
+		})
+
 		constraint := database.ConstraintResult{
 			PkTable:    "pk",
 			FkTable:    "fk",
@@ -334,7 +334,7 @@ func TestGetConstraintData(t *testing.T) {
 		}
 
 		// Act
-		result := getConstraintData(&configMock, constraint)
+		result := getConstraintData(&configMock, labelsMap, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -345,13 +345,14 @@ func TestGetConstraintData(t *testing.T) {
 		configMock := mocks.MermerdConfig{}
 		configMock.On("OmitConstraintLabels").Return(false).Once()
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
-		configMock.On("RelationshipLabels").Return([]config.RelationshipLabel{
-			{
-				PkName: "pk",
-				FkName: "fk",
-				Label:  "relationship-label",
-			},
-		}).Once()
+
+		labelsMap := &relationshipLabelMap{}
+		labelsMap.AddRelationshipLabel(config.RelationshipLabel{
+			PkName: "pk",
+			FkName: "fk",
+			Label:  "relationship-label",
+		})
+
 		constraint := database.ConstraintResult{
 			PkTable:    "pk",
 			FkTable:    "fk",
@@ -359,7 +360,7 @@ func TestGetConstraintData(t *testing.T) {
 		}
 
 		// Act
-		result := getConstraintData(&configMock, constraint)
+		result := getConstraintData(&configMock, labelsMap, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)

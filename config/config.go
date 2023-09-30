@@ -76,7 +76,7 @@ func (c config) SelectedTables() []string {
 
 func (c config) RelationshipLabels() []RelationshipLabel {
 	labels := viper.GetStringSlice(RelationshipLabelsKey)
-	return ParseLabels(labels)
+	return parseLabels(labels)
 }
 
 func (c config) EncloseWithMermaidBackticks() bool {

@@ -91,7 +91,7 @@ func shouldSkipConstraint(config config.MermerdConfig, tables []ErdTableData, co
 	return !(tableNameInSlice(tables, constraint.PkTable) && tableNameInSlice(tables, constraint.FkTable))
 }
 
-func getConstraintData(config config.MermerdConfig, constraint database.ConstraintResult) ErdConstraintData {
+func getConstraintData(config config.MermerdConfig, labelMap RelationshipLabelMap, constraint database.ConstraintResult) ErdConstraintData {
 	pkTableName := getTableName(config, database.TableDetail{Schema: constraint.PkSchema, Name: constraint.PkTable})
 	fkTableName := getTableName(config, database.TableDetail{Schema: constraint.FkSchema, Name: constraint.FkTable})
 
@@ -99,8 +99,8 @@ func getConstraintData(config config.MermerdConfig, constraint database.Constrai
 	if config.OmitConstraintLabels() {
 		constraintLabel = ""
 	}
-	if relationshipLabel := findRelationshipLabel(config, pkTableName, fkTableName); relationshipLabel != "" {
-		constraintLabel = relationshipLabel
+	if relationshipLabel, found := labelMap.LookupRelationshipLabel(pkTableName, fkTableName); found {
+		constraintLabel = relationshipLabel.Label
 	}
 
 	return ErdConstraintData{
@@ -109,15 +109,6 @@ func getConstraintData(config config.MermerdConfig, constraint database.Constrai
 		Relation:        getRelation(constraint),
 		ConstraintLabel: constraintLabel,
 	}
-}
-
-func findRelationshipLabel(config config.MermerdConfig, pkTableName, fkTableName string) string {
-	for _, label := range config.RelationshipLabels() {
-		if label.PkName == pkTableName && label.FkName == fkTableName {
-			return label.Label
-		}
-	}
-	return ""
 }
 
 func getTableName(config config.MermerdConfig, table database.TableDetail) string {

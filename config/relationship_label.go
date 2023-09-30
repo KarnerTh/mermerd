@@ -14,10 +14,10 @@ type RelationshipLabel struct {
 	Label  string
 }
 
-func ParseLabels(labels []string) []RelationshipLabel {
+func parseLabels(labels []string) []RelationshipLabel {
 	var relationshipLabels []RelationshipLabel
 	for _, label := range labels {
-		parsed, err := ParseLabel(label)
+		parsed, err := parseLabel(label)
 		if err != nil {
 			logrus.Warnf("label '%s' is not in the correct format", label)
 			continue
@@ -27,7 +27,7 @@ func ParseLabels(labels []string) []RelationshipLabel {
 	return relationshipLabels
 }
 
-func ParseLabel(label string) (RelationshipLabel, error) {
+func parseLabel(label string) (RelationshipLabel, error) {
 	label = strings.Trim(label, " \t")
 	matched, groups := match(label)
 	if !matched {
