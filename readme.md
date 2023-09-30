@@ -156,9 +156,7 @@ schemaPrefixSeparator: "_"
 
 # Names must match the pattern <schema><schema_prefix><table>
 relationshipLabels:
-  ? - public_table 
-    - public_another-table
-    : label
+  - "public_table public_another-table : label"
 ```
 
 ## Example usages
