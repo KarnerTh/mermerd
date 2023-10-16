@@ -42,7 +42,7 @@ for your operating system. To be able to use it globally on your system, add the
 * Interactive cli (multiselect, search for tables and schemas, etc.)
 * Use it in CI/CD pipeline via a run configuration
 * Either generate plain mermaid syntax or enclose it with mermaid backticks to use directly in e.g. GitHub markdown
-* Show primary and foreign keys
+* Show primary keys, foreign keys, and unique constraints
 * Show enum values of enum column
 * Show column comments
 * Show NOT NULL constraints
@@ -74,7 +74,7 @@ via `mermerd -h`
       --debug                         show debug logs        
   -e, --encloseWithMermaidBackticks   enclose output with mermaid backticks (needed for e.g. in markdown viewer)
   -h, --help                          help for mermerd
-      --omitAttributeKeys             omit the attribute keys (PK, FK)
+      --omitAttributeKeys             omit the attribute keys (PK, FK, UK)
       --omitConstraintLabels          omit the constraint labels
   -o, --outputFileName string         output file name (default "result.mmd")
       --runConfig string              run configuration (replaces global configuration)

@@ -38,6 +38,10 @@ func getAttributeKeys(column database.ColumnResult) []ErdAttributeKey {
 		attributeKeys = append(attributeKeys, foreignKey)
 	}
 
+	if column.IsUnique {
+		attributeKeys = append(attributeKeys, uniqueKey)
+	}
+
 	return attributeKeys
 }
 

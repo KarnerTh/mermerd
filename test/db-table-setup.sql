@@ -21,7 +21,7 @@ create table article_comment
 create table label
 (
     id    int          not null primary key,
-    label varchar(255) not null
+    label varchar(255) not null unique
 );
 
 create table article_label
