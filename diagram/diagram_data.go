@@ -27,10 +27,10 @@ type ErdTableData struct {
 }
 
 type ErdColumnData struct {
-	Name         string
-	DataType     string
-	Description  string
-	AttributeKey ErdAttributeKey
+	Name          string
+	DataType      string
+	Description   string
+	AttributeKeys []ErdAttributeKey
 }
 
 type ErdConstraintData struct {

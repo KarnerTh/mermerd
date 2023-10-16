@@ -45,7 +45,7 @@ func TestGetRelation(t *testing.T) {
 func TestGetAttributeKey(t *testing.T) {
 	testCases := []struct {
 		column                  database.ColumnResult
-		expectedAttributeResult ErdAttributeKey
+		expectedAttributeResult []ErdAttributeKey
 	}{
 		{
 			column: database.ColumnResult{
@@ -54,7 +54,7 @@ func TestGetAttributeKey(t *testing.T) {
 				IsPrimary: true,
 				IsForeign: false,
 			},
-			expectedAttributeResult: primaryKey,
+			expectedAttributeResult: []ErdAttributeKey{primaryKey},
 		},
 		{
 			column: database.ColumnResult{
@@ -63,7 +63,7 @@ func TestGetAttributeKey(t *testing.T) {
 				IsPrimary: false,
 				IsForeign: true,
 			},
-			expectedAttributeResult: foreignKey,
+			expectedAttributeResult: []ErdAttributeKey{foreignKey},
 		},
 		{
 			column: database.ColumnResult{
@@ -72,7 +72,7 @@ func TestGetAttributeKey(t *testing.T) {
 				IsPrimary: true,
 				IsForeign: true,
 			},
-			expectedAttributeResult: primaryKey,
+			expectedAttributeResult: []ErdAttributeKey{primaryKey, foreignKey},
 		},
 		{
 			column: database.ColumnResult{
@@ -81,7 +81,7 @@ func TestGetAttributeKey(t *testing.T) {
 				IsPrimary: false,
 				IsForeign: false,
 			},
-			expectedAttributeResult: none,
+			expectedAttributeResult: []ErdAttributeKey(nil),
 		},
 	}
 
@@ -91,7 +91,7 @@ func TestGetAttributeKey(t *testing.T) {
 			column := testCase.column
 
 			// Act
-			result := getAttributeKey(column)
+			result := getAttributeKeys(column)
 
 			// Assert
 			assert.Equal(t, testCase.expectedAttributeResult, result)
@@ -151,7 +151,7 @@ func TestGetColumnData(t *testing.T) {
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
 		assert.Equal(t, "<"+enumValues+"> "+expectedComment, result.Description)
-		assert.Equal(t, primaryKey, result.AttributeKey)
+		assert.Equal(t, []ErdAttributeKey{primaryKey}, result.AttributeKeys)
 	})
 
 	t.Run("Get all fields with enum values", func(t *testing.T) {
@@ -167,7 +167,7 @@ func TestGetColumnData(t *testing.T) {
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
 		assert.Equal(t, "<"+enumValues+">", result.Description)
-		assert.Equal(t, primaryKey, result.AttributeKey)
+		assert.Equal(t, []ErdAttributeKey{primaryKey}, result.AttributeKeys)
 	})
 
 	t.Run("Get all fields with column comments", func(t *testing.T) {
@@ -183,7 +183,7 @@ func TestGetColumnData(t *testing.T) {
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
 		assert.Equal(t, expectedComment, result.Description)
-		assert.Equal(t, primaryKey, result.AttributeKey)
+		assert.Equal(t, []ErdAttributeKey{primaryKey}, result.AttributeKeys)
 	})
 
 	t.Run("Get all fields except description", func(t *testing.T) {
@@ -199,7 +199,7 @@ func TestGetColumnData(t *testing.T) {
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
 		assert.Equal(t, "", result.Description)
-		assert.Equal(t, primaryKey, result.AttributeKey)
+		assert.Equal(t, []ErdAttributeKey{primaryKey}, result.AttributeKeys)
 	})
 
 	t.Run("Get all fields except attribute key", func(t *testing.T) {
@@ -215,7 +215,7 @@ func TestGetColumnData(t *testing.T) {
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
 		assert.Equal(t, "<"+enumValues+"> "+expectedComment, result.Description)
-		assert.Equal(t, none, result.AttributeKey)
+		assert.Equal(t, []ErdAttributeKey(nil), result.AttributeKeys)
 	})
 
 	t.Run("Get only minimal fields", func(t *testing.T) {
@@ -231,7 +231,7 @@ func TestGetColumnData(t *testing.T) {
 		configMock.AssertExpectations(t)
 		assert.Equal(t, columnName, result.Name)
 		assert.Equal(t, "", result.Description)
-		assert.Equal(t, none, result.AttributeKey)
+		assert.Equal(t, []ErdAttributeKey(nil), result.AttributeKeys)
 	})
 }
 
