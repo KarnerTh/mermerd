@@ -99,6 +99,12 @@ func (c *mySqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, erro
 				where cu.column_name = c.column_name
 				  and cu.table_name = c.table_name
 				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign,
+				(select count(*) > 0
+				from information_schema.key_column_usage cu
+						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+				where cu.column_name = c.column_name
+				  and cu.table_name = c.table_name
+				  and tc.constraint_type = 'UNIQUE') as is_unique,
 		    	IF(c.is_nullable = 'YES', 1, 0) as is_nullable,
         case when c.data_type = 'enum' then REPLACE(REPLACE(REPLACE(REPLACE(c.column_type, 'enum', ''), '\'', ''), '(', ''), ')', '') else '' end as enum_values,
 		c.column_comment as comment
@@ -113,7 +119,7 @@ func (c *mySqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, erro
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsNullable, &column.EnumValues, &column.Comment); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsUnique, &column.IsNullable, &column.EnumValues, &column.Comment); err != nil {
 			return nil, err
 		}
 

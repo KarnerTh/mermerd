@@ -101,6 +101,12 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
                 where cu.column_name = c.column_name
                   and cu.table_name = c.table_name
                   and tc.constraint_type = 'FOREIGN KEY')                      as is_foreign,
+				(select count(*) > 0
+				from information_schema.key_column_usage cu
+						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+				where cu.column_name = c.column_name
+				  and cu.table_name = c.table_name
+				  and tc.constraint_type = 'UNIQUE')                           as is_unique,
                bool_or(c.is_nullable = 'YES')                                  as is_not_null,
                coalesce(string_agg(enumlabel, ',' order by enumsortorder), '') as enum_values,
                coalesce(pd.description, '')                   				   as comment
@@ -126,7 +132,7 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsNullable, &column.EnumValues, &column.Comment); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsUnique, &column.IsNullable, &column.EnumValues, &column.Comment); err != nil {
 			return nil, err
 		}
 
