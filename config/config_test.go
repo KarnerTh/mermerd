@@ -2,9 +2,10 @@ package config
 
 import (
 	"bytes"
+	"testing"
+
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestYamlConfig(t *testing.T) {
@@ -32,6 +33,10 @@ showDescriptions:
   - enumValues
   - columnComments
   - notNull
+relationshipLabels:
+  - "schema.table1 schema.table2 : is_a"
+  - "table-name  another-table-name  : has_many"
+  - "incorrect format"
 useAllSchemas: true
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
@@ -63,4 +68,19 @@ connectionStringSuggestions:
 	assert.True(t, config.UseAllSchemas())
 	assert.True(t, config.ShowSchemaPrefix())
 	assert.Equal(t, "_", config.SchemaPrefixSeparator())
+	assert.ElementsMatch(t,
+		config.RelationshipLabels(),
+		[]RelationshipLabel{
+			RelationshipLabel{
+				PkName: "schema.table1",
+				FkName: "schema.table2",
+				Label:  "is_a",
+			},
+			RelationshipLabel{
+				PkName: "table-name",
+				FkName: "another-table-name",
+				Label:  "has_many",
+			},
+		},
+	)
 }

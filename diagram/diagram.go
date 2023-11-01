@@ -59,12 +59,13 @@ func (d diagram) Create(result *database.Result) error {
 	}
 
 	var constraints []ErdConstraintData
+	relationshipLabelMap := BuildRelationshipLabelMapFromConfig(d.config)
 	for _, constraint := range allConstraints {
 		if shouldSkipConstraint(d.config, tableData, constraint) {
 			continue
 		}
 
-		constraints = append(constraints, getConstraintData(d.config, constraint))
+		constraints = append(constraints, getConstraintData(d.config, relationshipLabelMap, constraint))
 	}
 
 	diagramData := ErdDiagramData{

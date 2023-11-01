@@ -24,5 +24,7 @@ showDescriptions:
   - enumValues
   - columnComments
   - notNull
+relationshipLabels:
+  - "public_article public_article_comment : has_many"
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
