@@ -3,7 +3,12 @@ erDiagram
 {{- range .Tables}}
     {{.Name}} {
     {{- range .Columns}}
-        {{.DataType}} {{.Name}} {{- if .AttributeKey}} {{.AttributeKey}}{{end -}} {{- if .Description}} "{{.Description}}"{{end -}}
+        {{.DataType}} {{.Name}} {{- if .AttributeKeys}} {{range $index, $attributeKey := .AttributeKeys}}
+            {{- if $index}},{{end -}}
+            {{$attributeKey}}
+        {{- end}}{{end}} {{if .Description -}}
+            "{{.Description}}"
+        {{- end}}
     {{- end}}
     }
 {{end -}}

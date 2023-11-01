@@ -28,29 +28,30 @@ func tableNameInSlice(slice []ErdTableData, tableName string) bool {
 	return false
 }
 
-func getAttributeKey(column database.ColumnResult) ErdAttributeKey {
+func getAttributeKeys(column database.ColumnResult) []ErdAttributeKey {
+	var attributeKeys []ErdAttributeKey
 	if column.IsPrimary {
-		return primaryKey
+		attributeKeys = append(attributeKeys, primaryKey)
 	}
 
 	if column.IsForeign {
-		return foreignKey
+		attributeKeys = append(attributeKeys, foreignKey)
 	}
 
-	return none
+	return attributeKeys
 }
 
 func getColumnData(config config.MermerdConfig, column database.ColumnResult) ErdColumnData {
-	attributeKey := getAttributeKey(column)
+	attributeKeys := getAttributeKeys(column)
 	if config.OmitAttributeKeys() {
-		attributeKey = none
+		attributeKeys = []ErdAttributeKey(nil)
 	}
 
 	return ErdColumnData{
-		Name:         column.Name,
-		DataType:     column.DataType,
-		Description:  getDescription(config.ShowDescriptions(), column),
-		AttributeKey: attributeKey,
+		Name:          column.Name,
+		DataType:      column.DataType,
+		Description:   getDescription(config.ShowDescriptions(), column),
+		AttributeKeys: attributeKeys,
 	}
 }
 
