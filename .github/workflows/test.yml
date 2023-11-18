@@ -8,6 +8,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Start container with test databases
         run: docker-compose -f test/docker-compose.yaml up -d
+      - name: Wait for docker containers to start
+        run: sleep 30
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
