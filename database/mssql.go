@@ -102,6 +102,12 @@ func (c *mssqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, erro
 				where cu.column_name = c.column_name
 				  and cu.table_name = c.table_name
 				  and tc.constraint_type = 'FOREIGN KEY') as is_foreign,
+			   (select IIF(count(*) > 0, 1, 0)
+				from information_schema.key_column_usage cu
+						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+				where cu.column_name = c.column_name
+				  and cu.table_name = c.table_name
+				  and tc.constraint_type = 'UNIQUE') as is_unique,
 		    	case when c.is_nullable = 'YES' then 1 else 0 end as is_nullable,
 			   (select ISNULL(ep.value, '') from sys.tables t
 			      inner join sys.columns col on col.object_id = t.object_id and col.name = c.column_name
@@ -118,7 +124,7 @@ func (c *mssqlConnector) GetColumns(tableName TableDetail) ([]ColumnResult, erro
 	var columns []ColumnResult
 	for rows.Next() {
 		var column ColumnResult
-		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsNullable, &column.Comment); err != nil {
+		if err = rows.Scan(&column.Name, &column.DataType, &column.IsPrimary, &column.IsForeign, &column.IsUnique, &column.IsNullable, &column.Comment); err != nil {
 			return nil, err
 		}
 

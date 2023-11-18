@@ -12,7 +12,7 @@ type ErdAttributeKey string
 const (
 	primaryKey ErdAttributeKey = "PK"
 	foreignKey ErdAttributeKey = "FK"
-	none       ErdAttributeKey = ""
+	uniqueKey  ErdAttributeKey = "UK"
 )
 
 type ErdDiagramData struct {
