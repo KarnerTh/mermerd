@@ -17,6 +17,7 @@ func TestNewConnector(t *testing.T) {
 		{connectionString: "postgres://user:password@localhost:5432/yourDb", expectedDbType: Postgres},
 		{connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/yourDb", expectedDbType: MySql},
 		{connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test", expectedDbType: MsSql},
+		{connectionString: "sqlite3://mermerd_test.db", expectedDbType: Sqlite3},
 	}
 
 	for index, testCase := range testCases {

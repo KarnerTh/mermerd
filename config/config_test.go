@@ -71,12 +71,12 @@ connectionStringSuggestions:
 	assert.ElementsMatch(t,
 		config.RelationshipLabels(),
 		[]RelationshipLabel{
-			RelationshipLabel{
+			{
 				PkName: "schema.table1",
 				FkName: "schema.table2",
 				Label:  "is_a",
 			},
-			RelationshipLabel{
+			{
 				PkName: "table-name",
 				FkName: "another-table-name",
 				Label:  "has_many",

@@ -32,6 +32,11 @@ func (connectorFactory) NewConnector(connectionString string) (Connector, error)
 			dbType:           MsSql,
 			connectionString: connectionString,
 		}, nil
+	case strings.HasPrefix(connectionString, "sqlite3"):
+		return &sqliteConnector{
+			dbType:           Sqlite3,
+			connectionString: connectionString,
+		}, nil
 	default:
 		return nil, errors.New("could not create connector for db")
 	}
