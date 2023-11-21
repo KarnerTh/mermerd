@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
+## [0.10.0] - 2023-11-21
+### Added
+- Support relationship labels ([PR #50](https://github.com/KarnerTh/mermerd/pull/50))
+- Support multiple key constraints on a single attribute ([PR #52](https://github.com/KarnerTh/mermerd/pull/52))
+- Add unique constraint to key column ([PR #53](https://github.com/KarnerTh/mermerd/pull/53))
+- Add sqlite support ([PR #55](https://github.com/KarnerTh/mermerd/pull/55))
+
 ## [0.9.0] - 2023-08-06
 ### Changed
 - Sort constraints ([Issue #44](https://github.com/KarnerTh/mermerd/issues/44))
@@ -138,6 +145,8 @@ by `--showDescriptions enumValues` (for details see [PR #32](https://github.com/
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.10.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.10.0
 
 [0.9.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.9.0
 

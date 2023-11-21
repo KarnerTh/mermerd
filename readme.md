@@ -35,7 +35,7 @@ for your operating system. To be able to use it globally on your system, add the
 
 ## Features
 
-* Supports PostgreSQL, MySQL and MSSQL
+* Supports PostgreSQL, MySQL, MSSQL and Sqlite3
 * Select from available schemas
 * Select only the tables you are interested in
 * Show only the constraints that you are interested in
@@ -115,6 +115,7 @@ connectionStringSuggestions:
   - postgresql://user:password@localhost:5432/yourDb
   - mysql://root:password@tcp(127.0.0.1:3306)/yourDb
   - sqlserver://user:password@localhost:1433?database=yourDb
+  - sqlite3://mermerd_test.db
 ```
 
 ## Use a predefined run configuration (e.g. for CI/CD)
@@ -191,6 +192,7 @@ Examples of valid connection strings:
 * `postgresql://user:password@localhost:5432/yourDb`
 * `mysql://root:password@tcp(127.0.0.1:3306)/yourDb`
 * `sqlserver://user:password@localhost:1433?database=yourDb` 
+* `sqlite3://mermerd_test.db`
 
 ## How can I write/update Mermaid-JS diagrams?
 
