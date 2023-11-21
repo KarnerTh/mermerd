@@ -26,7 +26,7 @@ var (
 	testConnectionMySql    connectionParameter = connectionParameter{connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/mermerd_test", schema: "mermerd_test"}
 	testConnectionMsSql    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test", schema: "dbo"}
 	testConnectionAzure    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1434?database=mermerd_test", schema: "dbo"}
-	testConnectionSqlite   connectionParameter = connectionParameter{connectionString: "sqlite3:///home/thomask/projects/mermerd/mermerd_test.db", schema: "mermerd_test"}
+	testConnectionSqlite   connectionParameter = connectionParameter{connectionString: "sqlite3://../mermerd_test.db", schema: "mermerd_test"}
 )
 
 func TestDatabaseIntegrations(t *testing.T) {
