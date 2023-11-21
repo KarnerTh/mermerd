@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	_ "modernc.org/sqlite"
@@ -14,12 +15,17 @@ func (c *sqliteConnector) GetDbType() DbType {
 	return c.dbType
 }
 
-func getFilenameFromConnectionString(connectionString string) string {
+func getFilePathFromConnectionString(connectionString string) string {
 	return strings.Replace(connectionString, "sqlite3://", "", 1)
 }
 
+func getFileNameFromPath(path string) string {
+	fileName := filepath.Base(path)
+	return strings.Replace(fileName, filepath.Ext(fileName), "", 1)
+}
+
 func (c *sqliteConnector) Connect() error {
-	db, err := sql.Open(c.dbType.String(), getFilenameFromConnectionString(c.connectionString))
+	db, err := sql.Open(c.dbType.String(), getFilePathFromConnectionString(c.connectionString))
 	if err != nil {
 		return err
 	}
@@ -40,8 +46,8 @@ func (c *sqliteConnector) Close() {
 }
 
 func (c *sqliteConnector) GetSchemas() ([]string, error) {
-	fileName := getFilenameFromConnectionString(c.connectionString)
-	schema := strings.Replace(fileName, ".db", "", 1)
+	filePath := getFilePathFromConnectionString(c.connectionString)
+	schema := getFileNameFromPath(filePath)
 	return []string{schema}, nil
 }
 
