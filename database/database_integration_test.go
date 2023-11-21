@@ -26,6 +26,7 @@ var (
 	testConnectionMySql    connectionParameter = connectionParameter{connectionString: "mysql://root:password@tcp(127.0.0.1:3306)/mermerd_test", schema: "mermerd_test"}
 	testConnectionMsSql    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1433?database=mermerd_test", schema: "dbo"}
 	testConnectionAzure    connectionParameter = connectionParameter{connectionString: "sqlserver://sa:securePassword1!@localhost:1434?database=mermerd_test", schema: "dbo"}
+	testConnectionSqlite   connectionParameter = connectionParameter{connectionString: "sqlite3:///home/thomask/projects/mermerd/mermerd_test.db", schema: "mermerd_test"}
 )
 
 func TestDatabaseIntegrations(t *testing.T) {
@@ -59,6 +60,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 			dbType:           MsSql,
 			connectionString: testConnectionAzure.connectionString,
 			schema:           testConnectionAzure.schema,
+		},
+		{
+			dbType:           Sqlite3,
+			connectionString: testConnectionSqlite.connectionString,
+			schema:           testConnectionSqlite.schema,
 		},
 	}
 
@@ -207,9 +213,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 					// Assert
 					assert.Nil(t, err)
 					assert.Len(t, constraintResults, 1)
-					constraint := constraintResults[0]
-					assert.True(t, constraint.IsPrimary)
-					assert.False(t, constraint.HasMultiplePK)
+					if len(constraintResults) >= 1 {
+						constraint := constraintResults[0]
+						assert.True(t, constraint.IsPrimary)
+						assert.False(t, constraint.HasMultiplePK)
+					}
 				})
 
 				t.Run("Many-to-one relation #1", func(t *testing.T) {
@@ -222,9 +230,11 @@ func TestDatabaseIntegrations(t *testing.T) {
 					// Assert
 					assert.Nil(t, err)
 					assert.Len(t, constraintResults, 1)
-					constraint := constraintResults[0]
-					assert.False(t, constraint.IsPrimary)
-					assert.False(t, constraint.HasMultiplePK)
+					if len(constraintResults) >= 1 {
+						constraint := constraintResults[0]
+						assert.False(t, constraint.IsPrimary)
+						assert.False(t, constraint.HasMultiplePK)
+					}
 				})
 
 				t.Run("Many-to-one relation #2", func(t *testing.T) {
@@ -245,8 +255,10 @@ func TestDatabaseIntegrations(t *testing.T) {
 						}
 					}
 					assert.NotNil(t, constraint)
-					assert.True(t, constraint.IsPrimary)
-					assert.True(t, constraint.HasMultiplePK)
+					if constraint != nil {
+						assert.True(t, constraint.IsPrimary)
+						assert.True(t, constraint.HasMultiplePK)
+					}
 				})
 
 				// Multiple primary keys (https://github.com/KarnerTh/mermerd/issues/8)
@@ -261,16 +273,22 @@ func TestDatabaseIntegrations(t *testing.T) {
 					assert.Nil(t, err)
 					assert.NotNil(t, constraintResults)
 					assert.Len(t, constraintResults, 2)
-					assert.True(t, constraintResults[0].IsPrimary)
-					assert.True(t, constraintResults[0].HasMultiplePK)
-					assert.Equal(t, constraintResults[0].ColumnName, "aid")
-					assert.True(t, constraintResults[1].IsPrimary)
-					assert.True(t, constraintResults[1].HasMultiplePK)
-					assert.Equal(t, constraintResults[1].ColumnName, "bid")
+					if len(constraintResults) >= 2 {
+						assert.True(t, constraintResults[0].IsPrimary)
+						assert.True(t, constraintResults[0].HasMultiplePK)
+						assert.Equal(t, constraintResults[0].ColumnName, "aid")
+						assert.True(t, constraintResults[1].IsPrimary)
+						assert.True(t, constraintResults[1].HasMultiplePK)
+						assert.Equal(t, constraintResults[1].ColumnName, "bid")
+					}
 				})
 			})
 
 			t.Run("Multiple schemas (Issue #23)", func(t *testing.T) {
+				if testCase.dbType == Sqlite3 {
+					t.Skip("Sqlite does not support multiple schemas")
+				}
+
 				connector := getConnectionAndConnect(t)
 
 				t.Run("GetTables", func(t *testing.T) {
@@ -318,11 +336,14 @@ func TestDatabaseIntegrations(t *testing.T) {
 					// Assert
 					assert.Nil(t, err)
 					assert.Len(t, constraintResults, 1)
-					assert.False(t, constraintResults[0].IsPrimary)
-					assert.False(t, constraintResults[0].HasMultiplePK)
-					assert.Equal(t, constraintResults[0].ColumnName, "aid")
-					assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
-					assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
+
+					if len(constraintResults) >= 1 {
+						assert.False(t, constraintResults[0].IsPrimary)
+						assert.False(t, constraintResults[0].HasMultiplePK)
+						assert.Equal(t, constraintResults[0].ColumnName, "aid")
+						assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
+						assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
+					}
 				})
 
 				t.Run("Get schema from FK and PK table", func(t *testing.T) {
@@ -335,10 +356,12 @@ func TestDatabaseIntegrations(t *testing.T) {
 					// Assert
 					assert.Nil(t, err)
 					assert.Len(t, constraintResults, 1)
-					assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
-					assert.Equal(t, constraintResults[0].FkSchema, "other_db")
-					assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
-					assert.Equal(t, constraintResults[0].PkSchema, testCase.schema)
+					if len(constraintResults) >= 1 {
+						assert.Equal(t, constraintResults[0].FkTable, "test_3_b")
+						assert.Equal(t, constraintResults[0].FkSchema, "other_db")
+						assert.Equal(t, constraintResults[0].PkTable, "test_3_a")
+						assert.Equal(t, constraintResults[0].PkSchema, testCase.schema)
+					}
 				})
 			})
 		})
