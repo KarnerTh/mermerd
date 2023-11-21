@@ -3,7 +3,7 @@ test_target := "./..."
 
 .PHONY: prepare-sqlite
 prepare-sqlite:
-	rm mermerd_test.db
+	rm -f mermerd_test.db
 	sqlite3 mermerd_test.db < <(cat test/db-table-setup.sql test/sqlite/sqlite-enum-setup.sql test/sqlite/sqlite-multiple-databases.sql)
 
 .PHONY: test-coverage
