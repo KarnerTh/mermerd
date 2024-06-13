@@ -3,6 +3,7 @@ package analyzer
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"sort"
 
 	"github.com/sirupsen/logrus"
@@ -143,8 +144,12 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 
 	logrus.WithField("count", len(tables)).Info("Got tables")
 
-	if a.config.UseAllTables() {
+	if a.config.UseAllTables() && len(a.config.IgnoreTables()) == 0 {
 		return tables, nil
+	}
+
+	if a.config.UseAllTables() && len(a.config.IgnoreTables()) > 0 {
+		return a.removeIgnoredTables(tables)
 	}
 
 	tableNames := util.Map2(tables, func(table database.TableDetail) string {
@@ -162,6 +167,31 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 
 		return res
 	}), nil
+}
+
+func (a analyzer) removeIgnoredTables(tables []database.TableDetail) ([]database.TableDetail, error) {
+	var tablesWithoutIgnored []database.TableDetail
+
+	for _, table := range tables {
+		ignoreTable := false
+		for _, ignore := range a.config.IgnoreTables() {
+			match, err := regexp.MatchString(ignore, table.Name)
+			if err != nil {
+				return nil, err
+			}
+
+			if match {
+				ignoreTable = true
+				break
+			}
+		}
+
+		if !ignoreTable {
+			tablesWithoutIgnored = append(tablesWithoutIgnored, table)
+		}
+	}
+
+	return tablesWithoutIgnored, nil
 }
 
 func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error) {
