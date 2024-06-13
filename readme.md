@@ -154,6 +154,8 @@ showDescriptions:
   - notNull
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
+ignoreTables:
+  - city
 
 # Names must match the pattern <schema><schema_prefix><table>
 relationshipLabels:
