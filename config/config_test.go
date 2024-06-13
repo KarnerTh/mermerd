@@ -40,6 +40,9 @@ relationshipLabels:
 useAllSchemas: true
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
+ignoreTables: 
+  - city
+  - customer
 
 # These connection strings are available as suggestions in the cli (use tab to access)
 connectionStringSuggestions:
@@ -83,4 +86,6 @@ connectionStringSuggestions:
 			},
 		},
 	)
+	assert.ElementsMatch(t, []string{"city", "customer"}, config.IgnoreTables())
+
 }
