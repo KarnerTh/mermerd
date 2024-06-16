@@ -155,6 +155,8 @@ by `--showDescriptions enumValues` (for details see [PR #32](https://github.com/
 ### Added
 - Initial release of mermerd
 
+[0.11.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.11.0
+
 [0.10.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.10.0
 
 [0.9.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.9.0
