@@ -144,12 +144,15 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 
 	logrus.WithField("count", len(tables)).Info("Got tables")
 
-	if a.config.UseAllTables() && len(a.config.IgnoreTables()) == 0 {
-		return tables, nil
+	if len(a.config.IgnoreTables()) > 0 {
+		tables, err = a.removeIgnoredTables(tables)
+		if err != nil {
+			return []database.TableDetail{}, err
+		}
 	}
 
-	if a.config.UseAllTables() && len(a.config.IgnoreTables()) > 0 {
-		return a.removeIgnoredTables(tables)
+	if a.config.UseAllTables() {
+		return tables, nil
 	}
 
 	tableNames := util.Map2(tables, func(table database.TableDetail) string {

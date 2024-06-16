@@ -87,5 +87,4 @@ connectionStringSuggestions:
 		},
 	)
 	assert.ElementsMatch(t, []string{"city", "customer"}, config.IgnoreTables())
-
 }

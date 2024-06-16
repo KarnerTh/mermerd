@@ -202,8 +202,8 @@ func TestAnalyzer_GetTables(t *testing.T) {
 				Name:   "tableC",
 			},
 		}, nil).Once()
-		configMock.On("UseAllTables").Return(true).Twice()
-		configMock.On("IgnoreTables").Return([]string{"_20\\d{2}_0[1-9]|1[0-2]", "tableB"}).Times(6)
+		configMock.On("UseAllTables").Return(true)
+		configMock.On("IgnoreTables").Return([]string{"_20\\d{2}_0[1-9]|1[0-2]", "tableB"})
 
 		// Act
 		result, err := analyzer.GetTables(&connectorMock, []string{"validSchema"})
@@ -224,7 +224,8 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		connectorMock := mocks.Connector{}
 		configMock.On("SelectedTables").Return([]string{}).Once()
 		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableDetail{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
-		configMock.On("UseAllTables").Return(false).Twice()
+		configMock.On("UseAllTables").Return(false)
+		configMock.On("IgnoreTables").Return([]string{})
 		questionerMock.On("AskTableQuestion", []string{"validSchema.tableA", "validSchema.tableB"}).Return([]string{"validSchema.tableA"}, nil).Once()
 
 		// Act
