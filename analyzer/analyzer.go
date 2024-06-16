@@ -3,6 +3,7 @@ package analyzer
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"sort"
 
 	"github.com/sirupsen/logrus"
@@ -143,6 +144,13 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 
 	logrus.WithField("count", len(tables)).Info("Got tables")
 
+	if len(a.config.IgnoreTables()) > 0 {
+		tables, err = a.removeIgnoredTables(tables)
+		if err != nil {
+			return []database.TableDetail{}, err
+		}
+	}
+
 	if a.config.UseAllTables() {
 		return tables, nil
 	}
@@ -162,6 +170,31 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 
 		return res
 	}), nil
+}
+
+func (a analyzer) removeIgnoredTables(tables []database.TableDetail) ([]database.TableDetail, error) {
+	var tablesWithoutIgnored []database.TableDetail
+
+	for _, table := range tables {
+		ignoreTable := false
+		for _, ignore := range a.config.IgnoreTables() {
+			match, err := regexp.MatchString(ignore, table.Name)
+			if err != nil {
+				return nil, err
+			}
+
+			if match {
+				ignoreTable = true
+				break
+			}
+		}
+
+		if !ignoreTable {
+			tablesWithoutIgnored = append(tablesWithoutIgnored, table)
+		}
+	}
+
+	return tablesWithoutIgnored, nil
 }
 
 func (a analyzer) GetColumnsAndConstraints(db database.Connector, selectedTables []database.TableDetail) ([]database.TableResult, error) {

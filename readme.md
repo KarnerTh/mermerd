@@ -74,6 +74,7 @@ via `mermerd -h`
       --debug                         show debug logs        
   -e, --encloseWithMermaidBackticks   enclose output with mermaid backticks (needed for e.g. in markdown viewer)
   -h, --help                          help for mermerd
+      --ignoreTables strings          ignore the given tables (supports regex)
       --omitAttributeKeys             omit the attribute keys (PK, FK, UK)
       --omitConstraintLabels          omit the constraint labels
   -o, --outputFileName string         output file name (default "result.mmd")
@@ -154,6 +155,8 @@ showDescriptions:
   - notNull
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
+ignoreTables:
+  - city
 
 # Names must match the pattern <schema><schema_prefix><table>
 relationshipLabels:

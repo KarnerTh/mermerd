@@ -65,6 +65,7 @@ func init() {
 	rootCmd.Flags().StringVar(&runConfig, "runConfig", "", "run configuration (replaces global configuration)")
 	rootCmd.Flags().Bool(config.ShowAllConstraintsKey, false, "show all constraints, even though the table of the resulting constraint was not selected")
 	rootCmd.Flags().Bool(config.UseAllTablesKey, false, "use all available tables")
+	rootCmd.Flags().StringSlice(config.IgnoreTables, []string{""}, "ignore the given tables (supports regex)")
 	rootCmd.Flags().Bool(config.UseAllSchemasKey, false, "use all available schemas")
 	rootCmd.Flags().Bool(config.DebugKey, false, "show debug logs")
 	rootCmd.Flags().Bool(config.OmitConstraintLabelsKey, false, "omit the constraint labels")
@@ -80,6 +81,7 @@ func init() {
 
 	bindFlagToViper(config.ShowAllConstraintsKey)
 	bindFlagToViper(config.UseAllTablesKey)
+	bindFlagToViper(config.IgnoreTables)
 	bindFlagToViper(config.UseAllSchemasKey)
 	bindFlagToViper(config.DebugKey)
 	bindFlagToViper(config.OmitConstraintLabelsKey)

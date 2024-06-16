@@ -165,6 +165,7 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		configMock.On("SelectedTables").Return([]string{}).Once()
 		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableDetail{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
 		configMock.On("UseAllTables").Return(true).Once()
+		configMock.On("IgnoreTables").Return([]string{}).Once()
 
 		// Act
 		result, err := analyzer.GetTables(&connectorMock, []string{"validSchema"})
@@ -178,13 +179,53 @@ func TestAnalyzer_GetTables(t *testing.T) {
 		assert.Equal(t, "tableB", result[1].Name)
 	})
 
+	t.Run("Use all available tables whilst ignoring some", func(t *testing.T) {
+		// Arrange
+		analyzer, configMock, _, _ := getAnalyzerWithMocks()
+		connectorMock := mocks.Connector{}
+		configMock.On("SelectedTables").Return([]string{}).Once()
+		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableDetail{
+			{
+				Schema: "validSchema",
+				Name:   "tableA",
+			},
+			{
+				Schema: "validSchema",
+				Name:   "tableB",
+			},
+			{
+				Schema: "validSchema",
+				Name:   "tableA_2024_06",
+			},
+			{
+				Schema: "validSchema",
+				Name:   "tableC",
+			},
+		}, nil).Once()
+		configMock.On("UseAllTables").Return(true)
+		configMock.On("IgnoreTables").Return([]string{"_20\\d{2}_0[1-9]|1[0-2]", "tableB"})
+
+		// Act
+		result, err := analyzer.GetTables(&connectorMock, []string{"validSchema"})
+
+		// Assert
+		configMock.AssertExpectations(t)
+		connectorMock.AssertExpectations(t)
+		assert.Nil(t, err)
+		assert.Len(t, result, 2)
+		assert.Equal(t, "tableA", result[0].Name)
+		assert.Equal(t, "tableC", result[1].Name)
+
+	})
+
 	t.Run("Use value from questioner", func(t *testing.T) {
 		// Arrange
 		analyzer, configMock, _, questionerMock := getAnalyzerWithMocks()
 		connectorMock := mocks.Connector{}
 		configMock.On("SelectedTables").Return([]string{}).Once()
 		connectorMock.On("GetTables", []string{"validSchema"}).Return([]database.TableDetail{{Schema: "validSchema", Name: "tableA"}, {Schema: "validSchema", Name: "tableB"}}, nil).Once()
-		configMock.On("UseAllTables").Return(false).Once()
+		configMock.On("UseAllTables").Return(false)
+		configMock.On("IgnoreTables").Return([]string{})
 		questionerMock.On("AskTableQuestion", []string{"validSchema.tableA", "validSchema.tableB"}).Return([]string{"validSchema.tableA"}, nil).Once()
 
 		// Act

@@ -5,6 +5,7 @@ import "github.com/spf13/viper"
 const (
 	ShowAllConstraintsKey          = "showAllConstraints"
 	UseAllTablesKey                = "useAllTables"
+	IgnoreTables                   = "ignoreTables"
 	SelectedTablesKey              = "selectedTables"
 	SchemaKey                      = "schema"
 	ConnectionStringKey            = "connectionString"
@@ -26,6 +27,7 @@ type config struct{}
 type MermerdConfig interface {
 	ShowAllConstraints() bool
 	UseAllTables() bool
+	IgnoreTables() []string
 	Schemas() []string
 	ConnectionString() string
 	OutputFileName() string
@@ -52,6 +54,10 @@ func (c config) ShowAllConstraints() bool {
 
 func (c config) UseAllTables() bool {
 	return viper.GetBool(UseAllTablesKey)
+}
+
+func (c config) IgnoreTables() []string {
+	return viper.GetStringSlice(IgnoreTables)
 }
 
 func (c config) Schemas() []string {
