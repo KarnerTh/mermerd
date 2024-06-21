@@ -197,6 +197,15 @@ Examples of valid connection strings:
 * `sqlserver://user:password@localhost:1433?database=yourDb` 
 * `sqlite3://mermerd_test.db`
 
+#### Special Characters
+Passwords with special characters may run into the "net/url: invalid userinfo" error. This can be worked around by percent encoding the characters
+
+| Invalid | Valid                                                        |
+|-----|----------------------------------------|
+|postgresql://user:password$@localhost:5432/yourDb|postgresql://user:password%24@localhost:5432/yourDb
+|postgresql://user:pass[];$/word@localhost:5432/yourDb|postgresql://user:pass%5B%5D%3B%24%2Fword@localhost:5432/yourDb
+
+
 ## How can I write/update Mermaid-JS diagrams?
 
 * All information can be found here: [Mermaid-JS](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
