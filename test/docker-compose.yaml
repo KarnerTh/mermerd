@@ -28,7 +28,7 @@ services:
       - ./mysql/mysql-enum-setup.sql:/docker-entrypoint-initdb.d/2.sql
       - ./mysql/mysql-multiple-databases.sql:/docker-entrypoint-initdb.d/3.sql
   mermerd-mssql-test-db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server@sha256:f54a84b8a802afdfa91a954e8ddfcec9973447ce8efec519adf593b54d49bedf
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "securePassword1!"
