@@ -24,6 +24,7 @@ the [Changelog](https://github.com/KarnerTh/mermerd/blob/master/changelog.md)
 </ul>
 
 ## Installation
+Through the go toolchain (requires go version >=1.21)
 ```sh
 go install github.com/KarnerTh/mermerd@latest
 ```
