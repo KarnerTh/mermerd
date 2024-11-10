@@ -10,8 +10,8 @@ schema:
 # Define what tables should be used
 #useAllTables: true
 selectedTables:
-  - article
-  - label
+  - public.article
+  - public.label
 
 # Additional flags
 showAllConstraints: true

@@ -128,6 +128,20 @@ func (_m *MermerdConfig) OutputFileName() string {
 	return r0
 }
 
+// OutputMode provides a mock function with given fields:
+func (_m *MermerdConfig) OutputMode() config.OutputModeType {
+	ret := _m.Called()
+
+	var r0 config.OutputModeType
+	if rf, ok := ret.Get(0).(func() config.OutputModeType); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(config.OutputModeType)
+	}
+
+	return r0
+}
+
 // RelationshipLabels provides a mock function with given fields:
 func (_m *MermerdConfig) RelationshipLabels() []config.RelationshipLabel {
 	ret := _m.Called()

@@ -2,7 +2,7 @@ package diagram
 
 import (
 	_ "embed"
-	"os"
+	"io"
 	"text/template"
 
 	"github.com/sirupsen/logrus"
@@ -19,22 +19,14 @@ type diagram struct {
 }
 
 type Diagram interface {
-	Create(result *database.Result) error
+	Create(wr io.Writer, result *database.Result) error
 }
 
 func NewDiagram(config config.MermerdConfig) Diagram {
 	return diagram{config}
 }
 
-func (d diagram) Create(result *database.Result) error {
-	f, err := os.Create(d.config.OutputFileName())
-	if err != nil {
-		logrus.Error("Could not create output file", " | ", err)
-		return err
-	}
-
-	defer f.Close()
-
+func (d diagram) Create(wr io.Writer, result *database.Result) error {
 	tmpl, err := template.New("erd_template").Parse(erdTemplate)
 	if err != nil {
 		logrus.Error("Could not load template file", " | ", err)
@@ -74,7 +66,7 @@ func (d diagram) Create(result *database.Result) error {
 		Constraints:                 constraints,
 	}
 
-	if err = tmpl.Execute(f, diagramData); err != nil {
+	if err = tmpl.Execute(wr, diagramData); err != nil {
 		logrus.Error("Could not create diagram", " | ", err)
 		return err
 	}

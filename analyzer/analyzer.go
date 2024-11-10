@@ -123,7 +123,7 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 		return util.Map2(selectedTables, func(value string) database.TableDetail {
 			res, err := database.ParseTableName(value, selectedSchemas)
 			if err != nil {
-				logrus.Error("Could not parse table name", value)
+				logrus.Error("Could not parse table name ", value)
 			}
 
 			return res
@@ -165,7 +165,7 @@ func (a analyzer) GetTables(db database.Connector, selectedSchemas []string) ([]
 	return util.Map2(surveyResult, func(value string) database.TableDetail {
 		res, err := database.ParseTableName(value, selectedSchemas)
 		if err != nil {
-			logrus.Error("Could not parse table name", value)
+			logrus.Error("Could not parse table name ", value)
 		}
 
 		return res
