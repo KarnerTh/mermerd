@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,14 +23,18 @@ var rootCmd = &cobra.Command{
 	Short: "Create Mermaid ERD diagrams from existing tables",
 	Long:  "Create Mermaid ERD diagrams from existing tables",
 	Run: func(cmd *cobra.Command, args []string) {
-		presentation.ShowIntro()
-		config := config.NewConfig()
+		conf := config.NewConfig()
+		if runConfig != "" {
+			presentation.ShowInfo(conf, fmt.Sprintf("Using run configuration (from %s)", runConfig))
+		}
+
+		presentation.ShowIntro(conf)
 		connectorFactory := database.NewConnectorFactory()
 		questioner := analyzer.NewQuestioner()
-		analyzer := analyzer.NewAnalyzer(config, connectorFactory, questioner)
-		diagram := diagram.NewDiagram(config)
+		analyzer := analyzer.NewAnalyzer(conf, connectorFactory, questioner)
+		diagram := diagram.NewDiagram(conf)
 
-		if !config.Debug() {
+		if !conf.Debug() {
 			logrus.SetOutput(io.Discard)
 		}
 
@@ -42,14 +45,33 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		err = diagram.Create(result)
+		var wr io.Writer
+		if conf.OutputMode() == config.File {
+			f, err := os.Create(conf.OutputFileName())
+			defer f.Close()
+			if err != nil {
+				logrus.Error(err)
+				presentation.ShowError()
+				os.Exit(1)
+			}
+
+			wr = f
+		} else if conf.OutputMode() == config.Stdout {
+			wr = os.Stdout
+		} else {
+			logrus.Errorf("Output mode %s not suppported", conf.OutputMode())
+			presentation.ShowError()
+			os.Exit(1)
+		}
+
+		err = diagram.Create(wr, result)
 		if err != nil {
 			logrus.Error(err)
 			presentation.ShowError()
 			os.Exit(1)
 		}
 
-		presentation.ShowSuccess(config.OutputFileName())
+		presentation.ShowSuccess(conf, conf.OutputFileName())
 	},
 }
 
@@ -76,24 +98,27 @@ func init() {
 	rootCmd.Flags().StringP(config.SchemaKey, "s", "", "schema that should be used")
 	rootCmd.Flags().StringP(config.OutputFileNameKey, "o", "result.mmd", "output file name")
 	rootCmd.Flags().String(config.SchemaPrefixSeparator, ".", "the separator that should be used between schema and table name")
+	var outputMode = config.File
+	rootCmd.Flags().Var(&outputMode, config.OutputMode, `output mode (file, stdout)`)
 	rootCmd.Flags().StringSlice(config.ShowDescriptionsKey, []string{""}, "show 'notNull', 'enumValues' and/or 'columnComments' in the description column")
 	rootCmd.Flags().StringSlice(config.SelectedTablesKey, []string{""}, "tables to include")
 
-	bindFlagToViper(config.ShowAllConstraintsKey)
-	bindFlagToViper(config.UseAllTablesKey)
-	bindFlagToViper(config.IgnoreTables)
-	bindFlagToViper(config.UseAllSchemasKey)
-	bindFlagToViper(config.DebugKey)
-	bindFlagToViper(config.OmitConstraintLabelsKey)
-	bindFlagToViper(config.OmitAttributeKeysKey)
-	bindFlagToViper(config.EncloseWithMermaidBackticksKey)
 	bindFlagToViper(config.ConnectionStringKey)
-	bindFlagToViper(config.SchemaKey)
+	bindFlagToViper(config.DebugKey)
+	bindFlagToViper(config.EncloseWithMermaidBackticksKey)
+	bindFlagToViper(config.IgnoreTables)
+	bindFlagToViper(config.OmitAttributeKeysKey)
+	bindFlagToViper(config.OmitConstraintLabelsKey)
 	bindFlagToViper(config.OutputFileNameKey)
+	bindFlagToViper(config.OutputMode)
+	bindFlagToViper(config.SchemaKey)
+	bindFlagToViper(config.SchemaPrefixSeparator)
 	bindFlagToViper(config.SelectedTablesKey)
+	bindFlagToViper(config.ShowAllConstraintsKey)
 	bindFlagToViper(config.ShowDescriptionsKey)
 	bindFlagToViper(config.ShowSchemaPrefix)
-	bindFlagToViper(config.SchemaPrefixSeparator)
+	bindFlagToViper(config.UseAllSchemasKey)
+	bindFlagToViper(config.UseAllTablesKey)
 }
 
 func bindFlagToViper(key string) {
@@ -102,7 +127,6 @@ func bindFlagToViper(key string) {
 
 func initConfig() {
 	if runConfig != "" {
-		color.Blue(fmt.Sprintf("Using run configuration (from %s)", runConfig))
 		viper.SetConfigFile(runConfig)
 	} else {
 		home, err := os.UserHomeDir()

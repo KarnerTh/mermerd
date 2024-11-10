@@ -5,6 +5,8 @@ package mocks
 import (
 	database "github.com/KarnerTh/mermerd/database"
 
+	io "io"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -13,13 +15,13 @@ type Diagram struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: result
-func (_m *Diagram) Create(result *database.Result) error {
-	ret := _m.Called(result)
+// Create provides a mock function with given fields: wr, result
+func (_m *Diagram) Create(wr io.Writer, result *database.Result) error {
+	ret := _m.Called(wr, result)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*database.Result) error); ok {
-		r0 = rf(result)
+	if rf, ok := ret.Get(0).(func(io.Writer, *database.Result) error); ok {
+		r0 = rf(wr, result)
 	} else {
 		r0 = ret.Error(0)
 	}

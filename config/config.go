@@ -3,45 +3,47 @@ package config
 import "github.com/spf13/viper"
 
 const (
-	ShowAllConstraintsKey          = "showAllConstraints"
-	UseAllTablesKey                = "useAllTables"
-	IgnoreTables                   = "ignoreTables"
-	SelectedTablesKey              = "selectedTables"
-	SchemaKey                      = "schema"
 	ConnectionStringKey            = "connectionString"
 	ConnectionStringSuggestionsKey = "connectionStringSuggestions"
-	OutputFileNameKey              = "outputFileName"
-	EncloseWithMermaidBackticksKey = "encloseWithMermaidBackticks"
 	DebugKey                       = "debug"
-	OmitConstraintLabelsKey        = "omitConstraintLabels"
+	EncloseWithMermaidBackticksKey = "encloseWithMermaidBackticks"
+	IgnoreTables                   = "ignoreTables"
 	OmitAttributeKeysKey           = "omitAttributeKeys"
-	ShowDescriptionsKey            = "showDescriptions"
-	UseAllSchemasKey               = "useAllSchemas"
-	ShowSchemaPrefix               = "showSchemaPrefix"
-	SchemaPrefixSeparator          = "schemaPrefixSeparator"
+	OmitConstraintLabelsKey        = "omitConstraintLabels"
+	OutputFileNameKey              = "outputFileName"
+	OutputMode                     = "outputMode"
 	RelationshipLabelsKey          = "relationshipLabels"
+	SchemaKey                      = "schema"
+	SchemaPrefixSeparator          = "schemaPrefixSeparator"
+	SelectedTablesKey              = "selectedTables"
+	ShowAllConstraintsKey          = "showAllConstraints"
+	ShowDescriptionsKey            = "showDescriptions"
+	ShowSchemaPrefix               = "showSchemaPrefix"
+	UseAllSchemasKey               = "useAllSchemas"
+	UseAllTablesKey                = "useAllTables"
 )
 
 type config struct{}
 
 type MermerdConfig interface {
-	ShowAllConstraints() bool
-	UseAllTables() bool
-	IgnoreTables() []string
-	Schemas() []string
 	ConnectionString() string
-	OutputFileName() string
 	ConnectionStringSuggestions() []string
-	SelectedTables() []string
-	EncloseWithMermaidBackticks() bool
 	Debug() bool
-	OmitConstraintLabels() bool
+	EncloseWithMermaidBackticks() bool
+	IgnoreTables() []string
 	OmitAttributeKeys() bool
-	ShowDescriptions() []string
-	UseAllSchemas() bool
-	ShowSchemaPrefix() bool
-	SchemaPrefixSeparator() string
+	OmitConstraintLabels() bool
+	OutputFileName() string
+	OutputMode() OutputModeType
 	RelationshipLabels() []RelationshipLabel
+	SchemaPrefixSeparator() string
+	Schemas() []string
+	SelectedTables() []string
+	ShowAllConstraints() bool
+	ShowDescriptions() []string
+	ShowSchemaPrefix() bool
+	UseAllSchemas() bool
+	UseAllTables() bool
 }
 
 func NewConfig() MermerdConfig {
@@ -115,4 +117,8 @@ func (c config) ShowSchemaPrefix() bool {
 
 func (c config) SchemaPrefixSeparator() string {
 	return viper.GetString(SchemaPrefixSeparator)
+}
+
+func (c config) OutputMode() OutputModeType {
+	return OutputModeType(viper.GetString(OutputMode))
 }

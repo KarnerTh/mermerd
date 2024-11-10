@@ -10,8 +10,8 @@ schema:
 # Define what tables should be used
 #useAllTables: true
 selectedTables:
-  - article
-  - label
+  - public.article
+  - public.label
 
 # Additional flags
 showAllConstraints: true
@@ -20,6 +20,7 @@ encloseWithMermaidBackticks: false
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
+outputMode: stdout
 showDescriptions:
   - enumValues
   - columnComments

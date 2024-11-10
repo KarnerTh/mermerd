@@ -3,9 +3,7 @@ module github.com/KarnerTh/mermerd
 go 1.23
 
 // https://github.com/microsoft/mssql-docker/issues/895#issuecomment-2327988940
-godebug (
-	x509negativeserial=1
-)
+godebug x509negativeserial=1
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
