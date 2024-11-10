@@ -78,6 +78,7 @@ via `mermerd -h`
       --omitAttributeKeys             omit the attribute keys (PK, FK, UK)
       --omitConstraintLabels          omit the constraint labels
   -o, --outputFileName string         output file name (default "result.mmd")
+      --outputMode OutputModeType     output mode (file, stdout) (default file)
       --runConfig string              run configuration (replaces global configuration)
   -s, --schema string                 schema that should be used
       --schemaPrefixSeparator string  the separator that should be used between schema and table name (default ".")
@@ -146,6 +147,7 @@ selectedTables:
 showAllConstraints: true
 encloseWithMermaidBackticks: true
 outputFileName: "my-db.mmd"
+outputMode: stdout
 debug: true
 omitConstraintLabels: true
 omitAttributeKeys: true
@@ -180,6 +182,9 @@ mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public
 
 # same as previous one, but use all available tables without interaction
 mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables
+
+# same as previous one, but get the result in stdout instead of a file
+mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --useAllTables --outputMode stdout
 
 # same as previous one, but use a list of tables without interaction
 mermerd -c "postgresql://user:password@localhost:5432/yourDb" -s public --selectedTables article,article_label

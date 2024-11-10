@@ -20,6 +20,7 @@ encloseWithMermaidBackticks: false
 debug: false
 omitConstraintLabels: false
 omitAttributeKeys: false
+outputMode: stdout
 showDescriptions:
   - enumValues
   - columnComments
