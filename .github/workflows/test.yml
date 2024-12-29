@@ -11,7 +11,7 @@ jobs:
       - name: Prepare sqlite database
         run: make prepare-sqlite
       - name: Wait for docker containers to start
-        run: sleep 30
+        run: sleep 60
       - name: Set up Go
         uses: actions/setup-go@v5
         with:

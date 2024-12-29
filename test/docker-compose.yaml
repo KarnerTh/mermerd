@@ -28,7 +28,7 @@ services:
       - ./mysql/mysql-enum-setup.sql:/docker-entrypoint-initdb.d/2.sql
       - ./mysql/mysql-multiple-databases.sql:/docker-entrypoint-initdb.d/3.sql
   mermerd-mssql-test-db:
-    image: mcr.microsoft.com/mssql/server@sha256:f54a84b8a802afdfa91a954e8ddfcec9973447ce8efec519adf593b54d49bedf
+    image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "securePassword1!"
@@ -54,6 +54,6 @@ services:
       - ./mssql/mssql-setup.sql:/usr/src/app/mssql-setup.sql
       - ./mssql/mssql-enum-setup.sql:/usr/src/app/mssql-enum-setup.sql
       - ./mssql/mssql-multiple-databases.sql:/usr/src/app/mssql-multiple-databases.sql
-      - ./mssql/entrypoint.sh:/usr/src/app/entrypoint.sh
+      - ./mssql/entrypoint_azure.sh:/usr/src/app/entrypoint.sh
     working_dir: /usr/src/app
     command: sh -c './entrypoint.sh & /opt/mssql/bin/sqlservr;'
