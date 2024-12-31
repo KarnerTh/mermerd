@@ -3,8 +3,9 @@ package diagram
 type ErdRelationType string
 
 const (
-	relationOneToOne  ErdRelationType = "|o--||"
-	relationManyToOne ErdRelationType = "}o--||"
+	relationOneToOne      ErdRelationType = "|o--||"
+	relationOneToMaybeOne ErdRelationType = "|o--o|"
+	relationManyToOne     ErdRelationType = "}o--||"
 )
 
 type ErdAttributeKey string

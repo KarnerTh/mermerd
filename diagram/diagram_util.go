@@ -10,8 +10,12 @@ import (
 	"github.com/KarnerTh/mermerd/database"
 )
 
-func getRelation(constraint database.ConstraintResult) ErdRelationType {
+func getRelation(constraint database.ConstraintResult, isUnique bool, isNullable bool) ErdRelationType {
 	if constraint.IsPrimary && !constraint.HasMultiplePK {
+		return relationOneToOne
+	} else if isUnique && isNullable {
+		return relationOneToMaybeOne
+	} else if isUnique {
 		return relationOneToOne
 	} else {
 		return relationManyToOne
@@ -96,7 +100,7 @@ func shouldSkipConstraint(config config.MermerdConfig, tables []ErdTableData, co
 	return !(tableNameInSlice(tables, constraint.PkTable) && tableNameInSlice(tables, constraint.FkTable))
 }
 
-func getConstraintData(config config.MermerdConfig, labelMap RelationshipLabelMap, constraint database.ConstraintResult) ErdConstraintData {
+func getConstraintData(config config.MermerdConfig, labelMap RelationshipLabelMap, tables []database.TableResult, constraint database.ConstraintResult) ErdConstraintData {
 	pkTableName := getTableName(config, database.TableDetail{Schema: constraint.PkSchema, Name: constraint.PkTable})
 	fkTableName := getTableName(config, database.TableDetail{Schema: constraint.FkSchema, Name: constraint.FkTable})
 
@@ -108,10 +112,25 @@ func getConstraintData(config config.MermerdConfig, labelMap RelationshipLabelMa
 		constraintLabel = relationshipLabel.Label
 	}
 
+	isUnique := false
+	isNullable := true
+	for _, table := range tables {
+		if table.Table.Name == constraint.FkTable && table.Table.Schema == constraint.FkSchema {
+			for _, column := range table.Columns {
+				if column.Name == constraint.ColumnName {
+					isUnique = column.IsUnique
+					isNullable = column.IsNullable
+					goto double_break
+				}
+			}
+		}
+	}
+double_break:
+
 	return ErdConstraintData{
 		PkTableName:     pkTableName,
 		FkTableName:     fkTableName,
-		Relation:        getRelation(constraint),
+		Relation:        getRelation(constraint, isUnique, isNullable),
 		ConstraintLabel: constraintLabel,
 	}
 }
