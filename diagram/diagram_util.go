@@ -17,6 +17,8 @@ func getRelation(constraint database.ConstraintResult, isUnique bool, isNullable
 		return relationOneToMaybeOne
 	} else if isUnique {
 		return relationOneToOne
+	} else if isNullable {
+		return relationManyToMaybeOne
 	} else {
 		return relationManyToOne
 	}
