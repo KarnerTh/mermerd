@@ -16,11 +16,26 @@ func TestGetRelation(t *testing.T) {
 		isPrimary        bool
 		hasMultiplePK    bool
 		expectedRelation ErdRelationType
+		isUnique         bool
+		isNullable       bool
 	}{
-		{true, true, relationManyToOne},
-		{false, true, relationManyToOne},
-		{false, false, relationManyToOne},
-		{true, false, relationOneToOne},
+		{true, true, relationManyToOne, false, false},
+		{false, true, relationManyToOne, false, false},
+		{false, false, relationManyToOne, false, false},
+		{true, false, relationOneToOne, false, false},
+
+		{false, false, relationOneToMaybeOne, true, true},
+		{false, false, relationOneToOne, true, false},
+		{false, false, relationManyToMaybeOne, false, true},
+
+		{true, false, relationOneToOne, true, false},
+		// if PK is true it should not be nullable (thought technically possible in Sqlite)
+
+		{false, true, relationOneToMaybeOne, true, true},
+		{false, true, relationOneToOne, true, false},
+		{false, true, relationManyToMaybeOne, false, true},
+
+		{true, true, relationOneToOne, true, false},
 	}
 
 	for index, testCase := range testCases {
@@ -33,9 +48,11 @@ func TestGetRelation(t *testing.T) {
 				IsPrimary:      testCase.isPrimary,
 				HasMultiplePK:  testCase.hasMultiplePK,
 			}
+			isUnique := testCase.isUnique
+			isNullable := testCase.isNullable
 
 			// Act
-			result := getRelation(constraint)
+			result := getRelation(constraint, isUnique, isNullable)
 
 			// Assert
 			assert.Equal(t, testCase.expectedRelation, result)
@@ -335,9 +352,10 @@ func TestGetConstraintData(t *testing.T) {
 		configMock.On("OmitConstraintLabels").Return(false).Once()
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
 		constraint := database.ConstraintResult{ColumnName: "Column1"}
+		tables := []database.TableResult{}
 
 		// Act
-		result := getConstraintData(&configMock, &relationshipLabelMap{}, constraint)
+		result := getConstraintData(&configMock, &relationshipLabelMap{}, tables, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -350,9 +368,10 @@ func TestGetConstraintData(t *testing.T) {
 		configMock.On("ShowSchemaPrefix").Return(false).Twice()
 
 		constraint := database.ConstraintResult{ColumnName: "Column1"}
+		tables := []database.TableResult{}
 
 		// Act
-		result := getConstraintData(&configMock, &relationshipLabelMap{}, constraint)
+		result := getConstraintData(&configMock, &relationshipLabelMap{}, tables, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -377,8 +396,24 @@ func TestGetConstraintData(t *testing.T) {
 			ColumnName: "Column1",
 		}
 
+		tables := []database.TableResult{
+			{
+				Table: database.TableDetail{
+					Name: "pk",
+				},
+				Columns: []database.ColumnResult{
+					{
+						Name:       "Column1",
+						IsUnique:   false,
+						IsNullable: false,
+					},
+				},
+				Constraints: database.ConstraintResultList{constraint},
+			},
+		}
+
 		// Act
-		result := getConstraintData(&configMock, labelsMap, constraint)
+		result := getConstraintData(&configMock, labelsMap, tables, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)
@@ -403,8 +438,24 @@ func TestGetConstraintData(t *testing.T) {
 			ColumnName: "Column1",
 		}
 
+		tables := []database.TableResult{
+			{
+				Table: database.TableDetail{
+					Name: "pk",
+				},
+				Columns: []database.ColumnResult{
+					{
+						Name:       "Column1",
+						IsUnique:   false,
+						IsNullable: false,
+					},
+				},
+				Constraints: database.ConstraintResultList{constraint},
+			},
+		}
+
 		// Act
-		result := getConstraintData(&configMock, labelsMap, constraint)
+		result := getConstraintData(&configMock, labelsMap, tables, constraint)
 
 		// Assert
 		configMock.AssertExpectations(t)

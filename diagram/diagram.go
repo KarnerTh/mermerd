@@ -57,7 +57,7 @@ func (d diagram) Create(wr io.Writer, result *database.Result) error {
 			continue
 		}
 
-		constraints = append(constraints, getConstraintData(d.config, relationshipLabelMap, constraint))
+		constraints = append(constraints, getConstraintData(d.config, relationshipLabelMap, result.Tables, constraint))
 	}
 
 	diagramData := ErdDiagramData{
