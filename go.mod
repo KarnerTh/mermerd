@@ -1,6 +1,6 @@
 module github.com/KarnerTh/mermerd
 
-go 1.23
+go 1.24
 
 // https://github.com/microsoft/mssql-docker/issues/895#issuecomment-2327988940
 godebug x509negativeserial=1
