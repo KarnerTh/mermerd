@@ -3,10 +3,32 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
 	"strings"
 
+	// regular mssql driver
 	_ "github.com/denisenkom/go-mssqldb"
+	// azuread driver provides azuresql driver name which integrates with azidentity
+	"github.com/denisenkom/go-mssqldb/azuread"
 )
+
+// chooseMSSQLDriver picks the driver name given a connection string and default driver.
+// It prefers the azuresql driver when the connection string indicates AAD usage (azuresql scheme or fedauth parameter).
+func chooseMSSQLDriver(connStr string, defaultDriver string) string {
+	// prefer azuresql when scheme is azuresql
+	if u, err := url.Parse(connStr); err == nil {
+			if strings.EqualFold(u.Scheme, azuread.DriverName) {
+				return azuread.DriverName
+			}
+	}
+
+	// prefer azuresql when fedauth parameter present
+	if strings.Contains(strings.ToLower(connStr), "fedauth=") {
+		return azuread.DriverName
+	}
+
+	return defaultDriver
+}
 
 type mssqlConnector baseConnector
 
@@ -15,7 +37,8 @@ func (c *mssqlConnector) GetDbType() DbType {
 }
 
 func (c *mssqlConnector) Connect() error {
-	db, err := sql.Open(c.dbType.String(), c.connectionString)
+	driverName := chooseMSSQLDriver(c.connectionString, c.dbType.String())
+	db, err := sql.Open(driverName, c.connectionString)
 	if err != nil {
 		return err
 	}
