@@ -118,6 +118,7 @@ func init() {
 	bindFlagToViper(config.ShowAllConstraintsKey)
 	bindFlagToViper(config.ShowDescriptionsKey)
 	bindFlagToViper(config.ShowSchemaPrefix)
+	bindFlagToViper(config.ShowNameBeforeType)
 	bindFlagToViper(config.UseAllSchemasKey)
 	bindFlagToViper(config.UseAllTablesKey)
 }
