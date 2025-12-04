@@ -62,6 +62,7 @@ func (d diagram) Create(wr io.Writer, result *database.Result) error {
 
 	diagramData := ErdDiagramData{
 		EncloseWithMermaidBackticks: d.config.EncloseWithMermaidBackticks(),
+		ShowNameBeforeType:          d.config.ShowNameBeforeType(),
 		Tables:                      tableData,
 		Constraints:                 constraints,
 	}

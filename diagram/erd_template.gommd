@@ -3,7 +3,11 @@ erDiagram
 {{- range .Tables}}
     {{.Name}} {
     {{- range .Columns}}
-        {{.DataType}} {{.Name}} {{- if .AttributeKeys}} {{range $index, $attributeKey := .AttributeKeys}}
+        {{- if .ShowNameBeforeType -}}
+        {{.Name}} {{.DataType}}
+        {{- else -}}
+        {{.DataType}} {{.Name}}
+        {{- end }} {{- if .AttributeKeys}} {{range $index, $attributeKey := .AttributeKeys}}
             {{- if $index}},{{end -}}
             {{$attributeKey}}
         {{- end}}{{end}} {{if .Description -}}

@@ -15,19 +15,24 @@ test-coverage:
 create-mocks:
 	mockery --all
 
-# https://github.com/mfridman/tparse is needed
 .PHONY: test-all
-test-all:
+test-all: test-setup
 	go test $(test_target) -cover -json | tparse -all
 
-# https://github.com/mfridman/tparse is needed
 .PHONY: test-unit
-test-unit:
+test-unit: test-setup
 	go test --short $(test_target) -cover -json | tparse -all
+
+.PHONY: test-setup
+test-setup:
+	go install github.com/mfridman/tparse@v0.18.0
+	cd test && docker-compose up -d
 
 .PHONY: test-cleanup
 test-cleanup:
 	go clean -testcache
+	cd test && docker-compose stop && docker-compose rm -f
+	rm mermerd_test.db 2&> /dev/null || true
 
 .PHONY: publish-package
 publish-package:

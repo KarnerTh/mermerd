@@ -93,6 +93,7 @@ func init() {
 	rootCmd.Flags().Bool(config.OmitConstraintLabelsKey, false, "omit the constraint labels")
 	rootCmd.Flags().Bool(config.OmitAttributeKeysKey, false, "omit the attribute keys (PK, FK, UK)")
 	rootCmd.Flags().Bool(config.ShowSchemaPrefix, false, "show schema prefix in table name")
+	rootCmd.Flags().Bool(config.ShowNameBeforeType, false, "show name before type for each table")
 	rootCmd.Flags().BoolP(config.EncloseWithMermaidBackticksKey, "e", false, "enclose output with mermaid backticks (needed for e.g. in markdown viewer)")
 	rootCmd.Flags().StringP(config.ConnectionStringKey, "c", "", "connection string that should be used")
 	rootCmd.Flags().StringP(config.SchemaKey, "s", "", "schema that should be used")

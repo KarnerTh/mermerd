@@ -40,6 +40,7 @@ relationshipLabels:
 useAllSchemas: true
 showSchemaPrefix: true
 schemaPrefixSeparator: "_"
+showNameBeforeType: true
 ignoreTables: 
   - city
   - customer
@@ -71,6 +72,7 @@ connectionStringSuggestions:
 	assert.True(t, config.UseAllSchemas())
 	assert.True(t, config.ShowSchemaPrefix())
 	assert.Equal(t, "_", config.SchemaPrefixSeparator())
+	assert.Equal(t, true, config.ShowNameBeforeType())
 	assert.ElementsMatch(t,
 		config.RelationshipLabels(),
 		[]RelationshipLabel{
