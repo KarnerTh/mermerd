@@ -364,6 +364,62 @@ func TestDatabaseIntegrations(t *testing.T) {
 					}
 				})
 			})
+
+			t.Run("Cross-schema constraints with duplicate constraint names", func(t *testing.T) {
+				if testCase.dbType != Postgres {
+					t.Skip("Test specific to Postgres")
+				}
+
+				connector := getConnectionAndConnect(t)
+
+				t.Run("GetConstraints cross-schema FK", func(t *testing.T) {
+					// Arrange
+					tableName := TableDetail{Schema: "tenant_2", Name: "posts"} // Act
+
+					t.Run("GetColumns with duplicate table names", func(t *testing.T) {
+						// Arrange - both tenant_1 and tenant_2 have a 'users' table with 'id' column
+						tableName := TableDetail{Schema: "tenant_1", Name: "users"}
+
+						// Act
+						columns, err := connector.GetColumns(tableName)
+
+						// Assert
+						assert.Nil(t, err, "GetColumns should not fail with duplicate table names across schemas")
+						assert.NotEmpty(t, columns)
+
+						// Verify we got the columns for tenant_1.users, not duplicates from tenant_2.users
+						if len(columns) > 0 {
+							assert.Equal(t, "id", columns[0].Name)
+							assert.True(t, columns[0].IsPrimary)
+						}
+					})
+
+					constraintResults, err := connector.GetConstraints(tableName)
+
+					// Assert
+					assert.Nil(t, err)
+					assert.NotEmpty(t, constraintResults)
+
+					// Find all FK constraints
+					var fkConstraints []ConstraintResult
+					for i := range constraintResults {
+						if !constraintResults[i].IsPrimary {
+							fkConstraints = append(fkConstraints, constraintResults[i])
+						}
+					}
+
+					assert.Len(t, fkConstraints, 1, "Should have exactly ONE FK constraint, not duplicates")
+
+					if len(fkConstraints) > 0 {
+						fk := fkConstraints[0]
+						assert.Equal(t, "posts", fk.FkTable)
+						assert.Equal(t, "tenant_2", fk.FkSchema)
+						assert.Equal(t, "users", fk.PkTable)
+						assert.Equal(t, "tenant_1", fk.PkSchema)
+						assert.Equal(t, "author_id", fk.ColumnName)
+					}
+				})
+			})
 		})
 	}
 }

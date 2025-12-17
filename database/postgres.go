@@ -92,20 +92,26 @@ func (c *postgresConnector) GetColumns(tableName TableDetail) ([]ColumnResult, e
                (select count(*) > 0
                 from information_schema.key_column_usage cu
                          left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+                           and tc.constraint_schema = cu.constraint_schema
                 where cu.column_name = c.column_name
                   and cu.table_name = c.table_name
+                  and cu.table_schema = $2
                   and tc.constraint_type = 'PRIMARY KEY')                      as is_primary,
                (select count(*) > 0
                 from information_schema.key_column_usage cu
                          left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+                           and tc.constraint_schema = cu.constraint_schema
                 where cu.column_name = c.column_name
                   and cu.table_name = c.table_name
+                  and cu.table_schema = $2
                   and tc.constraint_type = 'FOREIGN KEY')                      as is_foreign,
 				(select count(*) > 0
 				from information_schema.key_column_usage cu
 						 left join information_schema.table_constraints tc on tc.constraint_name = cu.constraint_name
+						   and tc.constraint_schema = cu.constraint_schema
 				where cu.column_name = c.column_name
 				  and cu.table_name = c.table_name
+				  and cu.table_schema = $2
 				  and tc.constraint_type = 'UNIQUE')                           as is_unique,
                bool_or(c.is_nullable = 'YES')                                  as is_not_null,
                coalesce(string_agg(enumlabel, ',' order by enumsortorder), '') as enum_values,
@@ -158,23 +164,29 @@ func (c *postgresConnector) GetConstraints(tableName TableDetail) ([]ConstraintR
 					from information_schema.key_column_usage kc
 							 inner join information_schema.key_column_usage kc2
 										ON kc2.column_name = kc.column_name and kc2.table_name = kc.table_name
+										   and kc2.table_schema = kc.table_schema
 							 inner join information_schema.table_constraints tc
-										on kc2.constraint_name = tc.constraint_name and
-										   tc.constraint_type = 'PRIMARY KEY'
+										on kc2.constraint_name = tc.constraint_name
+										   and kc2.constraint_schema = tc.constraint_schema
+										   and tc.constraint_type = 'PRIMARY KEY'
 					where kc.constraint_name = c.constraint_name
 					  and kc.column_name = kcu.column_name
-            and kc.table_name = fk.table_name)
+            and kc.table_name = fk.table_name
+            and kc.table_schema = fk.table_schema)
 			   , false) "isPrimary",
 		   (select COUNT(*) > 1 "hasMultiplePk"
 			from information_schema.table_constraints tc
 					 -- one constraint can have multiple columns
 					 inner join information_schema.key_column_usage kc
 								on kc.constraint_name = tc.constraint_name
+								   and kc.constraint_schema = tc.constraint_schema
 			where tc.table_name = fk.table_name
+			  and tc.table_schema = fk.table_schema
 			  and tc.constraint_type = 'PRIMARY KEY')
 	from information_schema.referential_constraints c
 			 inner join information_schema.table_constraints fk on c.constraint_name = fk.constraint_name
 			 inner join information_schema.table_constraints pk on c.unique_constraint_name = pk.constraint_name
+			   and c.unique_constraint_schema = pk.constraint_schema
 			 inner join information_schema.key_column_usage kcu on c.constraint_name = kcu.constraint_name
 	where c.constraint_schema = $1 and (fk.table_name = $2 or pk.table_name = $2);
 		`, tableName.Schema, tableName.Name)
