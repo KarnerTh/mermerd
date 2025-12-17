@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	// regular mssql driver
-	_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/microsoft/go-mssqldb"
 	// azuread driver provides azuresql driver name which integrates with azidentity
-	"github.com/denisenkom/go-mssqldb/azuread"
+	"github.com/microsoft/go-mssqldb/azuread"
 )
 
 // chooseMSSQLDriver picks the driver name given a connection string and default driver.
