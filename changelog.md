@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (after version 0.0.5).
 
-## Unreleased
+## [0.13.0] - 2025-12-17
 ### Changed
 - go 1.24 is now used
+- updated dependencies
+- choose MSSQL connection driver dynamically ([PR #70](https://github.com/KarnerTh/mermerd/pull/70))
+
+### Fixed
+- fix PostgreSQL queries to handle duplicate constraint names across schemas ([PR #72](https://github.com/KarnerTh/mermerd/pull/72))
 
 ## [0.12.0] - 2024-11-10
 ### Added
@@ -163,6 +168,8 @@ by `--showDescriptions enumValues` (for details see [PR #32](https://github.com/
 ## [0.0.1] - 2022-01-17
 ### Added
 - Initial release of mermerd
+
+[0.13.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.13.0
 
 [0.12.0]: https://github.com/KarnerTh/mermerd/releases/tag/v0.12.0
 
