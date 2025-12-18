@@ -19,6 +19,7 @@ const (
 	ShowAllConstraintsKey          = "showAllConstraints"
 	ShowDescriptionsKey            = "showDescriptions"
 	ShowSchemaPrefix               = "showSchemaPrefix"
+	ShowNameBeforeType             = "showNameBeforeType"
 	UseAllSchemasKey               = "useAllSchemas"
 	UseAllTablesKey                = "useAllTables"
 )
@@ -44,6 +45,7 @@ type MermerdConfig interface {
 	ShowSchemaPrefix() bool
 	UseAllSchemas() bool
 	UseAllTables() bool
+	ShowNameBeforeType() bool
 }
 
 func NewConfig() MermerdConfig {
@@ -121,4 +123,8 @@ func (c config) SchemaPrefixSeparator() string {
 
 func (c config) OutputMode() OutputModeType {
 	return OutputModeType(viper.GetString(OutputMode))
+}
+
+func (c config) ShowNameBeforeType() bool {
+	return viper.GetBool(ShowNameBeforeType)
 }
