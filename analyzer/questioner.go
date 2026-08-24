@@ -42,7 +42,7 @@ func (q questioner) AskSchemaQuestion(schemas []string) ([]string, error) {
 		Options: schemas,
 	}
 
-	err := survey.AskOne(question, &result, survey.WithValidator(survey.MinItems(1)))
+	err := survey.AskOne(question, &result, survey.WithValidator(survey.MinItems(1)), survey.WithKeepFilter(true))
 	return result, err
 }
 
@@ -54,6 +54,6 @@ func (q questioner) AskTableQuestion(tables []string) ([]string, error) {
 		PageSize: 15,
 	}
 
-	err := survey.AskOne(question, &result, survey.WithValidator(survey.MinItems(1)))
+	err := survey.AskOne(question, &result, survey.WithValidator(survey.MinItems(1)), survey.WithKeepFilter(true))
 	return result, err
 }
