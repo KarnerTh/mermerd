@@ -19,6 +19,7 @@ type ErdDiagramData struct {
 	EncloseWithMermaidBackticks bool
 	Tables                      []ErdTableData
 	Constraints                 []ErdConstraintData
+	ShowNameBeforeType          bool
 }
 
 type ErdTableData struct {
